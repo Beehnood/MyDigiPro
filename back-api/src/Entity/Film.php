@@ -38,11 +38,11 @@ class Film
 
     #[ORM\Column(length: 100)]
     #[Groups(['film:read', 'film:write'])]
-    private string $titre;
+    private string $title;
 
     #[ORM\Column(type: "text")]
     #[Groups(['film:read', 'film:write'])]
-    private string $synopsis;
+    private string $overview;
 
     #[ORM\Column(type: "date")]
     #[Groups(['film:read', 'film:write'])]
@@ -96,11 +96,11 @@ class Film
     public function getTmdbId(): int { return $this->tmdbId; }
     public function setTmdbId(int $tmdbId): static { $this->tmdbId = $tmdbId; return $this; }
 
-    public function getTitre(): string { return $this->titre; }
-    public function setTitre(string $titre): static { $this->titre = $titre; return $this; }
+    public function getTitle(): string { return $this->title; }
+    public function setTitle(string $title): static { $this->title = $title; return $this; }
 
-    public function getSynopsis(): string { return $this->synopsis; }
-    public function setSynopsis(string $synopsis): static { $this->synopsis = $synopsis; return $this; }
+    public function getOverview(): string { return $this->overview; }
+    public function setOverview(string $overview): static { $this->overview = $overview; return $this; }
 
     public function getDateSortie(): \DateTimeInterface { return $this->dateSortie; }
     public function setDateSortie(\DateTimeInterface $dateSortie): static { $this->dateSortie = $dateSortie; return $this; }
