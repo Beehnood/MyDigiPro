@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Put;
 use App\Repository\SubscriptionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -49,6 +50,13 @@ class Subscription
     #[ORM\OneToMany(mappedBy: 'subscription', targetEntity: User::class)]
     #[Groups(['read:subscription'])]
     private Collection $users;
+     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read:collection'])]
+    private \DateTimeInterface $createdAt;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read:collection'])]
+    private \DateTimeInterface $updatedAt;
 
     public function __construct()
     {
@@ -122,6 +130,27 @@ class Subscription
             }
         }
 
+        return $this;
+    }
+     public function getCreatedAt(): \DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUpdatedAt(): \DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 }
