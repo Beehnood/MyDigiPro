@@ -1,0 +1,20 @@
+parameters:
+  tmdb.api_key: '%env(TMDB_API_KEY)%'
+  tmdb.base_url: '%env(TMDB_BASE_URL)%'
+
+services:
+    App\Service\TMDBClient:
+        arguments:
+            $tmdbApiKey: '%tmdb.api_key%'
+            $tmdbBaseUrl: '%tmdb.base_url%'
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
