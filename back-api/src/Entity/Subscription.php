@@ -112,26 +112,8 @@ class Subscription
         return $this->users;
     }
 
-    public function addUser(User $user): static
-    {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->setSubscription($this);
-        }
+   
 
-        return $this;
-    }
-
-    public function removeUser(User $user): static
-    {
-        if ($this->users->removeElement($user)) {
-            if ($user->getSubscription() === $this) {
-                $user->setSubscription(null);
-            }
-        }
-
-        return $this;
-    }
      public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;

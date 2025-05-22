@@ -146,6 +146,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getPassword(): string { return $this->password; }
     public function setPassword(string $password): static { $this->password = $password; return $this; }
 
+    public function getPoints(): int { return $this->points; }
+    public function setPoints(int $points): static { $this->points = $points; return $this; }
+    public function isPremium(): bool { return $this->isPremium; }
+    public function setIsPremium(bool $isPremium): static { $this->isPremium = $isPremium; return $this; }
+    public function addPoints(int $points): static
+    {
+        $this->points += $points;
+        return $this;
+    }
+    public function removePoints(int $points): static
+    {
+        $this->points -= $points;
+        return $this;
+    }
+
     public function getRoles(): array { return array_unique([...$this->roles, 'ROLE_USER']); }
     public function setRoles(array $roles): static { $this->roles = $roles; return $this; }
 
@@ -169,7 +184,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->subscriptions;
     }
 
-    public function addSubscription(UserSubscription $subscription): static
+    public function setSubscription(UserSubscription $subscription): static
     {
         if (!$this->subscriptions->contains($subscription)) {
             $this->subscriptions->add($subscription);
