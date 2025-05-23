@@ -8,6 +8,10 @@ services:
             $tmdbApiKey: '%tmdb.api_key%'
             $tmdbBaseUrl: '%tmdb.base_url%'
 
+    App\OpenApi\JwtDecorator:
+        decorates: 'api_platform.openapi.factory'
+        arguments: ['@App\OpenApi\JwtDecorator.inner']
+
     _defaults:
         autowire: true
         autoconfigure: true
