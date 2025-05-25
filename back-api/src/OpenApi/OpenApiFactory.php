@@ -8,6 +8,7 @@ namespace App\OpenApi;
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\Model;
 use ApiPlatform\OpenApi\OpenApi;
+use ApiPlatform\OpenApi\Model\Components;
 
 
 final class OpenApiFactory implements OpenApiFactoryInterface
@@ -63,6 +64,22 @@ $paths->addPath('/api/login', new Model\PathItem(
         ]
     )
 ));
+$components = $openApi->getComponents();
+$securitySchemes = $components->getSecuritySchemes() ?? [];
+$securitySchemes['bearerAuth'] = new \ApiPlatform\OpenApi\Model\SecurityScheme(
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT'
+);
+$openApi = $openApi->withComponents(
+    $components->withSecuritySchemes($securitySchemes)
+);
+
+foreach ($paths as $pathItem) {
+    foreach ($pathItem->getOperations() as $operation) {
+        $operation->addSecurity(['bearerAuth' => []]);
+    }
+}
         return $openApi;
     }
 }
