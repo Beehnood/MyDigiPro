@@ -16,9 +16,17 @@ final class JwtDecorator implements OpenApiFactoryInterface
     {
         $openApi = $this->decorated->__invoke($context);
 
-        $schemas = $openApi->getComponents()->getSecuritySchemes() ?? [];
-        $schemas['JWT'] = new SecurityScheme('http', ['scheme' => 'bearer', 'bearerFormat' => 'JWT']);
-        $openApi->getComponents()->setSecuritySchemes($schemas);
+        $components = $openApi->getComponents();
+        $schemas = $components->getSecuritySchemes() ?? [];
+        $schemas['JWT'] = new SecurityScheme('http', 'bearer', null, 'JWT');
+
+        // Use reflection to set the private property 'securitySchemes'
+        $ref = new \ReflectionClass($components);
+        if ($ref->hasProperty('securitySchemes')) {
+            $prop = $ref->getProperty('securitySchemes');
+            $prop->setAccessible(true);
+            $prop->setValue($components, $schemas);
+        }
 
         // Add global security requirement
         foreach ($openApi->getPaths()->getPaths() as $pathItem) {
