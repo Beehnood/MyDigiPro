@@ -8,16 +8,23 @@ use App\Entity\UserSubscription;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
 
         $subscriptions = [];
 
-        // Crée 2 abonnements
         foreach (['Basic', 'Premium'] as $name) {
             $subscription = new Subscription();
             $subscription->setName($name);
@@ -30,14 +37,17 @@ class AppFixtures extends Fixture
             $subscriptions[] = $subscription;
         }
 
-        // Crée 10 utilisateurs avec un historique d'abonnement
         for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user->setFirstName($faker->firstName);
             $user->setLastName($faker->lastName);
-            $user->setEmail($faker->unique()->email);
+            $user->setEmail("user$i@example.com"); // Pour faciliter les tests
             $user->setUsername($faker->unique()->userName);
-            $user->setPassword('password'); // À encoder dans un vrai contexte
+
+            // 🔐 Encodage du mot de passe
+            $hashedPassword = $this->passwordHasher->hashPassword($user, 'password123');
+            $user->setPassword($hashedPassword);
+
             $user->setCountry($faker->country);
             $user->setCity($faker->city);
             $user->setPoints($faker->numberBetween(0, 1000));
@@ -45,7 +55,6 @@ class AppFixtures extends Fixture
             $user->setCreatedAt(new \DateTimeImmutable());
             $user->setUpdatedAt(new \DateTimeImmutable());
 
-            // Abonnement actif (ex: commence aujourd'hui, fini dans 30 jours)
             $activeSubscription = new UserSubscription();
             $activeSubscription->setUser($user);
             $subscription = $faker->randomElement($subscriptions);
@@ -53,22 +62,19 @@ class AppFixtures extends Fixture
             $activeSubscription->setStartedAt(new \DateTimeImmutable());
             $activeSubscription->setEndedAt((new \DateTimeImmutable())->modify("+{$subscription->getDurationInDays()} days"));
 
-            $user->setSubscription($activeSubscription); // méthode setSubscription attend un UserSubscription
+            $user->setSubscription($activeSubscription);
 
             $manager->persist($activeSubscription);
 
-            // Historique d’abonnement
-            $nbOldSubscriptions = $faker->numberBetween(0, 2);
-            for ($j = 0; $j < $nbOldSubscriptions; $j++) {
-                $pastSubscription = new UserSubscription();
-                $pastSubscription->setUser($user);
-                $pastSubscription->setSubscription($faker->randomElement($subscriptions));
+            for ($j = 0; $j < $faker->numberBetween(0, 2); $j++) {
+                $past = new UserSubscription();
+                $past->setUser($user);
+                $past->setSubscription($faker->randomElement($subscriptions));
                 $started = $faker->dateTimeBetween('-2 years', '-1 month');
                 $ended = (clone $started)->modify('+30 days');
-                $pastSubscription->setStartedAt($started);
-                $pastSubscription->setEndedAt($ended);
-
-                $manager->persist($pastSubscription);
+                $past->setStartedAt($started);
+                $past->setEndedAt($ended);
+                $manager->persist($past);
             }
 
             $manager->persist($user);
