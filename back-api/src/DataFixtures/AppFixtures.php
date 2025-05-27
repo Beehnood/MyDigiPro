@@ -41,12 +41,23 @@ class AppFixtures extends Fixture
             $user = new User();
             $user->setFirstName($faker->firstName);
             $user->setLastName($faker->lastName);
-            $user->setEmail("user$i@example.com"); // Pour faciliter les tests
+            $user->setEmail("user$i@example.com");
             $user->setUsername($faker->unique()->userName);
 
-            // 🔐 Encodage du mot de passe
+
+
+            // Hash du mot de passe
             $hashedPassword = $this->passwordHasher->hashPassword($user, 'password123');
             $user->setPassword($hashedPassword);
+
+            // 👇 AJOUT DES RÔLES
+            if ($i === 0) {
+                $user->setEmail('admin@example.com');
+                $user->setRoles(['ROLE_ADMIN']);
+            } else {
+                $user->setEmail("user$i@example.com");
+                $user->setRoles(['ROLE_USER']);
+            }
 
             $user->setCountry($faker->country);
             $user->setCity($faker->city);
@@ -55,6 +66,7 @@ class AppFixtures extends Fixture
             $user->setCreatedAt(new \DateTimeImmutable());
             $user->setUpdatedAt(new \DateTimeImmutable());
 
+            // Abonnement actif
             $activeSubscription = new UserSubscription();
             $activeSubscription->setUser($user);
             $subscription = $faker->randomElement($subscriptions);
@@ -63,9 +75,9 @@ class AppFixtures extends Fixture
             $activeSubscription->setEndedAt((new \DateTimeImmutable())->modify("+{$subscription->getDurationInDays()} days"));
 
             $user->setSubscription($activeSubscription);
-
             $manager->persist($activeSubscription);
 
+            // Abonnements passés
             for ($j = 0; $j < $faker->numberBetween(0, 2); $j++) {
                 $past = new UserSubscription();
                 $past->setUser($user);

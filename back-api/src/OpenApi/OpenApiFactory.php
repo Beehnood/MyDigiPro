@@ -22,7 +22,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface
 
     public function __invoke(array $context = []): OpenApi
     {
-        file_put_contents(__DIR__ . '/../../../login_log.txt', "OpenApiFactory executed\n", FILE_APPEND);
+        // file_put_contents(__DIR__ . '/../../../login_log.txt', "OpenApiFactory executed\n", FILE_APPEND);
         $openApi = $this->decorated->__invoke($context);
         $paths = $openApi->getPaths();
 
@@ -38,7 +38,7 @@ $paths->addPath('/api/login', new Model\PathItem(
                     'schema' => [
                         'type' => 'object',
                         'properties' => [
-                            'email' => ['type' => 'string', 'example' => 'user@example.com'],
+                            'email' => ['type' => 'string', 'example' => 'admin@example.com'],
                             'password' => ['type' => 'string', 'example' => 'password123']
                         ],
                         'required' => ['email', 'password']
@@ -64,6 +64,8 @@ $paths->addPath('/api/login', new Model\PathItem(
         ]
     )
 ));
+
+ // Déclarer bearerAuth dans les composants
 $components = $openApi->getComponents();
 $securitySchemes = $components->getSecuritySchemes() ?? [];
 $securitySchemes['bearerAuth'] = new \ApiPlatform\OpenApi\Model\SecurityScheme(

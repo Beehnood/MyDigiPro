@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -19,11 +20,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['read:collection']],
     denormalizationContext: ['groups' => ['write:item']],
     operations: [
+        new Get(normalizationContext: ['groups' => ['read:item']]),
         new GetCollection(),
-        new Get(),
-        new Post(),
-        new Put(),
-        new Delete()
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Put(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')")
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -31,63 +32,71 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:collection'])]
+    #[Groups(['read:collection', 'read:item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Assert\NotBlank]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private string $lastName;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Assert\NotBlank]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private string $firstName;
 
     #[ORM\Column(length: 100, unique: true)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Assert\NotBlank]
+    #[Assert\Email]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private string $email;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Assert\NotBlank]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private string $country;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Assert\NotBlank]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private string $city;
 
     #[ORM\Column(length: 50, unique: true)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Assert\NotBlank]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private string $username;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(groups: ['write:item'])]
     #[Groups(['write:item'])] // mot de passe non exposé en lecture
     private string $password;
 
     #[ORM\Column(type: Types::INTEGER)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private int $points = 0;
 
     #[ORM\Column(type: Types::BOOLEAN)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private bool $isPremium = false;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['read:collection', 'write:item'])]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
     private ?string $favoriteMovies = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:collection'])]
+    #[Groups(['read:collection', 'read:item'])]
     private \DateTimeInterface $createdAt;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:collection'])]
+    #[Groups(['read:collection', 'read:item'])]
     private \DateTimeInterface $updatedAt;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['read:collection'])]
+    #[Groups(['read:collection', 'read:item'])] // On ne permet pas d'écrire les rôles via API
     private array $roles = [];
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserSubscription::class, cascade: ['persist', 'remove'])]
-    #[Groups(['read:collection'])]
+    #[Groups(['read:collection', 'read:item'])]
     private Collection $subscriptions;
 
     public function __construct()
@@ -97,16 +106,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = ['ROLE_USER'];
         $this->subscriptions = new ArrayCollection();
     }
-    public function getCurrentSubscription(): ?UserSubscription
-{
-    foreach ($this->subscriptions as $subscription) {
-        if ($subscription->isActive()) {
-            return $subscription;
-        }
-    }
-    return null;
-}
-
 
     #[ORM\PrePersist]
     public function onPrePersist(): void
@@ -162,7 +161,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function getRoles(): array { return array_unique([...$this->roles, 'ROLE_USER']); }
-    public function setRoles(array $roles): static { $this->roles = $roles; return $this; }
+    public function setRoles(array $roles): self { $this->roles = $roles; return $this; }
 
     public function getUserIdentifier(): string { return $this->email; }
     public function eraseCredentials(): void {}
@@ -179,9 +178,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, UserSubscription>
      */
-    public function getSubscriptions(): Collection
+   
+    public function getCurrentSubscription(): ?UserSubscription
     {
-        return $this->subscriptions;
+        foreach ($this->subscriptions as $subscription) {
+            if ($subscription->isActive()) {
+                return $subscription;
+            }
+        }
+        return null;
     }
 
     public function setSubscription(UserSubscription $subscription): static
@@ -205,3 +210,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 }
+
