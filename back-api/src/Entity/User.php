@@ -17,6 +17,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
+
+    
+
     normalizationContext: ['groups' => ['read:collection']],
     denormalizationContext: ['groups' => ['write:item']],
     operations: [
