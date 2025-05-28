@@ -1,10 +1,11 @@
 security:
     role_hierarchy:
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+        ROLE_SUPER_ADMIN: [ROLE_SUPER_ADMIN]
         ROLE_ADMIN: [ROLE_USER]
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -16,18 +17,28 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        # login:
+        #     pattern: ^/api/login$
+        #     stateless: true
+        #     json_login:
+        #         check_path: /api/login
+        #         username_path: email
+        #         password_path: password
+        #         success_handler: lexik_jwt_authentication.handler.authentication_success
+        #         failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        #     provider: app_user_provider
 
-        login:
-            pattern: ^/api/login$
-            stateless: true
+
+        main:
             # anonymous: true
+            lazy: true
+            provider: app_user_provider
             json_login:
                 check_path: /api/login
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            provider: app_user_provider
 
             # https://symfony.com/doc/current/security.html#stateless-firewalls
             # stateless: true
@@ -54,8 +65,10 @@ security:
     access_control:
         - { path: ^/api/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         # - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/admin/, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/profile, roles: ROLE_USER }
+
+   
 
 when@test:
     security:

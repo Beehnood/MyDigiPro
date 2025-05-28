@@ -53,7 +53,7 @@ class AppFixtures extends Fixture
             // 👇 AJOUT DES RÔLES
             if ($i === 0) {
                 $user->setEmail('admin@example.com');
-                $user->setRoles(['ROLE_ADMIN']);
+                $user->setRoles(['ROLE_SUPER_ADMIN']);
             } else {
                 $user->setEmail("user$i@example.com");
                 $user->setRoles(['ROLE_USER']);
