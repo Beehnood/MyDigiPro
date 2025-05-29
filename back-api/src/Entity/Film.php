@@ -19,9 +19,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
-        new Put(),
-        new Delete()
+        new Post(security: "is_granted('ROLE_SUPER_ADMIN')"),
+        new Put(security: "is_granted('ROLE_SUPER_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_SUPER_ADMIN')"),
     ]
 )]
 class Film
@@ -44,10 +44,6 @@ class Film
     #[Groups(['film:read', 'film:write'])]
     private string $overview;
 
-    #[ORM\Column(type: "date")]
-    #[Groups(['film:read', 'film:write'])]
-    private \DateTimeInterface $dateSortie;
-
     #[ORM\Column(type: "float", options: ["default" => 0])]
     #[Groups(['film:read'])]
     private float $noteMoyenne = 0;
@@ -60,6 +56,10 @@ class Film
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['film:read', 'film:write'])]
     private ?string $posterPath = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['film:read'])]
+    private ?\DateTimeInterface $releaseDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['film:read'])]
@@ -102,9 +102,6 @@ class Film
     public function getOverview(): string { return $this->overview; }
     public function setOverview(string $overview): static { $this->overview = $overview; return $this; }
 
-    public function getDateSortie(): \DateTimeInterface { return $this->dateSortie; }
-    public function setDateSortie(\DateTimeInterface $dateSortie): static { $this->dateSortie = $dateSortie; return $this; }
-
     public function getNoteMoyenne(): float { return $this->noteMoyenne; }
     public function setNoteMoyenne(float $noteMoyenne): static { $this->noteMoyenne = $noteMoyenne; return $this; }
 
@@ -129,6 +126,16 @@ class Film
 
     public function getPosterPath(): ?string { return $this->posterPath; }
     public function setPosterPath(?string $posterPath): static { $this->posterPath = $posterPath; return $this; }
+
+    public function getReleaseDate(): ?\DateTimeInterface { return $this->releaseDate; }
+    public function setReleaseDate(?\DateTimeInterface $releaseDate): static
+    {
+        $this->releaseDate = $releaseDate;
+        return $this;
+    }
+    /**
+     * @return \DateTimeInterface
+     */
 
     public function getCreatedAt(): \DateTimeInterface { return $this->createdAt; }
     public function setCreatedAt(\DateTimeInterface $createdAt): static { $this->createdAt = $createdAt; return $this; }
