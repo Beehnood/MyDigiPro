@@ -5,6 +5,7 @@
 body {
   margin: 0;
   font-family: "Kaneda-Gothic", sans-serif; /* Remplace Montserrat par Kaneda Gothic */
+  background-color: #242424;
   /* font-weight: 400;
   font-style: normal;
   font-weight: 400;
@@ -15,4 +16,7 @@ body {
   font-style: normal;
   font-weight: 700;
   font-style: italic; */
+}
+*{
+  letter-spacing: 0.5;
 }
