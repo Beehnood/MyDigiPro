@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 //   useEffect(() => {
 //     if (token) {
 //       fetch("http://localhost:8000/api/me", {
-//         headers: { Authorization: `Bearer ${token}` },
+//         headers: { Authorization: `Bearer token` },
 //       })
 //         .then((res) => {
 //           if (!res.ok) throw new Error();
