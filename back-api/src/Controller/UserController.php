@@ -5,13 +5,19 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Psr\Log\LoggerInterface;
+
 
 class UserController extends AbstractController
 {
@@ -63,6 +69,8 @@ class UserController extends AbstractController
         return $this->json(['message' => 'Utilisateur créé avec succès !']);
     }
 
+
+
     // List all users (Admin only)
     #[Route('/api/users', name: 'api_users_list', methods: ['GET'])]
     public function listUsers(EntityManagerInterface $em): JsonResponse
@@ -82,6 +90,24 @@ class UserController extends AbstractController
 
         return $this->json($data);
     }
+
+   #[Route('/api/me', name: 'api_me', methods: ['GET'])]
+    public function getCurrentUser(Request $request, SerializerInterface $serializer, LoggerInterface $logger): JsonResponse
+    {
+        try {
+            // Récupérer l'utilisateur connecté via le système de sécurité de Symfony
+            $user = $this->getUser();
+            // Sérialiser l'utilisateur avec le groupe de sérialisation 'read:item'
+            $data = $serializer->serialize($user, 'json', ['groups' => ['read:item']]);
+
+            return new JsonResponse(json_decode($data), 200);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Authentication error: ' . $e->getMessage()], 401);
+        }
+    }
+
+
+    
 
     // Get a single user by ID (Admin only)
     #[Route('/api/users/{id}', name: 'user_delete', methods: ['DELETE'])]

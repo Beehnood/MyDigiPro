@@ -1,14 +1,18 @@
 api_platform:
-    title: Hello API Platform
-    version: 1.0.0
+    title: 'MyDigiProjet API'
+    version: '1.0.0'
+    path_segment_name_generator: api_platform.path_segment_name_generator.underscore
+    mapping:
+        paths:
+            - '%kernel.project_dir%/src/Entity'
+            - '%kernel.project_dir%/src/Controller'
     defaults:
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
-
-
-    swagger:
-        api_keys:
-            JWT:
-                name: Authorization
-                type: header
+    openapi:
+        swagger_ui_extra_configuration:
+            api_keys:
+                JWT:
+                    name: Authorization
+                    type: header
