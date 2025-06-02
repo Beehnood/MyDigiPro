@@ -17,8 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['film:read']],
     denormalizationContext: ['groups' => ['film:write']],
     operations: [
-        new GetCollection(),
-        new Get(),
+        new Get(uriTemplate: '/api/films/{id}'), // Uniquement pour un film spécifique
         new Post(security: "is_granted('ROLE_SUPER_ADMIN')"),
         new Put(security: "is_granted('ROLE_SUPER_ADMIN')"),
         new Delete(security: "is_granted('ROLE_SUPER_ADMIN')"),
