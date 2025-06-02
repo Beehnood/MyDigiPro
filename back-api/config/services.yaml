@@ -3,10 +3,13 @@ parameters:
   tmdb.base_url: '%env(TMDB_BASE_URL)%'
 
 services:
+    
     App\Service\TMDBClient:
         arguments:
             $tmdbApiKey: '%tmdb.api_key%'
             $tmdbBaseUrl: '%tmdb.base_url%'
+            # $tmdbApiKey: '%env(TMDB_API_KEY)%'
+            # $tmdbBaseUrl: 'https://api.themoviedb.org/3'
             
     App\EventListener\JwtCreateListener:
             tags:
@@ -19,6 +22,9 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            $tmdbApiKey: '%env(TMDB_API_KEY)%'
+            $tmdbBaseUrl: 'https://api.themoviedb.org/3'
 
     App\:
         resource: '../src/'
