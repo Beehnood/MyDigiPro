@@ -119,6 +119,59 @@ class FilmController extends AbstractController
         }
     }
 
+    #[Route('/api/films', name: 'films', methods: ['GET'])]
+    public function getFilms(TMDBClient $tmdbClient, LoggerInterface $logger): JsonResponse
+    {
+        try {
+            $tmdbMovies = $tmdbClient->fetchMovies();
+            $logger->info('Films récupérés depuis TMDB.', ['count' => count($tmdbMovies['results'])]);
+            $films = array_map(function ($movie) {
+                return [
+                    'tmdbId' => $movie['id'],
+                    'title' => $movie['title'],
+                    'overview' => $movie['overview'] ?? '',
+                    'posterPath' => $movie['poster_path'] ?? null,
+                    'releaseDate' => $movie['release_date'] ?? null,
+                    'note' => $movie['vote_average'] ?? 0.0,
+                ];
+            }, $tmdbMovies['results']);
+            return new JsonResponse($films);
+        } catch (\Exception $e) {
+            $logger->error('Erreur lors de la récupération des films.', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return new JsonResponse(['error' => 'Erreur lors de la récupération des films'], 500);
+        }
+    }
+
+    #[Route('/api/films/{id}', name: 'get_film', methods: ['GET'])]
+    public function getFilm(int $id, TMDBClient $tmdbClient, LoggerInterface $logger): JsonResponse
+    {
+        try {
+            $tmdbMovie = $tmdbClient->fetchMovieDetails($id);
+            if (!$tmdbMovie || !isset($tmdbMovie['id'])) {
+                return new JsonResponse(['error' => 'Film non trouvé sur TMDB'], 404);
+            }
+
+            $logger->info('Film récupéré depuis TMDB.', ['tmdbId' => $tmdbMovie['id']]);
+            return new JsonResponse([
+                'tmdbId' => $tmdbMovie['id'],
+                'title' => $tmdbMovie['title'],
+                'overview' => $tmdbMovie['overview'] ?? '',
+                'posterPath' => $tmdbMovie['poster_path'] ?? null,
+                'releaseDate' => $tmdbMovie['release_date'] ?? null,
+                'note' => $tmdbMovie['vote_average'] ?? 0.0,
+            ]);
+        } catch (\Exception $e) {
+            $logger->error('Erreur lors de la récupération du film.', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return new JsonResponse(['error' => 'Erreur lors de la récupération du film'], 500);
+        }
+    }
+
     // #[Route('/api/films/{id}', name: 'get_film', methods: ['GET'])]
     // public function getFilm(int $id, EntityManagerInterface $em): JsonResponse
     // {

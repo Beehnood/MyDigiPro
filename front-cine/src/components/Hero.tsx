@@ -3,6 +3,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
 
 
+const apiUrl = 'http://localhost:8000/api/films'
+
 
 
 interface Filme {
@@ -18,12 +20,13 @@ export const Hero = () => {
   useEffect(() => {
     const fetchFilmes = async () => {
       try {
-        const response = await fetch('https://ahttps://api.themoviedb.org/3'); // Replace with your API endpoint
+        const response = await fetch(apiUrl); // Replace with your API endpoint
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
           setFilmes(data);
+          console.log('Filmes fetched:', data);
         } catch (error) {
           console.error('Error fetching filmes:', error);
         }
@@ -51,7 +54,7 @@ export const Hero = () => {
       ))}
     </Swiper>
        </div>
-       
+      
     </main>
   );
 }

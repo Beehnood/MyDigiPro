@@ -19,12 +19,13 @@ class TMDBClient
         $this->httpClient = $httpClient;
         $this->apiKey = $tmdbApiKey;
         $this->baseUrl = rtrim($tmdbBaseUrl, '/');
+        
     }
 
     public function fetchPopularMovies(): array
 {
     $url = sprintf(
-        // '%s/movie/popular?api_key=%s&language=fr-FR&page=1&include_adult=false&include_video=false',
+        // '%s/movie/popular?api_key=86533c13f5646bdeb5295938d02a5d82s&language=fr-FR&page=1&include_adult=false&include_video=false',
 'https://api.themoviedb.org/3/movie/popular?api_key=86533c13f5646bdeb5295938d02a5d82&language=fr-FR&page=1&include_adult=false&include_video=false',        
 rtrim($this->tmdbBaseUrl, '/'),
         $this->tmdbApiKey
