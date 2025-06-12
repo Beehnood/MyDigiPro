@@ -2,7 +2,6 @@ lexik_jwt_authentication:
     secret_key: '%kernel.project_dir%/config/jwt/private.pem'
     public_key: '%kernel.project_dir%/config/jwt/public.pem'
     pass_phrase: '%env(JWT_PASSPHRASE)%'
-<<<<<<< HEAD
     token_ttl: 3600
     user_id_claim: email
     token_extractors:
@@ -12,8 +11,5 @@ lexik_jwt_authentication:
             name: Authorization
     api_platform:
         enabled: true
-=======
-    # token_ttl: 3600
     encoder:
         service: lexik_jwt_authentication.encoder.lcobucci
->>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d

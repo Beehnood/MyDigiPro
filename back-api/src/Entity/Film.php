@@ -18,7 +18,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => ['film:read']],
     denormalizationContext: ['groups' => ['film:write']],
     operations: [
-<<<<<<< HEAD
         new GetCollection(
             uriTemplate: '/api/films',
             security: "is_granted('ROLE_USER')",
@@ -31,34 +30,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: "is_granted('ROLE_USER')",
             securityMessage: 'Vous devez être connecté pour accéder à cette ressource.'
         ),
-        new Get(
-            uriTemplate: '/api/films/{id}',
-            security: "is_granted('ROLE_USER')",
-            securityMessage: 'Vous devez être connecté pour accéder à cette ressource.'
-        ),
-        new Post(
-            uriTemplate: '/api/films',
-            security: "is_granted('ROLE_SUPER_ADMIN')",
-            securityMessage: 'Vous devez être administrateur pour créer un film.'
-        ),
-        new Put(
-            uriTemplate: '/api/films/{id}',
-            security: "is_granted('ROLE_SUPER_ADMIN')",
-            securityMessage: 'Vous devez être administrateur pour modifier un film.'
-        ),
-        new Delete(
-            uriTemplate: '/api/films/{id}',
-            security: "is_granted('ROLE_SUPER_ADMIN')",
-            securityMessage: 'Vous devez être administrateur pour supprimer un film.'
-        ),
-=======
-        new Get(uriTemplate: '/api/films/{id}'), // Uniquement pour un film spécifique
+        new Get(security: "is_granted('ROLE_USER')"),
         new Post(security: "is_granted('ROLE_SUPER_ADMIN')"),
         new Put(security: "is_granted('ROLE_SUPER_ADMIN')"),
         new Delete(security: "is_granted('ROLE_SUPER_ADMIN')"),
->>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
     ]
 )]
+
 class Film
 {
     #[ORM\Id]
