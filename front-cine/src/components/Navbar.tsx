@@ -7,7 +7,7 @@ export const Navbar = () => {
   return (
     <nav className="bg-black shadow-md ">
       <div className="flex items-center justify-between py-4 mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div className=" w-16 h-16 flex items-center bg-yellow-400 rounded-full">
+        <div className=" w-16 h-16 flex items-center ">
           <img src="../public/Logo-rouge.png" alt="image-logo" />
         </div>
         <div className=" flex items-center  ">

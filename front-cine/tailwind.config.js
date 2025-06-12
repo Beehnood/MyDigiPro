@@ -2,10 +2,16 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}", // Inclut tous les fichiers source
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        beige: {
+          200: '#D9C2A8', // Couleur beige personnalisée
+        },
+      },
+    },
   },
   plugins: [],
 };

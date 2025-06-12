@@ -58,63 +58,48 @@ use ApiPlatform\OpenApi\Model\Operation;
 )]
 class FilmController extends AbstractController
 {
-    // #[Route('/api/films/sync', name: 'sync_films', methods: ['POST'])]
-    // #[IsGranted('ROLE_ADMIN')]
-    // public function syncPopular(
-    //     TMDBClient $tmdbClient,
-    //     EntityManagerInterface $em
-    // ): JsonResponse {
-    //     try {
-    //         $tmdbMovies = $tmdbClient->fetchPopularMovies();
-    //         $added = 0;
-
-    //         foreach ($tmdbMovies['results'] as $tmdbMovie) {
-    //             $existing = $em->getRepository(Film::class)->findOneBy(['tmdbId' => $tmdbMovie['id']]);
-    //             if ($existing) {
-    //                 continue;
-    //             }
-
-    //             $film = new Film();
-    //             $film->setTitle($tmdbMovie['title']);
-    //             $film->setTmdbId($tmdbMovie['id']);
-    //             $film->setOverview($tmdbMovie['overview']);
-    //             $film->setPosterPath($tmdbMovie['poster_path']);
-    //             $film->setReleaseDate(new \DateTime($tmdbMovie['release_date']));
-
-    //             $em->persist($film);
-    //             $added++;
-    //         }
-
-    //         $em->flush();
-
-    //         return $this->json(['message' => "$added films ajoutés."]);
-    //     } catch (\Exception $e) {
-    //         return $this->json(['error' => 'Erreur lors de la synchronisation: ' . $e->getMessage()], 500);
-    //     }
-    // }
 
     #[Route('/api/films/populaires', name: 'films_populaires', methods: ['GET'])]
     public function getPopularFilms(TMDBClient $tmdbClient, LoggerInterface $logger): JsonResponse
     {
         try {
+            // Récupération des données TMDB
             $tmdbMovies = $tmdbClient->fetchPopularMovies();
-            $logger->info('Films populaires récupérés depuis TMDB.', ['count' => count($tmdbMovies['results'])]);
-            $films = array_map(function ($movie) {
+            $genresList = $tmdbClient->fetchGenres();
+
+            // Indexation des genres par ID
+            $genreMap = [];
+            foreach ($genresList as $genre) {
+                $genreMap[$genre['id']] = $genre['name'];
+            }
+
+            // Transformation des films
+            $films = array_map(function ($movie) use ($genreMap) {
+                $genreNames = array_map(fn($id) => $genreMap[$id] ?? 'Inconnu', $movie['genre_ids'] ?? []);
+
                 return [
                     'tmdbId' => $movie['id'],
                     'title' => $movie['title'],
                     'overview' => $movie['overview'] ?? '',
                     'posterPath' => $movie['poster_path'] ?? null,
                     'releaseDate' => $movie['release_date'] ?? null,
+                    'genres' => $genreNames,
                     'note' => $movie['vote_average'] ?? 0.0,
+                    'backdropPath' => $movie['backdrop_path'] ?? null,
+
                 ];
-            }, $tmdbMovies['results']);
+            }, $tmdbMovies['results'] ?? []);
+
+            $logger->info('Films populaires récupérés depuis TMDB.', ['count' => count($films)]);
+
             return new JsonResponse($films);
+
         } catch (\Exception $e) {
             $logger->error('Erreur lors de la récupération des films populaires.', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return new JsonResponse(['error' => 'Erreur lors de la récupération des films'], 500);
         }
     }
@@ -132,6 +117,7 @@ class FilmController extends AbstractController
                     'overview' => $movie['overview'] ?? '',
                     'posterPath' => $movie['poster_path'] ?? null,
                     'releaseDate' => $movie['release_date'] ?? null,
+                    'genres' => $movieGenres = $movie['genre_ids'] ?? [],
                     'note' => $movie['vote_average'] ?? 0.0,
                 ];
             }, $tmdbMovies['results']);
@@ -144,6 +130,47 @@ class FilmController extends AbstractController
             return new JsonResponse(['error' => 'Erreur lors de la récupération des films'], 500);
         }
     }
+
+    #[Route('/api/films/by-genre', name: 'films_by_genre', methods: ['GET'])]
+    public function getFilmsByGenre(TMDBClient $tmdbClient, LoggerInterface $logger): JsonResponse
+    {
+        try {
+            $tmdbMovies = $tmdbClient->fetchPopularMovies();
+            $genresList = $tmdbClient->fetchGenres();
+
+            $genreMap = [];
+            foreach ($genresList as $genre) {
+                $genreMap[$genre['id']] = $genre['name'];
+            }
+
+            // Organisation des films par genre
+            $filmsByGenre = [];
+
+            foreach ($tmdbMovies['results'] ?? [] as $movie) {
+                $movieGenres = $movie['genre_ids'] ?? [];
+                $movieData = [
+                    'tmdbId' => $movie['id'] ?? 0,
+                    'title' => $movie['title'],
+                    'overview' => $movie['overview'] ?? '',
+                    'posterPath' => $movie['poster_path'] ?? null,
+                    'releaseDate' => $movie['release_date'] ?? null,
+                    'note' => $movie['vote_average'] ?? 0.0,
+                ];
+
+                foreach ($movieGenres as $gid) {
+                    $gname = $genreMap[$gid] ?? 'Inconnu';
+                    $filmsByGenre[$gname][] = $movieData;
+                }
+            }
+
+            return new JsonResponse($filmsByGenre);
+
+        } catch (\Exception $e) {
+            $logger->error('Erreur genre: ' . $e->getMessage());
+            return new JsonResponse(['error' => 'Erreur serveur'], 500);
+        }
+    }
+
 
     #[Route('/api/films/{id}', name: 'get_film', methods: ['GET'])]
     public function getFilm(int $id, TMDBClient $tmdbClient, LoggerInterface $logger): JsonResponse
@@ -161,6 +188,7 @@ class FilmController extends AbstractController
                 'overview' => $tmdbMovie['overview'] ?? '',
                 'posterPath' => $tmdbMovie['poster_path'] ?? null,
                 'releaseDate' => $tmdbMovie['release_date'] ?? null,
+                'genres' => $movieGenres = $movie['genre_ids'] ?? [],
                 'note' => $tmdbMovie['vote_average'] ?? 0.0,
             ]);
         } catch (\Exception $e) {
@@ -171,6 +199,8 @@ class FilmController extends AbstractController
             return new JsonResponse(['error' => 'Erreur lors de la récupération du film'], 500);
         }
     }
+
+
 
     // #[Route('/api/films/{id}', name: 'get_film', methods: ['GET'])]
     // public function getFilm(int $id, EntityManagerInterface $em): JsonResponse
@@ -190,6 +220,8 @@ class FilmController extends AbstractController
     //         'releaseDate' => $film->getReleaseDate()->format('Y-m-d'),
     //     ]);
     // }
+
+
 
     // #[Route('/api/films/{id}', name: 'delete_film', methods: ['DELETE'])]
     // #[IsGranted('ROLE_ADMIN')]
@@ -239,6 +271,8 @@ class FilmController extends AbstractController
     //         return $this->json(['error' => 'Erreur lors de l\'ajout des films: ' . $e->getMessage()], 500);
     //     }
     // }
+
+
 
     // test
     #[Route('/api/test', name: 'test_endpoint', methods: ['GET'])]

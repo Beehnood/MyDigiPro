@@ -21,25 +21,23 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token")
-  );
+  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
-//   useEffect(() => {
-//     if (token) {
-//       fetch("http://localhost:8000/api/me", {
-//         headers: { Authorization: `Bearer token` },
-//       })
-//         .then((res) => {
-//           if (!res.ok) throw new Error();
-//           return res.json();
-//         })
-//         .then((data) => setUser(data))
-//         .catch(() => logout());
-//     }
-//   }, [token]);
+  useEffect(() => {
+    if (token) {
+      fetch("http://localhost:8000/api/me", {
+        headers: { Authorization: `Bearer ${token}` }, // Correction ici
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error();
+          return res.json();
+        })
+        .then((data) => setUser(data))
+        .catch(() => logout());
+    }
+  }, [token]);
 
   const login = (newToken: string) => {
     localStorage.setItem("token", newToken);

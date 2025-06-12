@@ -1,12 +1,11 @@
-import { Navbar } from "../components/Navbar";  
+import { Navbar } from "../components/Navbar";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
 
-
 const Login = () => {
-const { login } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +23,7 @@ const { login } = useAuth();
         },
         body: JSON.stringify({ email, password }),
       });
-        // Vérifie si la réponse est correcte
+      // Vérifie si la réponse est correcte
       if (!response.ok) {
         throw new Error("Identifiants incorrects");
       }
@@ -91,14 +90,10 @@ const { login } = useAuth();
           >
             Se connecter
           </button>
-          
         </form>
         <p className="mt-4 text-md tracking-wider text-center">
           Pas encore de compte ?{" "}
-          <a
-            href="/register"
-            className="text-blue-600 hover:underline"
-          >
+          <a href="/register" className="text-blue-600 hover:underline">
             S'inscrire
           </a>
         </p>

@@ -5,15 +5,26 @@
 #         stateless: true
 #         cache_headers:
 #             vary: ['Content-Type', 'Authorization', 'Origin']
+# api_platform:
+#     title: 'MyDigiProjet API'
+#     version: '1.0.0'
+#     enable_entrypoint: true
+#     enable_docs: true
+#     formats:
+#         jsonld: ['application/ld+json']
+#         json: ['application/json']
+#     mapping:
+#         paths:
+#             - '%kernel.project_dir%/src/Entity'
+#     show_webby: false
+
 api_platform:
-    title: 'MyDigiProjet API'
-    version: '1.0.0'
-    enable_entrypoint: true
-    enable_docs: true
-    formats:
-        jsonld: ['application/ld+json']
-        json: ['application/json']
     mapping:
-        paths:
-            - '%kernel.project_dir%/src/Entity'
-    show_webby: false
+        paths: ['%kernel.project_dir%/src/Entity']
+    patch_formats:
+        json: ['application/merge-patch+json']
+    swagger:
+        versions: [3]
+    defaults:
+        stateless: true
+        security: 'is_granted("IS_AUTHENTICATED_FULLY")'

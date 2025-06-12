@@ -2,7 +2,7 @@ export const Footer = () => {
   return (
     <footer className="bg-black w-100% h-60 text-center text-white px-12 py-12">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-4 md:grid-cols-1 gap-8 items-center">
-        <div className="w-36 h-36 col-span-1  items-center bg-neutral-400 rounded-full">
+        <div className="w-36 h-36 col-span-1  items-center ">
           <img src="../public/Logo-blanc.png" alt="" />
         </div>
 

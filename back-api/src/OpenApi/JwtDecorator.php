@@ -5,6 +5,8 @@ namespace App\OpenApi;
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\Model\SecurityScheme;
 use ApiPlatform\OpenApi\OpenApi;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\PathItem;
 
 final class JwtDecorator implements OpenApiFactoryInterface
 {
@@ -14,25 +16,42 @@ final class JwtDecorator implements OpenApiFactoryInterface
 
     public function __invoke(array $context = []): OpenApi
     {
-        $openApi = $this->decorated->__invoke($context);
+        $openApi = ($this->decorated)($context);
 
-        $components = $openApi->getComponents();
-        $schemas = $components->getSecuritySchemes() ?? [];
-        $schemas['JWT'] = new SecurityScheme('http', 'bearer', null, 'JWT');
+        // Configuration du schéma de sécurité JWT
+        $securitySchemes = $openApi->getComponents()->getSecuritySchemes() ?: [];
+        $securitySchemes['JWT'] = new SecurityScheme(
+            scheme: 'bearer',
+            type: 'http',
+            bearerFormat: 'JWT'
+        );
 
-        // Use reflection to set the private property 'securitySchemes'
-        $ref = new \ReflectionClass($components);
-        if ($ref->hasProperty('securitySchemes')) {
-            $prop = $ref->getProperty('securitySchemes');
-            $prop->setAccessible(true);
-            $prop->setValue($components, $schemas);
-        }
+        // Mise à jour des composants OpenAPI
+        $components = $openApi->getComponents()->withSecuritySchemes($securitySchemes);
+        $openApi = $openApi->withComponents($components);
 
-        // Add global security requirement
-        foreach ($openApi->getPaths()->getPaths() as $pathItem) {
-            foreach ($pathItem->getOperations() as $operation) {
-                $operation->addSecurity(['JWT' => []]);
+        // Ajout de la sécurité JWT à toutes les opérations
+        $paths = $openApi->getPaths();
+        foreach ($paths as $path => $pathItem) {
+            $operations = [
+                'get' => $pathItem->getGet(),
+                'put' => $pathItem->getPut(),
+                'post' => $pathItem->getPost(),
+                'delete' => $pathItem->getDelete(),
+                'patch' => $pathItem->getPatch(),
+                'head' => $pathItem->getHead(),
+                'options' => $pathItem->getOptions(),
+                'trace' => $pathItem->getTrace(),
+            ];
+
+            foreach ($operations as $method => $operation) {
+                if ($operation instanceof Operation) {
+                    $operation = $operation->withSecurity(['JWT' => []]);
+                    $pathItem = $pathItem->{'with'.ucfirst($method)}($operation);
+                }
             }
+
+            $paths->addPath($path, $pathItem);
         }
 
         return $openApi;
