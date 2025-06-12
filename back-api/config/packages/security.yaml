@@ -14,10 +14,17 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+<<<<<<< HEAD
         
         api_login:
             pattern: ^/api/login
             stateless: true
+=======
+        main:
+            # anonymous: true
+            lazy: true
+            provider: app_user_provider
+>>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
             json_login:
                 check_path: /api/login
                 username_path: email
@@ -32,6 +39,7 @@ security:
             jwt: ~
     
     access_control:
+<<<<<<< HEAD
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/films/populaires, roles: PUBLIC_ACCESS }
@@ -40,6 +48,17 @@ security:
         - { path: ^/api/films, roles: ROLE_USER }
         - { path: ^/api/admin/, roles: ROLE_ADMIN }
         - { path: ^/api, roles: ROLE_USER }
+=======
+        - { path: ^/api/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        # - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/api/admin/, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/films/populaires, roles: PUBLIC_ACCESS }
+        - { path: ^/api/test, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: PUBLIC_ACCESS }
+
+   
+>>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
 
 when@test:
     security:

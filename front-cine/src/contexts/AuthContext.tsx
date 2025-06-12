@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   useEffect(() => {
     if (token) {
       fetch("http://localhost:8000/api/me", {
@@ -38,6 +39,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .catch(() => logout());
     }
   }, [token]);
+=======
+//   useEffect(() => {
+//     if (token) {
+//       fetch("http://localhost:8000/api/me", {
+//         headers: { Authorization: `Bearer token` },
+//       })
+//         .then((res) => {
+//           if (!res.ok) throw new Error();
+//           return res.json();
+//         })
+//         .then((data) => setUser(data))
+//         .catch(() => logout());
+//     }
+//   }, [token]);
+>>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
 
   const login = (newToken: string) => {
     localStorage.setItem("token", newToken);
