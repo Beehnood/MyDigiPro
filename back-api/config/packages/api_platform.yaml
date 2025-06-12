@@ -1,44 +1,21 @@
-# api_platform:
-#     title: Hello API Platform
-#     version: 1.0.0
-#     defaults:
-#         stateless: true
-#         cache_headers:
-#             vary: ['Content-Type', 'Authorization', 'Origin']
-# api_platform:
-#     title: 'MyDigiProjet API'
-#     version: '1.0.0'
-#     enable_entrypoint: true
-#     enable_docs: true
-#     formats:
-#         jsonld: ['application/ld+json']
-#         json: ['application/json']
-#     mapping:
-#         paths:
-#             - '%kernel.project_dir%/src/Entity'
-#     show_webby: false
-
 api_platform:
-<<<<<<< HEAD
-    mapping:
-        paths: ['%kernel.project_dir%/src/Entity']
-    patch_formats:
-        json: ['application/merge-patch+json']
-    swagger:
-        versions: [3]
-    defaults:
-        stateless: true
-        security: 'is_granted("IS_AUTHENTICATED_FULLY")'
-=======
     title: 'MyDigiProjet API'
     version: '1.0.0'
+    enable_entrypoint: true
+    enable_docs: true
     path_segment_name_generator: api_platform.path_segment_name_generator.underscore
     mapping:
         paths:
             - '%kernel.project_dir%/src/Entity'
             - '%kernel.project_dir%/src/Controller'
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+    patch_formats:
+        json: ['application/merge-patch+json']
     defaults:
         stateless: true
+        security: 'is_granted("IS_AUTHENTICATED_FULLY")'
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
     openapi:
@@ -47,4 +24,4 @@ api_platform:
                 JWT:
                     name: Authorization
                     type: header
->>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
+    show_webby: false
