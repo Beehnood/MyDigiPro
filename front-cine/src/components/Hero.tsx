@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+<<<<<<< HEAD
 import 'swiper/css';
 
 const apiUrl = 'http://localhost:8000/api/films/populaires';
@@ -39,9 +40,45 @@ export const Hero = () => {
   if (loading) return <div className="h-96 bg-gray-900 flex items-center justify-center"><p className="text-yellow-400 text-xl">Chargement...</p></div>;
   if (error) return <div className="h-96 bg-gray-900 flex items-center justify-center"><p className="text-red-500 text-xl">{error}</p></div>;
 
+=======
+// Import Swiper styles
+
+
+
+
+interface Filme {
+  image?: string;
+  // add other properties as needed
+}
+
+export const Hero = () => {
+
+  const [filmes, setFilmes] = useState<Filme[]>([]);
+
+  // Fetch filmes data from an API or use static data
+  useEffect(() => {
+    const fetchFilmes = async () => {
+      try {
+        const response = await fetch('https://ahttps://api.themoviedb.org/3'); // Replace with your API endpoint
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+          setFilmes(data);
+        } catch (error) {
+          console.error('Error fetching filmes:', error);
+        }
+      };
+  
+      fetchFilmes();
+    }, []);
+
+  
+>>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
   return (
     <main className="h-96 bg-gray-900 flex items-center justify-center">
       <div className="w-full max-w-7xl mx-auto px-6">
+<<<<<<< HEAD
         <Swiper spaceBetween={30} slidesPerView={1} breakpoints={{ 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }} className="w-full">
           {filmes.length > 0 ? filmes.map((filme) => (
             <SwiperSlide key={filme.id} className="flex justify-center">
@@ -55,6 +92,24 @@ export const Hero = () => {
           )) : <SwiperSlide><div className="w-full h-80 sm:h-96 flex items-center justify-center bg-gray-800 text-yellow-400">Aucun film</div></SwiperSlide>}
         </Swiper>
       </div>
+=======
+        <Swiper
+      spaceBetween={50}
+      slidesPerView={3}
+      onSlideChange={() => console.log('slide change')}
+      onSwiper={(swiper) => console.log(swiper)}
+    >
+
+      {filmes && filmes?.length > 0 && filmes?.map((filme, index) => (
+        <SwiperSlide key={index}>
+          {/* Render filme details here, e.g.: */}
+          {'Filme'}
+        </SwiperSlide>
+      ))}
+    </Swiper>
+       </div>
+       
+>>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
     </main>
   );
-};
+}

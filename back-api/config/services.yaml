@@ -3,9 +3,31 @@ parameters:
     tmdb_base_url: '%env(string:TMDB_BASE_URL)%'
 
 services:
+<<<<<<< HEAD
+=======
+    
+    App\Service\TMDBClient:
+        arguments:
+            $tmdbApiKey: '%tmdb.api_key%'
+            $tmdbBaseUrl: '%tmdb.base_url%'
+            # $tmdbApiKey: '%env(TMDB_API_KEY)%'
+            # $tmdbBaseUrl: 'https://api.themoviedb.org/3'
+            
+    App\EventListener\JwtCreateListener:
+            tags:
+                - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
+    App\OpenApi\JwtDecorator:
+        decorates: 'api_platform.openapi.factory'
+        arguments: ['@App\OpenApi\JwtDecorator.inner']
+
+>>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            $tmdbApiKey: '%env(TMDB_API_KEY)%'
+            $tmdbBaseUrl: 'https://api.themoviedb.org/3'
 
     lexik_jwt_authentication.jwt_token_authenticator:
         class: Lexik\Bundle\JWTAuthenticationBundle\Security\Authenticator\JWTTokenAuthenticator
