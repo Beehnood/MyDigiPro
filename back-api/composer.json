@@ -7,21 +7,15 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-<<<<<<< HEAD
         "api-platform/core": "^4.1.15",
-        "doctrine/common": ">=3.5",
-        "doctrine/dbal": "^3.9.4",
-=======
-        "api-platform/core": "*",
         "api-platform/doctrine-orm": "*",
         "api-platform/metadata": "*",
         "api-platform/openapi": "*",
         "api-platform/serializer": "*",
         "api-platform/symfony": "^4.1",
         "api-platform/validator": "*",
-        "doctrine/common": "*",
-        "doctrine/dbal": "^3",
->>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
+        "doctrine/common": ">=3.5",
+        "doctrine/dbal": "^3.9.4",
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "doctrine/orm": "^3.3.3",

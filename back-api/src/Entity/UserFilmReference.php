@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\{GetCollection, Post, Delete};
 use App\Controller\UserFilmController;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\RequestBody;
+use App\Enum\TypeListe;
 
 #[ORM\Entity]
 #[ApiResource(
@@ -40,6 +41,7 @@ use ApiPlatform\OpenApi\Model\RequestBody;
                                             'posterPath' => ['type' => 'string'],
                                             'releaseDate' => ['type' => 'string'],
                                             'note' => ['type' => 'number'],
+                                            'type' => ['type' => 'string'],
                                         ],
                                     ],
                                 ],
@@ -67,8 +69,9 @@ use ApiPlatform\OpenApi\Model\RequestBody;
                                 'type' => 'object',
                                 'properties' => [
                                     'tmdbId' => ['type' => 'integer'],
+                                    'type' => ['type' => 'string', 'enum' => ['VUE', 'JAIME', 'FAVORIS']],
                                 ],
-                                'required' => ['tmdbId'],
+                                'required' => ['tmdbId', 'type'],
                             ],
                         ],
                     ]),
@@ -98,7 +101,7 @@ use ApiPlatform\OpenApi\Model\RequestBody;
                     '500' => ['description' => 'Erreur serveur'],
                 ]
             )
-            ),
+        ),
     ]
 )]
 class UserFilmReference
@@ -113,7 +116,11 @@ class UserFilmReference
     #[Assert\Positive(message: 'Le TMDB ID doit être positif.')]
     private int $tmdbId;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\Column(type: "string", enumType: TypeListe::class)]
+    #[Groups(['user_film:read', 'user_film:write'])]
+    private TypeListe $type;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'filmReferences')]
     #[Groups(['user_film:read'])]
     #[Assert\NotNull(message: "L'utilisateur est requis.")]
     private User $user;
@@ -123,6 +130,13 @@ class UserFilmReference
     public function getTmdbId(): int { return $this->tmdbId; }
     public function setTmdbId(int $tmdbId): self { $this->tmdbId = $tmdbId; return $this; }
 
+    public function getType(): TypeListe { return $this->type; }
+    public function setType(TypeListe $type): self { $this->type = $type; return $this; }
+
     public function getUser(): User { return $this->user; }
-    public function setUser(User $user): self { $this->user = $user; return $this; }
+   public function setUser(?User $user): self
+{
+    $this->user = $user;
+    return $this;
+}
 }

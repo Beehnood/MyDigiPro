@@ -17,9 +17,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
-
-    
-
     normalizationContext: ['groups' => ['read:collection']],
     denormalizationContext: ['groups' => ['write:item']],
     operations: [
@@ -71,7 +68,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(groups: ['write:item'])]
-    #[Groups(['write:item'])] // mot de passe non exposé en lecture
+    #[Groups(['write:item'])]
     private string $password;
 
     #[ORM\Column(type: Types::INTEGER)]
@@ -82,10 +79,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:collection', 'read:item', 'write:item'])]
     private bool $isPremium = false;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['read:collection', 'read:item', 'write:item'])]
-    private ?string $favoriteMovies = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:collection', 'read:item'])]
     private \DateTimeInterface $createdAt;
@@ -95,12 +88,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private \DateTimeInterface $updatedAt;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['read:collection', 'read:item'])] // On ne permet pas d'écrire les rôles via API
+    #[Groups(['read:collection', 'read:item'])]
     private array $roles = [];
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserSubscription::class, cascade: ['persist', 'remove'])]
     #[Groups(['read:collection', 'read:item'])]
     private Collection $subscriptions;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserFilmReference::class, cascade: ['persist', 'remove'])]
+    #[Groups(['read:collection', 'read:item'])]
+    private Collection $filmReferences;
 
     public function __construct()
     {
@@ -108,6 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->updatedAt = new \DateTime();
         $this->roles = ['ROLE_USER'];
         $this->subscriptions = new ArrayCollection();
+        $this->filmReferences = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -123,35 +121,101 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->updatedAt = new \DateTime();
     }
 
-    // Getters / Setters
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getId(): ?int { return $this->id; }
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+    public function setLastName(string $lastName): static
+    {
+        $this->lastName = $lastName;
+        return $this;
+    }
 
-    public function getLastName(): string { return $this->lastName; }
-    public function setLastName(string $lastName): static { $this->lastName = $lastName; return $this; }
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+    public function setFirstName(string $firstName): static
+    {
+        $this->firstName = $firstName;
+        return $this;
+    }
 
-    public function getFirstName(): string { return $this->firstName; }
-    public function setFirstName(string $firstName): static { $this->firstName = $firstName; return $this; }
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+        return $this;
+    }
 
-    public function getEmail(): string { return $this->email; }
-    public function setEmail(string $email): static { $this->email = $email; return $this; }
+    public function getCountry(): string
+    {
+        return $this->country;
+    }
+    public function setCountry(string $country): static
+    {
+        $this->country = $country;
+        return $this;
+    }
 
-    public function getCountry(): string { return $this->country; }
-    public function setCountry(string $country): static { $this->country = $country; return $this; }
+    public function getCity(): string
+    {
+        return $this->city;
+    }
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
+        return $this;
+    }
 
-    public function getCity(): string { return $this->city; }
-    public function setCity(string $city): static { $this->city = $city; return $this; }
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+        return $this;
+    }
 
-    public function getUsername(): string { return $this->username; }
-    public function setUsername(string $username): static { $this->username = $username; return $this; }
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+        return $this;
+    }
 
-    public function getPassword(): string { return $this->password; }
-    public function setPassword(string $password): static { $this->password = $password; return $this; }
+    public function getPoints(): int
+    {
+        return $this->points;
+    }
+    public function setPoints(int $points): static
+    {
+        $this->points = $points;
+        return $this;
+    }
 
-    public function getPoints(): int { return $this->points; }
-    public function setPoints(int $points): static { $this->points = $points; return $this; }
-    public function isPremium(): bool { return $this->isPremium; }
-    public function setIsPremium(bool $isPremium): static { $this->isPremium = $isPremium; return $this; }
+    public function isPremium(): bool
+    {
+        return $this->isPremium;
+    }
+    public function setIsPremium(bool $isPremium): static
+    {
+        $this->isPremium = $isPremium;
+        return $this;
+    }
+
     public function addPoints(int $points): static
     {
         $this->points += $points;
@@ -163,25 +227,49 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getRoles(): array { return array_unique([...$this->roles, 'ROLE_USER']); }
-    public function setRoles(array $roles): self { $this->roles = $roles; return $this; }
+    public function getRoles(): array
+    {
+        return array_unique([...$this->roles, 'ROLE_USER']);
+    }
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
+    }
 
-    public function getUserIdentifier(): string { return $this->email; }
-    public function eraseCredentials(): void {}
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+    public function eraseCredentials(): void
+    {
+    }
 
-    public function getFavoriteMovies(): ?string { return $this->favoriteMovies; }
-    public function setFavoriteMovies(?string $favoriteMovies): static { $this->favoriteMovies = $favoriteMovies; return $this; }
+    public function getCreatedAt(): \DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-    public function getCreatedAt(): \DateTimeInterface { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeInterface $createdAt): static { $this->createdAt = $createdAt; return $this; }
+    public function getUpdatedAt(): \DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
 
-    public function getUpdatedAt(): \DateTimeInterface { return $this->updatedAt; }
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
+    public function getSubscriptions(): Collection
+    {
+        return $this->subscriptions;
+    }
 
-    /**
-     * @return Collection<int, UserSubscription>
-     */
-   
     public function getCurrentSubscription(): ?UserSubscription
     {
         foreach ($this->subscriptions as $subscription) {
@@ -192,13 +280,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return null;
     }
 
-    public function setSubscription(UserSubscription $subscription): static
+    public function addSubscription(UserSubscription $subscription): static
     {
         if (!$this->subscriptions->contains($subscription)) {
             $this->subscriptions->add($subscription);
             $subscription->setUser($this);
         }
-
         return $this;
     }
 
@@ -209,8 +296,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $subscription->setUser(null);
             }
         }
+        return $this;
+    }
 
+    public function getFilmReferences(): Collection
+    {
+        return $this->filmReferences;
+    }
+
+    public function addFilmReference(UserFilmReference $filmReference): static
+    {
+        if (!$this->filmReferences->contains($filmReference)) {
+            $this->filmReferences->add($filmReference);
+            $filmReference->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeFilmReference(UserFilmReference $filmReference): static
+    {
+        if ($this->filmReferences->removeElement($filmReference)) {
+            if ($filmReference->getUser() === $this) {
+                $filmReference->setUser(null);
+            }
+        }
         return $this;
     }
 }
-

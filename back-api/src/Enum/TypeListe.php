@@ -4,6 +4,7 @@ namespace App\Enum;
 
 enum TypeListe: string
 {
-    case PUBLIQUE = 'publique';
-    case PRIVEE = 'privee';
+    case VUE = 'VUE';
+    case JAIME = 'JAIME';
+    case FAVORIS = 'FAVORIS';
 }
