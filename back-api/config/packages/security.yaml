@@ -1,4 +1,7 @@
 security:
+    # hierarchy:
+    #     ROLE_ADMIN: [ROLE_SUPER_ADMIN]
+    #     ROLE_USER: [ROLE_ADMIN]
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
         App\Entity\User:
@@ -35,6 +38,9 @@ security:
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/films/populaires, roles: PUBLIC_ACCESS }
+        - { path: ^/api/films/by-genre, roles: PUBLIC_ACCESS }
+        - { path: ^/api/films/list, roles: PUBLIC_ACCESS }
+        - { path: ^/api/films/details, roles: PUBLIC_ACCESS }
         - { path: ^/api/test, roles: PUBLIC_ACCESS }
         - { path: ^/api/user/films, roles: ROLE_USER }
         - { path: ^/api/films, roles: ROLE_USER }

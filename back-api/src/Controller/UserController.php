@@ -59,7 +59,7 @@ class UserController extends AbstractController
         // Check if user already exists
         $existingUser = $em->getRepository(User::class)->findOneBy(['email' => $data['email'] && $data['username']]);
         if ($existingUser) {
-            return $this->json(['error' => 'User is already exist.'], 400);
+            return $this->json(['error' => 'User is already exist.'], 409);
 
         }
 

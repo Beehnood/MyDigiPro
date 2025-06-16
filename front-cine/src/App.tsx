@@ -1,74 +1,34 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./index.css"; // Import Tailwind CSS styles
+import { Routes, Route } from "react-router-dom";
+import "./index.css";
 import { BlogSection } from "./components/BlogSection";
-import { Footer } from "./components/Footer";
+
 import { Home } from "./pages/Home";
 import Login from "./pages/Login";
 import { Register } from "./pages/Register";
 import PrivateRoute from "./components/PrivateRoute";
 import Collection from "./components/Collection";
 import Dashboard from "./pages/Dashboard";
-<<<<<<< HEAD
-import { MainLayout } from "./layouts/MainLayout";
-import { Hero } from "./components/Hero";
-=======
-// import 'swiper/css';
->>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
 
-export function App() {
+import { AuthProvider } from "./contexts/AuthContext";
+
+function App() {
   return (
-
-
-      <main className="flex-1">
-<<<<<<< HEAD
+    <AuthProvider>
       <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-        {/* Ajoute Navbar ici si tu l'utilises (exemple) */}
-        {/* <Navbar /> */}
-          <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            {/* <Route path="/blog" element={<BlogSection />} /> */}
-            <Route
-              path="/collection"
-              element={
-                <PrivateRoute>
-                  <Collection />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="*"
-              element={<div className="text-center mt-20 text-yellow-400">Page not found</div>}
-            />
-          </Routes>
-          
-       
-
-        {/* Ajoute Footer ici si tu l'utilises (exemple) */}
-        {/* <Footer /> */}
-
-      </div>
-       </main>
-
-    
-  
-      
-   
-=======
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <Home />
+              </>
+            }
+          />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/blog" element={<BlogSection />} /> */}
+          <Route path="/blog" element={<BlogSection />} />
+
+          {/* Routes protégées */}
           <Route
             path="/collection"
             element={
@@ -85,13 +45,20 @@ export function App() {
               </PrivateRoute>
             }
           />
+
+          {/* 404 Page */}
           <Route
             path="*"
-            element={<div className="text-center mt-20">Page not found</div>}
+            element={
+              <div className="text-center mt-20 text-yellow-400">
+                Page not found
+              </div>
+            }
           />
         </Routes>
-      </main>
-    </div>
->>>>>>> 3eaf7263c3f02f26cf17187fcfacae450847db8d
+      </div>
+    </AuthProvider>
   );
 }
+
+export default App;

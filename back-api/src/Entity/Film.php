@@ -19,24 +19,27 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['film:write']],
     operations: [
         new GetCollection(
-            uriTemplate: '/api/films',
-            security: "is_granted('ROLE_USER')",
-            securityMessage: 'Vous devez être connecté pour accéder à cette ressource.'
+            uriTemplate: '/films',
+            security: "is_granted('ROLE_USER')"
         ),
-        new GetCollection(
-            uriTemplate: '/api/films/populaires',
-            controller: \App\Controller\FilmController::class . '::getPopularFilms',
-            name: 'films_populaires',
-            security: "is_granted('ROLE_USER')",
-            securityMessage: 'Vous devez être connecté pour accéder à cette ressource.'
+        new Get(
+            uriTemplate: '/films/{id}',
+            security: "is_granted('ROLE_USER')"
         ),
-        new Get(security: "is_granted('ROLE_USER')"),
-        new Post(security: "is_granted('ROLE_SUPER_ADMIN')"),
-        new Put(security: "is_granted('ROLE_SUPER_ADMIN')"),
-        new Delete(security: "is_granted('ROLE_SUPER_ADMIN')"),
+        new Post(
+            uriTemplate: '/films',
+            security: "is_granted('ROLE_SUPER_ADMIN')"
+        ),
+        new Put(
+            uriTemplate: '/films/{id}',
+            security: "is_granted('ROLE_SUPER_ADMIN')"
+        ),
+        new Delete(
+            uriTemplate: '/films/{id}',
+            security: "is_granted('ROLE_SUPER_ADMIN')"
+        ),
     ]
 )]
-
 class Film
 {
     #[ORM\Id]

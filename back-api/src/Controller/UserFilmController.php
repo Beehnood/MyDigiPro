@@ -2,157 +2,150 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Entity\UserFilmReference;
-use App\Service\TMDBClient;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Service\TMDBClient;
+use Psr\Log\LoggerInterface;
+use App\Entity\UserFilmReference;
+use App\Entity\User;
+use App\Enum\TypeListe;
 
 class UserFilmController extends AbstractController
 {
-    public function addUserFilm(
-        Request $request,
-        TMDBClient $tmdbClient,
-        EntityManagerInterface $em,
-        ValidatorInterface $validator,
-        LoggerInterface $logger,
-        CacheInterface $cache
-    ): JsonResponse {
+    #[Route('/api/user/films', name: 'add_user_film', methods: ['POST'])]
+    public function addUserFilm(Request $request, EntityManagerInterface $em, TMDBClient $tmdbClient, LoggerInterface $logger): JsonResponse
+    {
         try {
-            /** @var User|null $user */
             $user = $this->getUser();
-            if (!$user) {
-                $logger->warning('Utilisateur non authentifié.');
-                return new JsonResponse(['error' => 'Utilisateur non authentifié'], 401);
+            if (!$user instanceof User) {
+                return new JsonResponse(['error' => 'Utilisateur non authentifié ou invalide'], 401);
             }
 
             $data = json_decode($request->getContent(), true);
-            if (!isset($data['tmdbId']) || !is_int($data['tmdbId'])) {
-                $logger->warning('tmdbId invalide dans la requête.', ['data' => $data]);
-                return new JsonResponse(['error' => 'tmdbId doit être un entier valide'], 400);
+            $tmdbId = $data['tmdbId'] ?? null;
+            $type = $data['type'] ?? null;
+
+            if (!$tmdbId || !is_numeric($tmdbId)) {
+                return new JsonResponse(['error' => 'TMDB ID invalide'], 400);
             }
 
-            $tmdbId = $data['tmdbId'];
-            $existing = $em->getRepository(UserFilmReference::class)->findOneBy(['tmdbId' => $tmdbId, 'user' => $user]);
-            if ($existing) {
-                $logger->info('Film déjà ajouté.', ['tmdbId' => $tmdbId, 'user' => $user->getEmail()]);
-                return new JsonResponse(['message' => 'Film déjà ajouté'], 200);
+            $typeEnum = TypeListe::tryFrom($type);
+            if (!$typeEnum) {
+                return new JsonResponse(['error' => 'Type de liste invalide'], 400);
             }
 
-            $tmdbMovie = $cache->get("tmdb_movie_$tmdbId", function () use ($tmdbClient, $tmdbId) {
-                return $tmdbClient->fetchMovieDetails($tmdbId) ?: [];
-            });
+            $tmdbMovie = $tmdbClient->fetchMovieDetails($tmdbId);
             if (!$tmdbMovie || !isset($tmdbMovie['id'])) {
-                $logger->warning('Film non trouvé sur TMDB.', ['tmdbId' => $tmdbId]);
                 return new JsonResponse(['error' => 'Film non trouvé sur TMDB'], 404);
             }
 
-            $reference = new UserFilmReference();
-            $reference->setTmdbId($tmdbId);
-            $reference->setUser($user);
+            // Vérifier si la référence existe déjà
+            $existingReference = $em->getRepository(UserFilmReference::class)->findOneBy([
+                'tmdbId' => $tmdbId,
+                'user' => $user,
+                'type' => $typeEnum,
+            ]);
 
-            $errors = $validator->validate($reference);
-            if (count($errors) > 0) {
-                $errorMessages = array_map(fn($error) => $error->getMessage(), iterator_to_array($errors));
-                $logger->warning('Erreurs de validation.', ['errors' => $errorMessages]);
-                return new JsonResponse(['errors' => $errorMessages], 400);
+            if ($existingReference) {
+                return new JsonResponse(['message' => 'Film déjà dans la liste'], 200);
             }
 
-            $em->persist($reference);
+            $filmReference = new UserFilmReference();
+            $filmReference->setTmdbId($tmdbId);
+            $filmReference->setType($typeEnum);
+            $filmReference->setUser($user);
+
+            $em->persist($filmReference);
             $em->flush();
 
-            $logger->info('Film ajouté à la liste de l\'utilisateur.', ['tmdbId' => $tmdbId, 'user' => $user->getEmail()]);
-            return new JsonResponse(['message' => 'Film ajouté', 'tmdbId' => $tmdbId], 201);
+            $logger->info('Film ajouté à la liste.', ['tmdbId' => $tmdbId, 'type' => $typeEnum->value, 'user' => $user->getUserIdentifier()]);
+
+            return new JsonResponse(['message' => 'Film ajouté à la liste'], 201);
         } catch (\Exception $e) {
             $logger->error('Erreur lors de l\'ajout du film.', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            return new JsonResponse(['error' => 'Erreur lors de l\'ajout du film'], 500);
+            return new JsonResponse(['error' => 'Erreur serveur'], 500);
         }
     }
 
-    public function getUserFilms(
-        EntityManagerInterface $em,
-        TMDBClient $tmdbClient,
-        LoggerInterface $logger,
-        CacheInterface $cache
-    ): JsonResponse {
+    #[Route('/api/user/films', name: 'get_user_films', methods: ['GET'])]
+    public function getUserFilms(TMDBClient $tmdbClient, LoggerInterface $logger): JsonResponse
+    {
         try {
-            /** @var User|null $user */
             $user = $this->getUser();
-            if (!$user) {
-                $logger->warning('Utilisateur non authentifié.');
-                return new JsonResponse(['error' => 'Utilisateur non authentifié'], 401);
+            if (!$user instanceof User) {
+                return new JsonResponse(['error' => 'Utilisateur non authentifié ou invalide'], 401);
             }
 
-            $references = $em->getRepository(UserFilmReference::class)->findBy(['user' => $user]);
-            $films = [];
-            foreach ($references as $reference) {
-                $tmdbId = $reference->getTmdbId();
-                $tmdbMovie = $cache->get("tmdb_movie_$tmdbId", function () use ($tmdbClient, $tmdbId) {
-                    return $tmdbClient->fetchMovieDetails($tmdbId) ?: [];
-                });
-
+            $filmReferences = $user->getFilmReferences();
+            $movies = [];
+            foreach ($filmReferences as $reference) {
+                $tmdbMovie = $tmdbClient->fetchMovieDetails($reference->getTmdbId());
                 if ($tmdbMovie && isset($tmdbMovie['id'])) {
-                    $films[] = [
+                    $movies[] = [
                         'tmdbId' => $tmdbMovie['id'],
-                        'title' => $tmdbMovie['title'] ?? 'Titre inconnu',
+                        'title' => $tmdbMovie['title'],
                         'overview' => $tmdbMovie['overview'] ?? '',
                         'posterPath' => $tmdbMovie['poster_path'] ?? null,
                         'releaseDate' => $tmdbMovie['release_date'] ?? null,
+                        'genres' => array_map(fn($genre) => $genre['id'], $tmdbMovie['genres'] ?? []),
                         'note' => $tmdbMovie['vote_average'] ?? 0.0,
+                        'type' => $reference->getType()->value,
                     ];
                 }
             }
 
-            usort($films, fn($a, $b) => ($b['releaseDate'] ?? '') <=> ($a['releaseDate'] ?? ''));
-            $logger->info('Films de l\'utilisateur récupérés.', ['user' => $user->getEmail(), 'count' => count($films)]);
-            return new JsonResponse($films, 200);
+            $logger->info('Films récupérés pour l\'utilisateur.', ['user' => $user->getUserIdentifier(), 'count' => count($movies)]);
+            return new JsonResponse($movies);
         } catch (\Exception $e) {
             $logger->error('Erreur lors de la récupération des films.', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            return new JsonResponse(['error' => 'Erreur lors de la récupération des films'], 500);
+            return new JsonResponse(['error' => 'Erreur serveur'], 500);
         }
     }
 
-    public function deleteUserFilm(
-        int $tmdbId,
-        EntityManagerInterface $em,
-        LoggerInterface $logger
-    ): JsonResponse {
+    #[Route('/api/user/films/{tmdbId}/{type}', name: 'delete_user_film', methods: ['DELETE'])]
+    public function deleteUserFilm(int $tmdbId, string $type, EntityManagerInterface $em, LoggerInterface $logger): JsonResponse
+    {
         try {
-            /** @var User|null $user */
             $user = $this->getUser();
-            if (!$user) {
-                $logger->warning('Utilisateur non authentifié.');
-                return new JsonResponse(['error' => 'Utilisateur non authentifié'], 401);
+            if (!$user instanceof User) {
+                return new JsonResponse(['error' => 'Utilisateur non authentifié ou invalide'], 401);
             }
 
-            $reference = $em->getRepository(UserFilmReference::class)->findOneBy(['tmdbId' => $tmdbId, 'user' => $user]);
-            if (!$reference) {
-                $logger->warning('Film non trouvé dans la liste de l\'utilisateur.', ['tmdbId' => $tmdbId]);
-                return new JsonResponse(['error' => 'Film non trouvé'], 404);
+            $typeEnum = TypeListe::tryFrom($type);
+            if (!$typeEnum) {
+                return new JsonResponse(['error' => 'Type de liste invalide'], 400);
             }
 
-            $em->remove($reference);
+            $filmReference = $em->getRepository(UserFilmReference::class)->findOneBy([
+                'tmdbId' => $tmdbId,
+                'user' => $user,
+                'type' => $typeEnum,
+            ]);
+
+            if (!$filmReference) {
+                return new JsonResponse(['error' => 'Film non trouvé dans la liste'], 404);
+            }
+
+            $em->remove($filmReference);
             $em->flush();
 
-            $logger->info('Film supprimé de la liste de l\'utilisateur.', ['tmdbId' => $tmdbId, 'user' => $user->getEmail()]);
-            return new JsonResponse(['message' => 'Film supprimé avec succès'], 200);
+            $logger->info('Film supprimé de la liste.', ['tmdbId' => $tmdbId, 'type' => $typeEnum->value, 'user' => $user->getUserIdentifier()]);
+            return new JsonResponse(['message' => 'Film supprimé avec succès']);
         } catch (\Exception $e) {
             $logger->error('Erreur lors de la suppression du film.', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            return new JsonResponse(['error' => 'Erreur lors de la suppression du film'], 500);
+            return new JsonResponse(['error' => 'Erreur serveur'], 500);
         }
     }
 }

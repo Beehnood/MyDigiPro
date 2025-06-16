@@ -3,47 +3,74 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 
 class TMDBClient
 {
-    private const DEFAULT_LANGUAGE = 'fr-FR';
-    private const DEFAULT_INCLUDE_ADULT = false;
-    private const DEFAULT_INCLUDE_VIDEO = false;
-    private const DEFAULT_SORT_BY = 'popularity.desc';
+    private $httpClient;
+    private $apiKey;
+    private $baseUrl;
 
-    public function __construct(
-        private readonly HttpClientInterface $httpClient,
-        private readonly string $apiKey,
-        private readonly string $baseUrl,
-    ) {}
-
-    public function fetchPopularMovies(int $page = 1): array
+    public function __construct(HttpClientInterface $httpClient, string $tmdbApiKey, string $tmdbBaseUrl)
     {
-        return $this->makeRequest('/movie/popular', [
-            'page' => max(1, $page),
+        $this->httpClient = $httpClient;
+        $this->apiKey = $tmdbApiKey;
+        $this->baseUrl = $tmdbBaseUrl;
+    }
+
+    public function fetchConfiguration(): array
+    {
+        $response = $this->httpClient->request('GET', $this->baseUrl . '/configuration', [
+            'query' => [
+                'api_key' => $this->apiKey,
+            ],
         ]);
+
+        return $response->toArray();
     }
 
-    public function fetchMovies(int $page = 1): array
+    public function fetchMovies(): array
     {
-        return $this->makeRequest('/discover/movie', [
-            'page' => max(1, $page),
+        $response = $this->httpClient->request('GET', $this->baseUrl . '/discover/movie', [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+                'include_adult' => false,
+                'include_video' => false,
+                'page' => 1,
+                'sort_by' => 'popularity.desc',
+            ],
         ]);
+
+        return $response->toArray();
     }
 
-    public function fetchMovieDetails(int $tmdbId): array
+    public function fetchPopularMovies(): array
     {
-        if ($tmdbId <= 0) {
-            throw new \InvalidArgumentException('L\'ID TMDB doit être un entier positif.');
-        }
+        $response = $this->httpClient->request('GET', $this->baseUrl . '/movie/popular', [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+                'page' => 1,
+            ],
+        ]);
 
-        return $this->makeRequest(sprintf('/movie/%d', $tmdbId));
+        return $response->toArray();
     }
 
-    public function fetchMovieById(int $tmdbId): array
+    public function fetchMoviesByGenre(int $genreId): array
     {
-        return $this->fetchMovieDetails($tmdbId);
+        $response = $this->httpClient->request('GET', $this->baseUrl . '/discover/movie', [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+                'include_adult' => false,
+                'include_video' => false,
+                'page' => 1,
+                'with_genres' => $genreId,
+            ],
+        ]);
+
+        return $response->toArray();
     }
 
     public function fetchGenres(): array
@@ -51,30 +78,22 @@ class TMDBClient
         $response = $this->httpClient->request('GET', $this->baseUrl . '/genre/movie/list', [
             'query' => [
                 'api_key' => $this->apiKey,
-                'language' => self::DEFAULT_LANGUAGE,
-            ]
+                'language' => 'fr-FR',
+            ],
         ]);
 
-        return $response->toArray()['genres'] ?? [];
+        return $response->toArray();
     }
 
-    private function makeRequest(string $endpoint, array $query = []): array
+    public function fetchMovieDetails(int $id): array
     {
-        try {
-            $response = $this->httpClient->request('GET', $this->baseUrl . $endpoint, [
-                'query' => array_merge([
-                    'api_key' => $this->apiKey,
-                    'language' => self::DEFAULT_LANGUAGE,
-                    'include_adult' => self::DEFAULT_INCLUDE_ADULT,
-                    'include_video' => self::DEFAULT_INCLUDE_VIDEO,
-                ], $query)
-            ]);
+        $response = $this->httpClient->request('GET', $this->baseUrl . '/movie/' . $id, [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+            ],
+        ]);
 
-            return $response->toArray();
-        } catch (HttpExceptionInterface $e) {
-            throw new \RuntimeException("Erreur TMDB ($endpoint) : " . $e->getMessage(), $e->getCode(), $e);
-        } catch (\Exception $e) {
-            throw new \RuntimeException("Erreur inattendue TMDB ($endpoint) : " . $e->getMessage(), 500, $e);
-        }
+        return $response->toArray();
     }
 }

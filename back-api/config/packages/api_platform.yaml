@@ -3,21 +3,21 @@ api_platform:
     version: '1.0.0'
     enable_entrypoint: true
     enable_docs: true
-    path_segment_name_generator: api_platform.path_segment_name_generator.underscore
-    mapping:
-        paths:
-            - '%kernel.project_dir%/src/Entity'
-            - '%kernel.project_dir%/src/Controller'
+    enable_swagger: true
+    enable_swagger_ui: true
     formats:
         jsonld: ['application/ld+json']
         json: ['application/json']
     patch_formats:
         json: ['application/merge-patch+json']
+    path_segment_name_generator: api_platform.metadata.path_segment_name_generator.underscore
+    mapping:
+        paths:
+            - '%kernel.project_dir%/src/Entity'
+            - '%kernel.project_dir%/src/Controller'
     defaults:
         stateless: true
         security: 'is_granted("IS_AUTHENTICATED_FULLY")'
-        cache_headers:
-            vary: ['Content-Type', 'Authorization', 'Origin']
     openapi:
         swagger_ui_extra_configuration:
             api_keys:

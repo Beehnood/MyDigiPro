@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\{Get, GetCollection, Post, Delete};
 use App\Repository\PosterRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PosterRepository::class)]
 #[ApiResource(
@@ -32,10 +33,10 @@ class Poster
     #[Groups(['poster:read', 'poster:write'])]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(targetEntity: Film::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column]
     #[Groups(['poster:read', 'poster:write'])]
-    private ?Film $film = null;
+    #[Assert\Positive(message: 'Le TMDB ID doit être positif.')]
+    private int $tmdbId;
 
     #[ORM\Column(length: 255)]
     #[Groups(['poster:read', 'poster:write'])]
@@ -50,52 +51,17 @@ class Poster
         $this->uploadedAt = new \DateTime();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
+    public function getUser(): ?User { return $this->user; }
+    public function setUser(?User $user): static { $this->user = $user; return $this; }
 
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-        return $this;
-    }
+    public function getTmdbId(): int { return $this->tmdbId; }
+    public function setTmdbId(int $tmdbId): static { $this->tmdbId = $tmdbId; return $this; }
 
-    public function getFilm(): ?Film
-    {
-        return $this->film;
-    }
+    public function getFilePath(): string { return $this->filePath; }
+    public function setFilePath(string $filePath): static { $this->filePath = $filePath; return $this; }
 
-    public function setFilm(?Film $film): static
-    {
-        $this->film = $film;
-        return $this;
-    }
-
-    public function getFilePath(): string
-    {
-        return $this->filePath;
-    }
-
-    public function setFilePath(string $filePath): static
-    {
-        $this->filePath = $filePath;
-        return $this;
-    }
-
-    public function getUploadedAt(): \DateTimeInterface
-    {
-        return $this->uploadedAt;
-    }
-
-    public function setUploadedAt(\DateTimeInterface $uploadedAt): static
-    {
-        $this->uploadedAt = $uploadedAt;
-        return $this;
-    }
+    public function getUploadedAt(): \DateTimeInterface { return $this->uploadedAt; }
+    public function setUploadedAt(\DateTimeInterface $uploadedAt): static { $this->uploadedAt = $uploadedAt; return $this; }
 }
