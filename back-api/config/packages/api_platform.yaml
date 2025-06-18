@@ -25,3 +25,39 @@ api_platform:
                     name: Authorization
                     type: header
     show_webby: false
+
+# api_platform:
+#     title: 'MyDigiProjet API'
+#     version: '1.0.0'
+#     enable_entrypoint: true
+#     enable_docs: true
+#     enable_swagger: true
+#     enable_swagger_ui: true
+#     formats:
+#         jsonld: ['application/ld+json']
+#         json: ['application/json']
+#     patch_formats:
+#         json: ['application/merge-patch+json']
+#     path_segment_name_generator: api_platform.metadata.path_segment_name_generator.underscore
+#     mapping:
+#         paths:
+#             - '%kernel.project_dir%/src/Entity'
+#             - '%kernel.project_dir%/src/Controller'
+#     defaults:
+#         stateless: true
+#         security: 'is_granted("IS_AUTHENTICATED_FULLY")'
+#     collection:
+#         security: 'is_granted("ROLE_USER")'
+#     item:
+#         security: 'is_granted("ROLE_USER")'
+#     operations:
+#         /api/login:
+#             security: null
+#         /api/register:
+#             security: null
+#         /api/tmdb/config:
+#             security: null
+#         /api/movies:
+#             security: null
+#         /api/test:
+#             security: null

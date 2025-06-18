@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(normalizationContext: ['groups' => ['read:item']]),
         new GetCollection(),
-        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Post(security: "is_granted('ROLE_USER')"),
         new Put(security: "is_granted('ROLE_ADMIN')"),
         new Delete(security: "is_granted('ROLE_ADMIN')")
     ]
@@ -70,6 +70,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(groups: ['write:item'])]
     #[Groups(['write:item'])]
     private string $password;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['read:collection', 'read:item', 'write:item'])]
+    private ?string $interests = null;
 
     #[ORM\Column(type: Types::INTEGER)]
     #[Groups(['read:collection', 'read:item', 'write:item'])]
@@ -193,6 +197,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+        return $this;
+    }
+
+    public function getInterests(): ?string
+    {
+        return $this->interests;
+    }
+
+    public function setInterests(?string $interests): static
+    {
+        $this->interests = $interests;
         return $this;
     }
 

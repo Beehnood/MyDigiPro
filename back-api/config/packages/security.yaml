@@ -12,6 +12,7 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+        # used to reload user from session & other features (e.g. switch_user)
 
     firewalls:
         dev:
@@ -37,13 +38,14 @@ security:
     access_control:
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/films/populaires, roles: PUBLIC_ACCESS }
-        - { path: ^/api/films/by-genre, roles: PUBLIC_ACCESS }
-        - { path: ^/api/films/list, roles: PUBLIC_ACCESS }
-        - { path: ^/api/films/details, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/movies/popular, roles: PUBLIC_ACCESS }
+        - { path: ^/api/movies/by-genre, roles: PUBLIC_ACCESS }
+        - { path: ^/api/movies/list, roles: PUBLIC_ACCESS }
+        - { path: ^/api/movies/details, roles: PUBLIC_ACCESS }
         - { path: ^/api/test, roles: PUBLIC_ACCESS }
         - { path: ^/api/user/films, roles: ROLE_USER }
-        - { path: ^/api/films, roles: ROLE_USER }
+        - { path: ^/api/movies, roles: ROLE_USER }
         - { path: ^/api/admin/, roles: ROLE_ADMIN }
         - { path: ^/api, roles: ROLE_USER }
 
