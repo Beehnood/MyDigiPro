@@ -49,7 +49,7 @@ class UserController extends AbstractController
             return $this->json(['error' => 'Le mot de passe doit contenir au moins 6 caractères'], 400);
         }
         $user->setPassword($passwordHasher->hashPassword($user, $data['password'] ?? ''));
-        $user->setFavoriteMovies($data['favoriteMovies'] ?? null);
+        $user->setInterests($data['favoriteMovies'] ?? null);
 
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
@@ -161,7 +161,7 @@ class UserController extends AbstractController
         }
 
         if (isset($data['favoriteMovies'])) {
-            $user->setFavoriteMovies($data['favoriteMovies']);
+            $user->setInterests($data['favoriteMovies']);
         }
 
         $em->persist($user);
