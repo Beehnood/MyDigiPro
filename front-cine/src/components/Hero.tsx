@@ -1,3 +1,4 @@
+// Hero.tsx
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -5,8 +6,11 @@ import 'swiper/css';
 interface Filme {
   id: number;
   title: string;
-  poster_path?: string;
+  poster_path: string | null;
 }
+
+const API_URL = "https://api.themoviedb.org/3";
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 export const Hero = () => {
   const [filmes, setFilmes] = useState<Filme[]>([]);
@@ -16,17 +20,9 @@ export const Hero = () => {
   useEffect(() => {
     const fetchFilmes = async () => {
       try {
-        setLoading(true);
-        const tonToken = localStorage.getItem('token');
-        if (!tonToken) throw new Error('Aucun token trouvé');
-        
-        const response = await fetch('localhost:8000/api/movies/popular', { 
-          headers: { Authorization: `Bearer ${tonToken}` } 
-        });
-        
-        if (!response.ok) throw new Error('Erreur API');
+        const response = await fetch(`${API_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=fr-FR`);
         const data = await response.json();
-        
+
         if (data.results && Array.isArray(data.results)) {
           setFilmes(data.results);
         } else {
@@ -34,12 +30,11 @@ export const Hero = () => {
         }
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Erreur inattendue');
-        console.error('Error fetching filmes:', error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchFilmes();
   }, []);
 
@@ -70,7 +65,7 @@ export const Hero = () => {
           {filmes.length > 0 ? (
             filmes.map((filme) => (
               <SwiperSlide key={filme.id} className="flex justify-center">
-                <div className="bg-beige-200 rounded-lg shadow-xl overflow-hidden w-56 h-80 sm:w-64 sm:h-96">
+                <div className="bg-black rounded-lg shadow-xl overflow-hidden w-56 h-80 sm:w-64 sm:h-96">
                   {filme.poster_path ? (
                     <img 
                       src={`https://image.tmdb.org/t/p/w500${filme.poster_path}`} 
@@ -83,11 +78,6 @@ export const Hero = () => {
                       Pas d'image
                     </div>
                   )}
-                  <div className="p-3 text-center bg-gray-800">
-                    <h3 className="text-lg font-semibold text-yellow-400 line-clamp-2">
-                      {filme.title}
-                    </h3>
-                  </div>
                 </div>
               </SwiperSlide>
             ))

@@ -27,14 +27,16 @@ export const Register = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8000/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
+      const response = await fetch('http://localhost:8000/api/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  body: JSON.stringify(form),
+});
+const data = await response.json();
+console.log(data); 
       if (!response.ok) {
         const err = await response.json();
         throw new Error(err.message || "Erreur lors de l'inscription");

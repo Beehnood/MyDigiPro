@@ -1,3 +1,4 @@
+// Collection.tsx
 import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -5,20 +6,46 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 interface Movie {
-  tmdbId: number;
+  id: number;
   title: string;
-  posterPath: string | null;
-  note: number;
+  poster_path: string | null;
 }
+
+interface Genre {
+  id: number;
+  name: string;
+}
+
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const API_URL = "https://api.themoviedb.org/3";
 
 const Collection: React.FC = () => {
   const [filmsByGenre, setFilmsByGenre] = useState<Record<string, Movie[]>>({});
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/films/by-genre")
-      .then((res) => res.json())
-      .then(setFilmsByGenre)
-      .catch(console.error);
+    const fetchGenresAndMovies = async () => {
+      try {
+        const genreRes = await fetch(`${API_URL}/genre/movie/list?api_key=${TMDB_API_KEY}&language=fr-FR`);
+        const genreData = await genreRes.json();
+        const genres: Genre[] = genreData.genres;
+
+        const genreMovies: Record<string, Movie[]> = {};
+
+        for (const genre of genres) {
+          const movieRes = await fetch(
+            `${API_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genre.id}&language=fr-FR`
+          );
+          const movieData = await movieRes.json();
+          genreMovies[genre.name] = movieData.results.slice(0, 15); // Limite à 15 films/genre
+        }
+
+        setFilmsByGenre(genreMovies);
+      } catch (error) {
+        console.error("Erreur de récupération :", error);
+      }
+    };
+
+    fetchGenresAndMovies();
   }, []);
 
   return (
@@ -35,14 +62,14 @@ const Collection: React.FC = () => {
           >
             {films.map((film) => (
               <SwiperSlide
-                key={film.tmdbId}
+                key={film.id}
                 className="w-[140px] sm:w-[180px] md:w-[220px]"
               >
                 <div className="rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300">
                   <img
                     src={
-                      film.posterPath
-                        ? `https://image.tmdb.org/t/p/w500${film.posterPath}`
+                      film.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
                         : "/placeholder.jpg"
                     }
                     alt={film.title}
