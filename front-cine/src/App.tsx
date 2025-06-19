@@ -6,7 +6,7 @@ import { Home } from "./pages/Home";
 import Login from "./pages/Login";
 import { Register } from "./pages/Register";
 import PrivateRoute from "./components/PrivateRoute";
-import Collection from "./components/Collection";
+import { Collection } from "./pages/Collection";
 import Dashboard from "./pages/Dashboard";
 
 import { AuthProvider } from "./contexts/AuthContext";
