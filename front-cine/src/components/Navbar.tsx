@@ -87,7 +87,7 @@ export const Navbar = () => {
               {/* Login */}
               <div className="flex items-center space-x-2">
                 <Link
-                  to="/Dashboard"
+                  to="/UserProfile"
                   className="text-orange-100 hover:text-yellow-400 transition-colors"
                 >
                   <svg

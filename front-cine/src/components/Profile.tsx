@@ -1,12 +1,12 @@
 import { useAuth } from "../contexts/AuthContext";
 
-const Dashboard = () => {
+const Profile = () => {
   const { user } = useAuth();
 
 //   if (!user) return null; // Par sécurité
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-400">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#242424]">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg text-center text-gray-700">
         <h1 className="text-2xl font-bold mb-4">
           Bienvenue, {user?.firstName} 👋
@@ -31,4 +31,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Profile;
