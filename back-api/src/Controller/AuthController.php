@@ -17,9 +17,6 @@ class AuthController extends AbstractController
     #[Route('/api/login', name: 'api_login', methods: ['POST', 'OPTIONS'])]
     public function login(Request $request, JWTTokenManagerInterface $jwtManager): JsonResponse
     {
-    if ($request->getMethod() === 'OPTIONS') {
-            return new JsonResponse(null, 204);
-        }
         $user = $this->getUser();
         if (!$user instanceof UserInterface) {
             return new JsonResponse(['error' => 'Identifiants incorrects'], 401);
@@ -34,9 +31,6 @@ class AuthController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-        if ($request->getMethod() === 'OPTIONS') {
-            return new JsonResponse(null, 204);
-        }
 
         $data = json_decode($request->getContent(), true);
         if (!$data || !isset($data['email'], $data['password'], $data['username'], $data['firstName'], $data['lastName'], $data['country'], $data['city'])) {
