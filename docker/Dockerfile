@@ -8,22 +8,16 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Étape 3 : Installation des extensions PHP
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions
-# Étape 4 : Dépendances système
+
+# Étape 4 : Installation des dépendances et extensions
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libpng-dev libonig-dev libxml2-dev \
+    git unzip \
     && install-php-extensions \
-        ctype \
-        iconv \
-        pdo \
         pdo_mysql \
-        json \
-        tokenizer \
-        xml \
-        dom \
-        mbstring \
         zip \
         intl \
-        opcache
+        opcache \
+    && rm -rf /var/lib/apt/lists/*
 
 # Étape 5 : Installation de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -41,27 +35,65 @@ WORKDIR /var/www/html/front-cine
 RUN npm install
 RUN npm run build
 
-# Étape 9 : Configuration Apache pour servir React + API
-# Copier le build React vers le document root Apache
-RUN cp -r build/* /var/www/html/
-# Créer un alias pour l'API
-RUN echo "Alias /api /var/www/html/back-api/public" >> /etc/apache2/apache2.conf
+# Étape 9 : Vérification du build
+RUN ls -la /var/www/html/front-cine/build  # Debug step
 
-# Étape 10 : Configuration Apache finale
-ENV APACHE_DOCUMENT_ROOT /var/www/html
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN a2enmod rewrite
+# Étape 10 : Déplacement du build
+RUN cp -r /var/www/html/front-cine/build /var/www/html/react-build \
+    && mv /var/www/html/react-build/* /var/www/html/ \
+    && rmdir /var/www/html/react-build
 
-# Étape 11 : Configuration pour React Router (SPA)
-RUN echo '<Directory "/var/www/html">\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-    RewriteEngine On\n\
-    RewriteCond %{REQUEST_FILENAME} !-f\n\
-    RewriteCond %{REQUEST_FILENAME} !-d\n\
-    RewriteCond %{REQUEST_URI} !^/api\n\
-    RewriteRule . /index.html [L]\n\
-</Directory>' >> /etc/apache2/apache2.conf
+# Étape 10 : Configuration Apache complète
+RUN a2enmod rewrite \
+    && a2enmod alias
+
+# Configuration du VirtualHost principal
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html\n\
+    \n\
+    # Alias pour l API Symfony\n\
+    Alias /api /var/www/html/back-api/public\n\
+    \n\
+    # Configuration pour React (racine)\n\
+    <Directory "/var/www/html">\n\
+        Options Indexes FollowSymLinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
+        \n\
+        # React Router - redirection vers index.html sauf pour /api\n\
+        RewriteEngine On\n\
+        RewriteCond %{REQUEST_URI} !^/api\n\
+        RewriteCond %{REQUEST_FILENAME} !-f\n\
+        RewriteCond %{REQUEST_FILENAME} !-d\n\
+        RewriteRule . /index.html [L]\n\
+    </Directory>\n\
+    \n\
+    # Configuration pour l API Symfony\n\
+    <Directory "/var/www/html/back-api/public">\n\
+        Options Indexes FollowSymLinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
+        \n\
+        # Configuration Symfony\n\
+        DirectoryIndex index.php\n\
+        <IfModule mod_negotiation.c>\n\
+            Options -MultiViews\n\
+        </IfModule>\n\
+        \n\
+        RewriteEngine On\n\
+        RewriteCond %{REQUEST_URI}::$0 ^(/.+)/(.*)::\\2$\n\
+        RewriteRule .* - [E=BASE:%1]\n\
+        RewriteCond %{HTTP:Authorization} .\n\
+        RewriteRule ^ - [E=HTTP_AUTHORIZATION:%0]\n\
+        RewriteCond %{ENV:REDIRECT_STATUS} !\n\
+        RewriteRule ^index\\.php(?:/(.*)|$) %{ENV:BASE}/$1 [R=301,L]\n\
+        RewriteCond %{REQUEST_FILENAME} !-f\n\
+        RewriteRule ^ %{ENV:BASE}/index.php [L]\n\
+    </Directory>\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
+# Permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
 CMD ["apache2-foreground"]
