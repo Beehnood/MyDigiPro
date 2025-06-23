@@ -7,6 +7,7 @@ interface Filme {
   id: number;
   title: string;
   poster_path: string | null;
+  release_date: string;
 }
 
 const API_URL = "https://api.themoviedb.org/3";
@@ -83,7 +84,14 @@ export const FilmsNowPlaying = () => {
                     className="w-full h-[240px] object-cover"
                   />
                 </div>
-                <p className="mt-2 text-sm text-center text-white line-clamp-1">{filme.title}</p>
+                <p className="mt-2 text-2xl text-center text-white line-clamp-1">{filme.title}</p>
+                <p className="text-xl text-gray-400 text-center">
+                  {new Date(filme.release_date).toLocaleDateString("fr-FR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
               </SwiperSlide>
             ))
           ) : (

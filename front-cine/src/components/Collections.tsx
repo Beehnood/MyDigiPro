@@ -52,10 +52,10 @@ const Collection: React.FC = () => {
   return (
     <section className="bg-[#242424] text-white px-6 py-10 space-y-12">
       {Object.entries(filmsByGenre).map(([genre, films]) => (
-        <div key={genre}>
+        <div className="w-full max-w-7xl mx-auto px-6" key={genre}>
           <h2 className="text-xl sm:text-2xl font-bold mb-4">{genre}</h2>
           <Swiper
-            slidesPerView={7}
+            slidesPerView={6}
             spaceBetween={50}
             navigation
             pagination={{ clickable: true }}

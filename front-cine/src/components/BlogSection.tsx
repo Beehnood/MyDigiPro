@@ -1,11 +1,13 @@
 import ButtonRouge from "./ButtonRouge"
+import React from "react";
+
 
 export const BlogSection = () => {
   return (
     <section className=" flex py-12 bg-orange-100 text-black">
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-2xl font-bold mb-6">DERNIERS ARTICLES DE BLOGS</h2>
-        <div className="grid grid-cols-2 md:grid-cols-1 gap-8">
+        <h2 className="text-4xl font-bold mb-6">DERNIERS ARTICLES DE BLOGS</h2>
+        <div className="flex justify-between gap-8">
           <div>
             <h3 className=" grid text-2xl tracking-wider font-bold mb-2 ">
               OUVERTURE DE CINÉMA LUMINOYA À RENNES : UNE EXPÉRIENCE CINÉMATOGRAPHIQUE NOUVELLE GÉNÉRATION EN ILLE-ET-VILAINE
@@ -18,7 +20,7 @@ export const BlogSection = () => {
           
           <div>
             <div>
-            <h3 className="text-2xl tracking-wider text-space-0.5 font-bold mb-2 ">
+            <h3 className=" grid text-2xl tracking-wider text-space-0.5 font-bold mb-2 ">
               “BASILIC” : LE FILM ÉTUDIANT RENNNAIS QUI BOUSCULE LES CODES DU CINÉMA INDÉPENDANT
             </h3>
             <p className="text-xl tracking-wider mb-4">

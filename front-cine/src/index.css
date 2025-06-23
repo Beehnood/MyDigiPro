@@ -1,9 +1,10 @@
 @import "tailwindcss";
 @tailwind utilities;
 
+
 @layer base {
   body {
-    margin: 0;
+    
     font-family: 'Kaneda Gothic', sans-serif; /* Si intégré */
     background-color: #242424; /* Fond par défaut pour éviter la page noire */
   }
