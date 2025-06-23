@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Post(),
         new Put(),
         new Delete()
-    ]
+    ]   
 )]
 class UserSubscription
 {

@@ -3,13 +3,14 @@ import "./index.css";
 import { BlogSection } from "./components/BlogSection";
 
 import { Home } from "./pages/Home";
-import Login from "./pages/Login";
+import Login_page from "./components/Login";
 import { Register } from "./pages/Register";
 import PrivateRoute from "./components/PrivateRoute";
 import { Collection } from "./pages/Collection";
 import {UserProfile} from "./pages/UserProfile";
 
 import { AuthProvider } from "./contexts/AuthContext";
+import { Film_page } from "./pages/Films_page";
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
             }
           />
           <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/Login_page" element={<Login_page />} />
           <Route path="/blog" element={<BlogSection />} />
 
           {/* Routes protégées */}
@@ -42,6 +43,14 @@ function App() {
             element={
               <PrivateRoute>
                 <UserProfile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/Film_page"
+            element={
+              <PrivateRoute>
+                <Film_page />
               </PrivateRoute>
             }
           />

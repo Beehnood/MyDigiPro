@@ -1,4 +1,4 @@
-import { Navbar } from "../components/Navbar"; 
+import { Navbar } from "./Navbar"; 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
@@ -91,7 +91,14 @@ const { login } = useAuth();
           >
             Se connecter
           </button>
-          
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+
+            className="w-full bg-yellow-400 text-black tracking-wider py-2 rounded hover:bg-red-700 hover:text-white transition-colors"
+          >
+            Acceuil
+          </button>
         </form>
         <p className="mt-4 text-md tracking-wider text-center">
           Pas encore de compte ?{" "}

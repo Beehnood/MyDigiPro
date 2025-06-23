@@ -1,13 +1,13 @@
 export const Footer = () => {
   return (
     <footer className="bg-black w-100% h-60 text-center text-white px-12 py-12">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-4 md:grid-cols-1 gap-8 items-center">
+      <div className="max-w-7xl mx-auto px-6 flex justify-between gap-8 items-center ">
         <div className="w-36 h-36 col-span-1  items-center ">
           <img src="../public/Logo-blanc.png" alt="" />
         </div>
 
          {/* clo 1 */}
-        <div className=" grid-span-2 md:flex-row space-y-4 md:space-y-0 md:space-x-8 mb-4 md:mb-0">
+        <div className=" flex  md:flex-row space-y-4 md:space-y-0 md:space-x-8 mb-4 md:mb-0">
           <ul className="text-whit  text-2xl">
             <li>
               {" "}

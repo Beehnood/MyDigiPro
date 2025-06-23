@@ -51,7 +51,7 @@ console.log(data);
 
   return (
     <div>
-      <div className="flex items-center justify-center min-h-screen bg-[#242424]">
+      <div className="flex h-full items-center justify-center min-h-screen bg-[#242424]">
         <form
           onSubmit={handleSubmit}
           className="bg-orange-100 my-6 p-8 rounded-lg shadow-md w-full max-w-md space-y-4"
@@ -93,6 +93,15 @@ console.log(data);
           >
             S'inscrire
           </button>
+           <button
+            type="button"
+            onClick={() => navigate("/")}
+
+            className="w-full bg-yellow-400 text-black tracking-wider py-2 rounded hover:bg-red-700 hover:text-white transition-colors"
+          >
+            Acceuil
+          </button>
+          
         </form>
       </div>
     </div>

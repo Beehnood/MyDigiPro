@@ -5,17 +5,17 @@ export const Navbar = () => {
   const { token } = useAuth();
 
   return (
-    <nav className="bg-black shadow-md ">
+    <nav className="bg-black shadow-md  ">
       <div className="flex items-center justify-between py-4 mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className=" w-16 h-16 flex items-center ">
           <img src="../public/Logo-rouge.png" alt="image-logo" />
         </div>
         <div className=" flex items-center  ">
-          <ul className="flex text-3xl space-x-12">
+          <ul className="flex text-3xl space-x-12 gap-6">
           
             {token && (
               <>
-                <li>
+                <li className="flex text-orange-100 hover:text-yellow-400">
               <a
                 href="/"
                 className="text-orange-100 hover:text-yellow-400 transition-colors "
@@ -23,7 +23,7 @@ export const Navbar = () => {
                 Accueil
               </a>
             </li>
-                <li>
+                <li className="flex text-orange-100 hover:text-yellow-400">
                   <a
                     href="/Collection"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
@@ -31,7 +31,7 @@ export const Navbar = () => {
                     Collection
                   </a>
                 </li>
-                <li>
+                <li className="flex text-orange-100 hover:text-yellow-400">
                   <Link
                     to="/BlogSection"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
@@ -39,15 +39,15 @@ export const Navbar = () => {
                     Blogs
                   </Link>
                 </li>
-                <li>
+                <li className="flex text-orange-100 hover:text-yellow-400">
                   <a
-                    href="#"
+                    href="/Film_page"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
                   >
                     Films
                   </a>
                 </li>
-                <li>
+                <li className="flex text-orange-100 hover:text-yellow-400">
                   <a
                     href="#"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
@@ -118,7 +118,7 @@ export const Navbar = () => {
               <div>
                 {/* Login-btn */}
                 <button className="bg-[#242424] text-white tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-yellow-400 hover:shadow-yellow-200 transition-colors">
-                  <Link to="/Login">Connexion</Link>
+                  <Link to="/Login_page">Connexion</Link>
                 </button>
               </div>
             </>

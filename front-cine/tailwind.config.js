@@ -2,16 +2,19 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // Inclut tous les fichiers source
+    "./src/**/*.{js,ts,jsx,tsx}", 
   ],
   theme: {
     extend: {
-      colors: {
-        beige: {
-          200: '#D9C2A8', // Couleur beige personnalisée
-        },
-      },
+      // colors: {
+      //   beige: {
+      //     200: '#D9C2A8', // Couleur beige personnalisée
+      //   },
+      // },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+    require('@tailwindcss/typography'),
+  ],
 };
