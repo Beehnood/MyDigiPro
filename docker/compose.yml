@@ -6,7 +6,7 @@ services:
     volumes:
       - web:/var/www/html
     environment:
-      DATABASE_URL: "mysql://app:!ChangeMe!@database:3306/app?serverVersion=8.0"
+      DATABASE_URL: "mysql://app:!ChangeMe!@database:3306/app?serverVersion=8.0.32&charset=utf8mb4"
     depends_on:
       - database
 
@@ -27,14 +27,14 @@ services:
       timeout: 5s
       retries: 5
 
-  phpmyadmin:
+  phpmyadmin-web:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
+    container_name: phpmyadmin-web
     environment:
       PMA_HOST: database
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "8080:80"
+      - "8081:80"
     depends_on:
       - database
 
