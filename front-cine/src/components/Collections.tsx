@@ -15,8 +15,8 @@ interface Genre {
   name: string;
 }
 
-const TMDB_API_KEY = "86533c13f5646bdeb5295938d02a5d82";
-const API_URL = "https://api.themoviedb.org/3";
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const API_URL = import.meta.env.VITE_TMDB_BASE_URL ; 
 
 const Collection: React.FC = () => {
   const [filmsByGenre, setFilmsByGenre] = useState<Record<string, Movie[]>>({});

@@ -96,4 +96,26 @@ class TMDBClient
 
         return $response->toArray();
     }
+
+    public function fetchRandomMovie(): array
+{
+    $page = random_int(1, 20); // Max TMDB: 500
+    $response = $this->httpClient->request('GET', $this->baseUrl . '/discover/movie', [
+        'query' => [
+            'api_key' => $this->apiKey,
+            'language' => 'fr-FR',
+            'page' => $page,
+            'include_adult' => false,
+            'sort_by' => 'popularity.desc',
+        ],
+    ]);
+
+    $movies = $response->toArray();
+
+    if (!isset($movies['results']) || empty($movies['results'])) {
+        throw new \RuntimeException('Aucun film trouvé');
+    }
+
+    return $movies['results'][array_rand($movies['results'])];
+}
 }

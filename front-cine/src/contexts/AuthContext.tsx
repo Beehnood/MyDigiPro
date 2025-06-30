@@ -48,7 +48,7 @@ useEffect(() => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
-    navigate("/login");
+    navigate("/login_page");
   };
 
   return (
