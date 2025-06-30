@@ -69,7 +69,7 @@ export const FilmProduit = () => {
   const genres = film.genres?.map((g) => g.name).join(" / ") || "";
 
   return (
-    <div className="min-h-screen bg-orange-100 text-gray-900">
+    <div className="min-h-screen bg-[#242424] text-orange-100">
       <div>
         <img className="w-auto h-50% object-cover"
          src={  film.backdrop_path
@@ -97,16 +97,16 @@ export const FilmProduit = () => {
             <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
               Lire la Bande-annonce
             </button>
-            <button className="border border-black px-4 py-2 rounded hover:bg-gray-100">
+            <button className="border border-orange-100 px-4 py-2 rounded hover:bg-orange-100 hover:text-black">
               Vu
             </button>
-            <button className="border border-black px-4 py-2 rounded hover:bg-gray-100">
+            <button className="border border-orange-100 px-4 py-2 rounded hover:bg-orange-100 hover:text-black">
               À voir
             </button>
-            <button className="border border-black px-4 py-2 rounded hover:bg-gray-100">
+            <button className="border border-orange-100 px-4 py-2 rounded hover:bg-orange-100 hover:text-black">
               J'aime
             </button>
-            <button className="border border-black px-4 py-2 rounded hover:bg-gray-100">
+            <button className="border border-orange-100 px-4 py-2 rounded hover:bg-orange-100 hover:text-black">
               J'aime pas
             </button>
           </div>
@@ -134,7 +134,7 @@ export const FilmProduit = () => {
                   />
                 </div>
                 <p className="font-medium">{person.name}</p>
-                <p className="text-gray-600">{person.character}</p>
+                <p className="text-white">{person.character}</p>
               </div>
             ))}
           </div>

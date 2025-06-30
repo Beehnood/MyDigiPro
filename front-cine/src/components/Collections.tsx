@@ -3,6 +3,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import { useNavigate } from "react-router-dom";
+
+
 
 interface Movie {
   id: number;
@@ -17,9 +20,12 @@ interface Genre {
 
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const API_URL = import.meta.env.VITE_TMDB_BASE_URL ; 
-
 const Collection: React.FC = () => {
   const [filmsByGenre, setFilmsByGenre] = useState<Record<string, Movie[]>>({});
+  const navigate = useNavigate();
+
+
+
 
   useEffect(() => {
     const fetchGenresAndMovies = async () => {
@@ -66,6 +72,7 @@ const Collection: React.FC = () => {
             {films.map((film) => (
               <SwiperSlide
                 key={film.id}
+                 onClick={() => navigate(`/film/${film.id}`)}
                 className="w-[140px] sm:w-[180px] md:w-[220px]"
               >
                 <div className="rounded-lg  overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300">
