@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import axios from "axios";
 import { FilmIcon, Loader2 } from "lucide-react";
@@ -62,6 +63,8 @@ export default function Randomizer() {
                 <img
                   src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
                   alt={movie.title}
+                  key={movie.id}
+                  onClick={() => navigate(`/film/${movie.id}`)}
                   className="rounded-lg shadow-lg mx-auto mb-2 border-2 border-yellow-500/30"
                 />
                 <h3 className="text-xl font-semibold text-white">

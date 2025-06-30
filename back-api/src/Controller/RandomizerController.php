@@ -8,33 +8,59 @@ namespace App\Controller;
 
 use App\Service\TMDBClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security as SecurityBundleSecurity;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Routing\Annotation\Route;
 
 class RandomizerController extends AbstractController
 {
-    #[Route('/api/randomize', name: 'api_randomize', methods: ['POST'])]
-    public function randomize(
+    #[Route('/api/randomize', name: 'api_randomize', methods: ['GET'])]
+    public function randomizeById(
         TMDBClient $tmdbClient,
-       SecurityBundleSecurity $security
+        Security $security,
+        Request $request
     ): JsonResponse {
-        $user = $security->getUser();
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        if (!$user) {
-            return new JsonResponse(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
+        $session = $request->getSession();
+        $today = (new \DateTime())->format('Y-m-d');
+
+        $lastTryDate = $session->get('randomize_last_date');
+        $tries = $session->get('randomize_tries', 0);
+
+        if ($lastTryDate !== $today) {
+            $tries = 0;
+            $session->set('randomize_last_date', $today);
+            $session->set('randomize_tries', 0);
         }
 
-        // Simuler quota Freemium (ex: tirer depuis session ou token usage ?)
-        // Pour ce MVP on n’utilise pas encore d’entité log -> à faire plus tard
-        // Tu peux juste retourner 403 si l’utilisateur a dépassé 3 fois/jour (à implémenter côté front pour le moment)
+        if ($tries >= 3) {
+            return new JsonResponse(
+                ['error' => 'Quota dépassé (3 essais/jour)'],
+                Response::HTTP_FORBIDDEN
+            );
+        }
 
-        $movie = $tmdbClient->fetchRandomMovie();
+        try {
+            $movie = $tmdbClient->fetchRandomMovie();
+            $session->set('randomize_tries', $tries + 1);
 
-        return new JsonResponse($movie);
+            return new JsonResponse([
+                'id' => $movie['id'],
+                'title' => $movie['title'],
+                'poster_path' => $movie['poster_path'],
+                'overview' => $movie['overview'],
+                'vote_average' => $movie['vote_average'],
+                'release_date' => $movie['release_date'],
+                'tries_left' => 2 - $tries
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['error' => 'Erreur TMDB: ' . $e->getMessage()],
+                Response::HTTP_SERVICE_UNAVAILABLE
+            );
+        }
     }
-
 }
