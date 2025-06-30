@@ -64,8 +64,14 @@ export const Navbar = () => {
           {token ? (
             <>
               {/* Randomize */}
-              <div>
-                <img className="w-8 h-6" src="../public/randomize.png" alt="" />
+              
+              <div className="flex items-center space-x-2">
+                <Link
+                  to="/Randomizer"
+                  className="text-orange-100 hover:text-yellow-400 transition-colors"
+                >
+                  <img className="w-8 h-6" src="../public/randomize.png" alt="" />
+                </Link>
               </div>
               {/* Search */}
               <div>

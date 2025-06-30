@@ -43,7 +43,7 @@ console.log(data);
       }
 
       // Rediriger vers la page de connexion après inscription
-      navigate("/login");
+      navigate("/login_page");
     } catch (err: any) {
       setError(err.message || "Une erreur est survenue");
     }

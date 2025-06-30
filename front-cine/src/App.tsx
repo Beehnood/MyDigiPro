@@ -11,6 +11,8 @@ import {UserProfile} from "./pages/UserProfile";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import { Film_page } from "./pages/Films_page";
+import {FilmProduit_page} from "./pages/FilmProduit_page";
+import Randomizer from "./components/Randomaizer";
 
 function App() {
   return (
@@ -51,6 +53,22 @@ function App() {
             element={
               <PrivateRoute>
                 <Film_page />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/film/:id"
+            element={
+              <PrivateRoute>
+                <FilmProduit_page />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/Randomizer"
+            element={
+              <PrivateRoute>
+                <Randomizer />
               </PrivateRoute>
             }
           />

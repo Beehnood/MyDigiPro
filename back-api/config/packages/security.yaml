@@ -45,6 +45,8 @@ security:
         - { path: ^/api/movies, roles: ROLE_USER }
         - { path: ^/api/admin/, roles: ROLE_ADMIN }
         - { path: ^/api, roles: ROLE_USER }
+        - { path: ^api/randomize, roles: ROLE_USER  }
+        - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

@@ -10,8 +10,8 @@ interface Filme {
   release_date: string;
 }
 
-const API_URL = "https://api.themoviedb.org/3";
-const TMDB_API_KEY = "86533c13f5646bdeb5295938d02a5d82";
+const API_URL = import.meta.env.VITE_TMDB_BASE_URL ; 
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 export const FilmsPopular = () => {
   const [filmes, setFilmes] = useState<Filme[]>([]);

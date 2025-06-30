@@ -31,7 +31,7 @@ const { login } = useAuth();
 
       const data = await response.json();
       login(data.token);
-      localStorage.setItem("token", data.token); // ou data.jwt selon ton backend
+      localStorage.setItem("token", data.token); 
 
       navigate("/"); // ou la route que tu veux après connexion
     } catch (err: any) {
