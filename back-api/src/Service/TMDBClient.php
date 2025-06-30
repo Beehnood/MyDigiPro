@@ -2,7 +2,10 @@
 
 namespace App\Service;
 
+use ApiPlatform\OpenApi\Model\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 
 class TMDBClient
 {
@@ -99,23 +102,32 @@ class TMDBClient
 
     public function fetchRandomMovie(): array
 {
-    $page = random_int(1, 20); // Max TMDB: 500
-    $response = $this->httpClient->request('GET', $this->baseUrl . '/discover/movie', [
+    $page = random_int(1, 100);
+
+    // Premier appel - Discover movies
+    $discoverUrl = $this->baseUrl . '/discover/movie';
+    $discoverResponse = $this->httpClient->request('GET', $discoverUrl, [
         'query' => [
             'api_key' => $this->apiKey,
-            'language' => 'fr-FR',
-            'page' => $page,
-            'include_adult' => false,
             'sort_by' => 'popularity.desc',
+            'page' => $page,
+            'language' => 'fr-FR',
         ],
     ]);
 
-    $movies = $response->toArray();
+    $discoverData = $discoverResponse->toArray();
+    $movie = $discoverData['results'][array_rand($discoverData['results'])];
 
-    if (!isset($movies['results']) || empty($movies['results'])) {
-        throw new \RuntimeException('Aucun film trouvé');
-    }
+    // Deuxième appel - Movie details
+    $movieUrl = $this->baseUrl . '/movie/' . $movie['id'];
+    $detailsResponse = $this->httpClient->request('GET', $movieUrl, [
+        'query' => [
+            'api_key' => $this->apiKey,
+            'language' => 'fr-FR',
+            'append_to_response' => 'credits',
+        ],
+    ]);
 
-    return $movies['results'][array_rand($movies['results'])];
+    return $detailsResponse->toArray();
 }
 }
