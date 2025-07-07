@@ -45,4 +45,5 @@ class TestEntity
         $this->name = $name;
         return $this;
     }
+
 }

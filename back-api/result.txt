@@ -1,0 +1,28 @@
+PHPUnit 12.2.5 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.7
+Configuration: /Applications/MAMP/htdocs/MyDigiProjet/back-api/phpunit.dist.xml
+
+F                                                                   1 / 1 (100%)
+
+Time: 00:01.429, Memory: 62.50 MB
+
+There was 1 failure:
+
+1) App\Tests\Controller\AuthControllerTest::testRegister
+Failed asserting that the Response status code is 201.
+HTTP/1.1 200 OK
+Cache-Control: no-cache, private
+Content-Type:  application/json
+Date:          Thu, 03 Jul 2025 21:29:31 GMT
+X-Robots-Tag:  noindex
+
+{"message":"Utilisateur cr\u00e9\u00e9 avec succ\u00e8s !"}
+
+/Applications/MAMP/htdocs/MyDigiProjet/back-api/vendor/symfony/framework-bundle/Test/BrowserKitAssertionsTrait.php:148
+/Applications/MAMP/htdocs/MyDigiProjet/back-api/vendor/symfony/framework-bundle/Test/BrowserKitAssertionsTrait.php:38
+/Applications/MAMP/htdocs/MyDigiProjet/back-api/tests/Controller/AuthControllerTest.php:28
+/Applications/MAMP/htdocs/MyDigiProjet/back-api/vendor/phpunit/phpunit/phpunit:104
+
+FAILURES!
+Tests: 1, Assertions: 2, Failures: 1.

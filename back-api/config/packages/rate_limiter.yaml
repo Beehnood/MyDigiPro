@@ -1,0 +1,13 @@
+framework:
+    rate_limiter:
+        login_limiter:
+            policy: 'fixed_window'
+            limit: 5
+            interval: '1 minute'
+            storage_service: 'cache.rate_limiter'
+
+        tmdb_limiter:
+            policy: 'fixed_window'
+            limit: 100
+            interval: '1 hour'
+            storage_service: 'cache.rate_limiter'

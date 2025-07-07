@@ -7,33 +7,42 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use App\Service\TMDBClient;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class FilmController extends AbstractController
 {
     #[Route('/api/movies/popular', name: 'movies_popular', methods: ['GET'])]
-    public function getPopularMovies(TMDBClient $tmdbClient, LoggerInterface $logger): JsonResponse
-    {
+    public function getPopularMovies(
+        TMDBClient $tmdbClient,
+        LoggerInterface $logger,
+        RateLimiterFactory $tmdbLimiter,
+        \Symfony\Component\HttpFoundation\Request $request
+    ): JsonResponse {
+        $limiter = $tmdbLimiter->create($this->getUser()?->getUserIdentifier() ?? $request->getClientIp());
+
+        if (!$limiter->consume(1)->isAccepted()) {
+            throw new TooManyRequestsHttpException('Trop de requêtes vers TMDB. Réessayez plus tard.');
+        }
+
         try {
             $tmdbMovies = $tmdbClient->fetchPopularMovies();
             $logger->info('Films populaires récupérés depuis TMDB.', ['count' => count($tmdbMovies['results'])]);
-            $movies = array_map(function ($movie) {
-                return [
-                    'tmdbId' => $movie['id'],
-                    'title' => $movie['title'],
-                    'overview' => $movie['overview'] ?? '',
-                    'posterPath' => $movie['poster_path'] ?? null,
-                    'releaseDate' => $movie['release_date'] ?? null,
-                    'genres' => $movie['genre_ids'] ?? [],
-                    'voteAverage' => $movie['vote_average'] ?? 0.0,
-                ];
-            }, $tmdbMovies['results']);
+
+            $movies = array_map(fn($movie) => [
+                'tmdbId' => $movie['id'],
+                'title' => $movie['title'],
+                'overview' => $movie['overview'] ?? '',
+                'posterPath' => $movie['poster_path'] ?? null,
+                'releaseDate' => $movie['release_date'] ?? null,
+                'genres' => $movie['genre_ids'] ?? [],
+                'voteAverage' => $movie['vote_average'] ?? 0.0,
+            ], $tmdbMovies['results']);
+
             return new JsonResponse($movies);
         } catch (\Exception $e) {
-            $logger->error('Erreur lors de la récupération des films populaires.', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return new JsonResponse(['error' => 'Erreur lors de la récupération des films'], 500);
+            $logger->error('Erreur TMDB : ' . $e->getMessage());
+            return new JsonResponse(['error' => 'Erreur TMDB'], 500);
         }
     }
 
