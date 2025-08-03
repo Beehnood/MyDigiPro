@@ -11,20 +11,33 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class AuthController extends AbstractController
 {
     #[Route('/api/login', name: 'api_login', methods: ['POST', 'OPTIONS'])]
-    public function login(Request $request, JWTTokenManagerInterface $jwtManager): JsonResponse
-    {
+    public function login(
+        Request $request,
+        JWTTokenManagerInterface $jwtManager,
+        RateLimiterFactory $loginLimiter
+    ): JsonResponse {
+        $limiter = $loginLimiter->create($request->getClientIp());
+
+        if (!$limiter->consume(1)->isAccepted()) {
+            throw new TooManyRequestsHttpException('Trop de tentatives. Réessayez plus tard.');
+        }
+
         $user = $this->getUser();
         if (!$user instanceof UserInterface) {
             return new JsonResponse(['error' => 'Identifiants incorrects'], 401);
         }
+
         $token = $jwtManager->create($user);
         return new JsonResponse(['token' => $token]);
     }
 
+    
     #[Route('/api/register', name: 'api_register', methods: ['POST', 'OPTIONS'])]
     public function register(
         Request $request,
@@ -53,6 +66,7 @@ class AuthController extends AbstractController
         $user->setLastName($data['lastName']);
         $user->setCountry($data['country']);
         $user->setCity($data['city']);
+        $user->setInterests($data['interests'] ?? null);
         $user->setPassword($passwordHasher->hashPassword($user, $data['password']));
         $user->setRoles(['ROLE_USER']);
 
