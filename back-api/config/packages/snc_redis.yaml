@@ -1,6 +1,15 @@
+# snc_redis:
+#     clients:
+#         default:
+#             type: phpredis
+#             alias: default
+#             dsn: '%env(REDIS_URL)%'
+
+
 snc_redis:
-    clients:
-        default:
-            type: phpredis
-            alias: default
-            dsn: '%env(REDIS_URL)%'
+  clients:
+    default:
+      type: predis
+      alias: default
+      dsn: 'redis://localhost:6379'
+      logging: false   
