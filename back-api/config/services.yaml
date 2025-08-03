@@ -1,18 +1,30 @@
 services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
+  _defaults:
+    autowire: true
+    autoconfigure: true
 
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+  App\:
+    resource: '../src/'
+    exclude:
+      - '../src/DependencyInjection/'
+      - '../src/Entity/'
+      - '../src/Kernel.php'
 
-    App\Service\TMDBClient:
-        arguments:
-            $httpClient: '@Symfony\Contracts\HttpClient\HttpClientInterface'
-            $tmdbApiKey: '%env(TMDB_API_KEY)%'
-            $tmdbBaseUrl: '%env(TMDB_BASE_URL)%'
+  App\Service\TMDBClient:
+    arguments:
+      $httpClient: '@Symfony\Contracts\HttpClient\HttpClientInterface'
+      $tmdbApiKey: '%env(TMDB_API_KEY)%'
+      $tmdbBaseUrl: '%env(TMDB_BASE_URL)%'
+
+  session.redis_connection:
+    class: Redis
+    calls:
+      - method: connect
+        arguments: ['localhost', 6379]
+
+  session.handler.redis:
+    class: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
+    arguments:
+      - '@session.redis_connection'
+
 
