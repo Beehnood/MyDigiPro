@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
+
 export const Navbar = () => {
   const { token } = useAuth();
+  const { logout } = useAuth();
 
   return (
     <nav className="bg-black shadow-md  ">
@@ -12,17 +14,16 @@ export const Navbar = () => {
         </div>
         <div className=" flex items-center  ">
           <ul className="flex text-3xl space-x-12 gap-6">
-          
             {token && (
               <>
                 <li className="flex text-orange-100 hover:text-yellow-400">
-              <a
-                href="/"
-                className="text-orange-100 hover:text-yellow-400 transition-colors "
-              >
-                Accueil
-              </a>
-            </li>
+                  <a
+                    href="/"
+                    className="text-orange-100 hover:text-yellow-400 transition-colors "
+                  >
+                    Accueil
+                  </a>
+                </li>
                 <li className="flex text-orange-100 hover:text-yellow-400">
                   <a
                     href="/Collection"
@@ -64,13 +65,17 @@ export const Navbar = () => {
           {token ? (
             <>
               {/* Randomize */}
-              
+
               <div className="flex items-center space-x-2">
                 <Link
                   to="/Randomizer"
                   className="text-orange-100 hover:text-yellow-400 transition-colors"
                 >
-                  <img className="w-8 h-6" src="../public/randomize.png" alt="" />
+                  <img
+                    className="w-8 h-6"
+                    src="../public/randomize.png"
+                    alt=""
+                  />
                 </Link>
               </div>
               {/* Search */}
@@ -111,6 +116,27 @@ export const Navbar = () => {
                     ></path>
                   </svg>
                 </Link>
+              </div>
+              <div>
+                <button
+                  onClick={logout}
+                  className="text-orange-100 hover:text-yellow-400 transition-colors"
+                >
+                  <svg
+                    className="w-8 h-8 text-orange-100 hover:text-yellow-400 transition-colors"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4a9 9 0 11-9-9 9 9 0 019 9z"
+                    ></path>
+                  </svg>
+                </button>
               </div>
             </>
           ) : (
