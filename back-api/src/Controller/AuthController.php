@@ -78,4 +78,6 @@ class AuthController extends AbstractController
             return new JsonResponse(['error' => 'Erreur lors de l\'inscription : ' . $e->getMessage()], 500);
         }
     }
+    
+
 }
