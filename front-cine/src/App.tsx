@@ -13,7 +13,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { Film_page } from "./pages/Films_page";
 import {FilmProduit_page} from "./pages/FilmProduit_page";
 import Randomizer from "./components/Randomaizer";
-import Logout from "./components/logout";
+import Logout from "./components/Logout";
+import ContactPage from './components/ContactPage';
 function App() {
   return (
     <AuthProvider>
@@ -32,6 +33,10 @@ function App() {
           <Route path="/logout" element={<Logout />} />
 
           <Route path="/blog" element={<BlogSection />} />
+          <Route path="/contact" element={<ContactPage />} />
+          
+          {/* Routes publiques */}
+          
 
           {/* Routes protégées */}
           <Route

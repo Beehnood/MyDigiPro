@@ -1,3 +1,8 @@
+import React from "react";
+import "../App.css";
+import ContactPage from "./ContactPage";
+
+
 export const Footer = () => {
   return (
     <footer className="bg-black w-100% h-60 text-center text-white px-12 py-12">
@@ -6,12 +11,14 @@ export const Footer = () => {
           <img src="../public/Logo-blanc.png" alt="" />
         </div>
 
+
+
          {/* clo 1 */}
         <div className=" flex  md:flex-row space-y-4 md:space-y-0 md:space-x-8 mb-4 md:mb-0">
           <ul className="text-whit  text-2xl">
             <li>
               {" "}
-              <a href="#" className="  hover:text-yellow-400 transition-colors">
+              <a href="/contact" className="hover:text-yellow-400 transition-colors">
                 CONTACT
               </a>
             </li>
