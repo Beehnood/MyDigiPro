@@ -67,5 +67,17 @@ class Blog
     // Setters
     public function setTitle(string $title): static { $this->title = $title; return $this; }
     public function setContent(string $content): static { $this->content = $content; return $this; }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }   
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
     public function setPublishedAt(?\DateTimeInterface $publishedAt): static { $this->publishedAt = $publishedAt; return $this; }
 }

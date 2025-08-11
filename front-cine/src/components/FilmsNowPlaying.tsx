@@ -99,7 +99,7 @@ export const FilmsNowPlaying = () => {
           Sorties du moment
         </h2>
         <Swiper
-          slidesPerView={6}
+          slidesPerView={7}
           spaceBetween={50}
           navigation
           pagination={{ clickable: true }}

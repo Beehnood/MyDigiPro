@@ -34,7 +34,7 @@ export const Navbar = () => {
                 </li>
                 <li className="flex text-orange-100 hover:text-yellow-400">
                   <Link
-                    to="/BlogSection"
+                    to="/BlogList"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
                   >
                     Blogs

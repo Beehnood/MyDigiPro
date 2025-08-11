@@ -4,7 +4,7 @@ import { BlogSection } from "./components/BlogSection";
 
 import { Home } from "./pages/Home";
 import Login_page from "./components/Login";
-import { Register } from "./pages/Register";
+import {Register_page} from "./pages/Register_page";
 import PrivateRoute from "./components/PrivateRoute";
 import { Collection } from "./pages/Collection";
 import {UserProfile} from "./pages/UserProfile";
@@ -15,6 +15,10 @@ import {FilmProduit_page} from "./pages/FilmProduit_page";
 import Randomizer from "./components/Randomaizer";
 import Logout from "./components/Logout";
 import ContactPage from './components/ContactPage';
+
+import  BlogList  from './components/BlogList';
+import { CreateBlog_page } from "./pages/CreateBlog_page";
+
 function App() {
   return (
     <AuthProvider>
@@ -28,11 +32,13 @@ function App() {
               </>
             }
           />
-          <Route path="/register" element={<Register />} />
+          <Route path="/Register_page" element={<Register_page />} />
           <Route path="/Login_page" element={<Login_page />} />
           <Route path="/logout" element={<Logout />} />
 
           <Route path="/blog" element={<BlogSection />} />
+          <Route path="/blogList" element={<BlogList />} />
+          <Route path="/createBlog_page" element={<CreateBlog_page />} />
           <Route path="/contact" element={<ContactPage />} />
           
           {/* Routes publiques */}

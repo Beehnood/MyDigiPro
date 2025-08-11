@@ -16,7 +16,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        api_login:
+        login:
             pattern: ^/api/login
             stateless: true
             json_login:
@@ -33,6 +33,7 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/api/blogs, roles: PUBLIC_ACCESS } 
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
@@ -46,8 +47,7 @@ security:
         - { path: ^/api/admin/, roles: ROLE_ADMIN }
         - { path: ^/api, roles: ROLE_USER }
         - { path: ^api/randomize, roles: ROLE_USER  }
-        - { path: ^/, roles: PUBLIC_ACCESS }
-
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY } 
 when@test:
     security:
         password_hashers:
@@ -57,17 +57,3 @@ when@test:
                 time_cost: 3
                 memory_cost: 10
 
-# security:
-#     firewalls:
-#         dev:
-#             pattern: ^/(_(profiler|wdt)|css|images|js)/
-#             security: false
-
-#         api:
-#             pattern: ^/api
-#             stateless: true
-#             security: false
-
-#         password_hashers:
-#             App\Entity\User:
-#                 algorithm: auto
