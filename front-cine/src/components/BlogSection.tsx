@@ -31,7 +31,7 @@ export const BlogSection = () => {
         </div>
           </div>
         <div className="mt-8 text-center">
-          <a href="#" className="text-[#8B0000] text-xl font-bold hover:text-yellow-400 transition-colors">TOUS LES ARTICLES DES BLOGS →</a>
+          <a href="./blogList" className="text-[#8B0000] text-xl font-bold hover:text-yellow-400 transition-colors">TOUS LES ARTICLES DES BLOGS →</a>
         </div>
       </div>
     </section>

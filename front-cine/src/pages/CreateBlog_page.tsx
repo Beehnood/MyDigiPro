@@ -1,12 +1,12 @@
 import { MainLayout } from '../layouts/MainLayout';
-import BlogList from '../components/BlogList';
+import { CreateBlog } from '../components/CreateBlog';
 
 
-export const Blogs = () => {
+export const CreateBlog_page = () => {
   console.log('Home rendering');
   return (
     <MainLayout>
-      <BlogList/>
+      <CreateBlog/>
     </MainLayout>
   );
 };

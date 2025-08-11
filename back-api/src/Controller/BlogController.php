@@ -11,21 +11,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 
 final class BlogController extends AbstractController
 {
-    #[Route('/api/blogs')]
     public function __construct(
         private EntityManagerInterface $entityManager,
         private SerializerInterface $serializer
 
     ) {}
 
-    #[Route ('/', name: 'app_blog_list', methods:['Get'])]
+    #[Route ('/api/blogs', name: 'app_blog_list', methods:['Get'])]
     public function list() :JsonResponse
     {
-        $blogs = $this->entityManager->getRepository(Blog::class)->findAll();
+        $blogs = $this->entityManager->getRepository(Blog::class)->findBy([], ['createdAt' => 'DESC']);
         return new JsonResponse(
             $this->serializer->serialize($blogs, 'json'),
             Response::HTTP_OK,
@@ -34,7 +35,7 @@ final class BlogController extends AbstractController
         );
     }
 
-    #[Route('/{$id}', name: 'app_blog_show', methods: 'GET')]
+    #[Route('/api/blogs/{id}', name: 'app_blog_show', methods: 'GET')]
     public function show(int $id): JsonResponse
     {
         $blog = $this->entityManager->getRepository(Blog::class)->find($id);
@@ -51,50 +52,63 @@ final class BlogController extends AbstractController
    
    
 
-    #[Route('/', name: 'app_blog_create', methods: 'POST')]
-    public function create(Request $request): JsonResponse
+    #[Route('/api/blogs', name: 'app_blog_create', methods: ['POST'])]
+    public function create(Request $request, ValidatorInterface $validator): JsonResponse
     {
-       $data = json_decode($request->getContent(), true);
-       
-       $blog = new Blog();
-       $blog -> setTitle($data['title']?? '');
-       $blog -> setContent($data['content']?? '');
+        $data = json_decode($request->getContent(), true);
+        
+        $blog = new Blog();
+        $blog->setTitle($data['title'] ?? '');
+        $blog->setContent($data['content'] ?? '');
+        $blog->setCreatedAt(new \DateTimeImmutable());
 
-       $this -> entityManager -> persist($blog);
-       $this->entityManager->flush();
+        // Validation
+        $errors = $validator->validate($blog);
+        if (count($errors) > 0) {
+            return new JsonResponse(
+                $this->serializer->serialize($errors, 'json'),
+                Response::HTTP_BAD_REQUEST,
+                [],
+                true
+            );
+        }
 
-       return new JsonResponse(
-        $this -> serializer ->serialize($blog,'json'),
-        Response :: HTTP_CREATED,
-        [],
-        true
-       );
+        $this->entityManager->persist($blog);
+        $this->entityManager->flush();
+
+        return new JsonResponse(
+            $this->serializer->serialize($blog, 'json'),
+            Response::HTTP_CREATED,
+            [],
+            true
+        );
     }
 
 
-    #[Route('/{$id}', name: 'app_blog_update', methods: 'PUT')]
-    public function update(int $id, Request $request): JsonResponse
+    #[Route('/api/blogs/{id}', name: 'app_blog_update', methods: ['PUT'])]
+public function update(int $id, Request $request): JsonResponse
 {
     $blog = $this->entityManager->getRepository(Blog::class)->find($id);
-    if(!$blog){
+    if (!$blog) {
         return new JsonResponse(['error' => 'Blog not found'], Response::HTTP_NOT_FOUND);
     }
 
-    $data = json_decode ($request->getContent(), true);
-    $blog -> setTitle($data['title']??$blog->getContent());
-    $blog-> setContent($data['content']?? $blog->getCOntent());
+    $data = json_decode($request->getContent(), true);
 
-    $this->entityManager -> flush();
+    $blog->setTitle($data['title'] ?? $blog->getTitle());
+    $blog->setContent($data['content'] ?? $blog->getContent());
+
+    $this->entityManager->flush();
+
     return new JsonResponse(
-        $this -> serializer ->serialize($blog,'json'),
-        Response ::HTTP_OK, 
+        $this->serializer->serialize($blog, 'json'),
+        Response::HTTP_OK,
         [],
         true
-
     );
-
 }
-#[Route ('/{$id}', name: 'app_blog_delete', methods :['DELETE'])]
+
+#[Route ('/api/blogs/{id}', name: 'app_blog_delete', methods :['DELETE'])]
 public function delete(int $id,Request $request)
 {
     $blog = $this ->entityManager->getRepository(Blog::class)->find($id);

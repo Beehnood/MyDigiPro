@@ -5,6 +5,7 @@ import { BlogSection } from '../components/BlogSection';
 import { FilmsPopular } from '../components/FilmsPopular';
 
 
+
 export const Home = () => {
   console.log('Home rendering');
   return (
