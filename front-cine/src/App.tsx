@@ -4,20 +4,22 @@ import { BlogSection } from "./components/BlogSection";
 
 import { Home } from "./pages/Home";
 import Login_page from "./components/Login";
-import {Register_page} from "./pages/Register_page";
+import { Register_page } from "./pages/Register_page";
 import PrivateRoute from "./components/PrivateRoute";
 import { Collection } from "./pages/Collection";
-import {UserProfile} from "./pages/UserProfile";
+import { UserProfile } from "./pages/UserProfile";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import { Film_page } from "./pages/Films_page";
-import {FilmProduit_page} from "./pages/FilmProduit_page";
+import { FilmProduit_page } from "./pages/FilmProduit_page";
 import Randomizer from "./components/Randomaizer";
 import Logout from "./components/Logout";
-import ContactPage from './components/ContactPage';
+import ContactPage from "./components/ContactPage";
 
-import  BlogList  from './components/BlogList';
+import BlogList from "./components/BlogList";
 import { CreateBlog_page } from "./pages/CreateBlog_page";
+import { ExitProvider } from "./contexts/ExitContext";
+
 
 function App() {
   return (
@@ -40,9 +42,8 @@ function App() {
           <Route path="/blogList" element={<BlogList />} />
           <Route path="/createBlog_page" element={<CreateBlog_page />} />
           <Route path="/contact" element={<ContactPage />} />
-          
+
           {/* Routes publiques */}
-          
 
           {/* Routes protégées */}
           <Route
@@ -57,7 +58,9 @@ function App() {
             path="/UserProfile"
             element={
               <PrivateRoute>
-                <UserProfile />
+                <ExitProvider>
+                  <UserProfile />
+                </ExitProvider>
               </PrivateRoute>
             }
           />
