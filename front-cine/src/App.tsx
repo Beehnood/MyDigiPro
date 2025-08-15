@@ -16,7 +16,7 @@ import Randomizer from "./components/Randomaizer";
 import Logout from "./components/Logout";
 import ContactPage from "./components/ContactPage";
 
-import BlogList from "./components/BlogList";
+import {Blogs} from "./pages/Blogs";
 import { CreateBlog_page } from "./pages/CreateBlog_page";
 import { ExitProvider } from "./contexts/ExitContext";
 
@@ -38,8 +38,8 @@ function App() {
           <Route path="/Login_page" element={<Login_page />} />
           <Route path="/logout" element={<Logout />} />
 
-          <Route path="/blog" element={<BlogSection />} />
-          <Route path="/blogList" element={<BlogList />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/blogList" element={<Blogs />} />
           <Route path="/createBlog_page" element={<CreateBlog_page />} />
           <Route path="/contact" element={<ContactPage />} />
 

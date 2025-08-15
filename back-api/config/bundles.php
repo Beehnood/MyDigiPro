@@ -13,4 +13,5 @@ return [
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     ApiPlatform\Symfony\Bundle\ApiPlatformBundle::class => ['all' => true],
     Snc\RedisBundle\SncRedisBundle::class => ['all' => true],
+    Vich\UploaderBundle\VichUploaderBundle::class => ['all' => true],
 ];
