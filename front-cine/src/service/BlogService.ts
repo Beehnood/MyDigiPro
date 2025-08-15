@@ -1,34 +1,34 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api', // Retirez '/blogs' ici
+  baseURL: "http://127.0.0.1:8000/api",
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    Accept: "application/json",
   },
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('jwt');
+  const token = localStorage.getItem("jwt");
   if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`; 
+    config.headers["Authorization"] = `Bearer ${token}`; // ← backticks corrigés
   }
   return config;
 });
 
 export const BlogService = {
   async getAll() {
-    const response = await api.get('/blogs');
-    return response.data; // plus hydra:member
+    const response = await api.get("/blogs");
+    return response.data;
   },
 
-  async create(blogData: { title: string; content: string }) {
-    const response = await api.post('/blogs', blogData);
+  async create(blogData: FormData) {
+    // Laisse Axios gérer le boundary automatiquement
+    const response = await api.post("/blogs", blogData);
     return response.data;
   },
 
   async getById(id: number) {
-    const response = await api.get(`/blogs/${id}`);
+    const response = await api.get(`/blogs/${id}`); // ← quotes + template
     return response.data;
   },
 };

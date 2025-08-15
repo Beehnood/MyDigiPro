@@ -3,25 +3,24 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
-use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\BlogRepository;
-use Doctrine\DBAL\Types\Types;
+use App\Controller\BlogController;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: BlogRepository::class)]
-#[ORM\HasLifecycleCallbacks]
+#[Vich\Uploadable]
 #[ApiResource(
     operations: [
-        new Get(),
         new GetCollection(),
-        new Post(),
-        new Put(),
-        new Delete()
-    ]
+        new Get(),
+       
+    ],
 )]
 class Blog
 {
@@ -31,53 +30,78 @@ class Blog
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $title = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank]
     private ?string $content = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
+    #[Vich\UploadableField(mapping: 'blog_images', fileNameProperty: 'image')]
+    private ?File $imageFile = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $publishedAt = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
 
-    public function __construct()
+    public function getId(): ?int
     {
-        $this->createdAt = new \DateTimeImmutable();
+        return $this->id;
     }
 
-    #[ORM\PreUpdate]
-    public function updateTimestamps(): void
+    public function getTitle(): ?string
     {
-        $this->updatedAt = new \DateTime();
+        return $this->title;
+    }
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
     }
 
-    // Getters
-    public function getId(): ?int { return $this->id; }
-    public function getTitle(): ?string { return $this->title; }
-    public function getContent(): ?string { return $this->content; }
-    public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
-    public function getUpdatedAt(): ?\DateTimeInterface { return $this->updatedAt; }
-    public function getPublishedAt(): ?\DateTimeInterface { return $this->publishedAt; }
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+    public function setContent(string $content): self
+    {
+        $this->content = $content;
+        return $this;
+    }
 
-    // Setters
-    public function setTitle(string $title): static { $this->title = $title; return $this; }
-    public function setContent(string $content): static { $this->content = $content; return $this; }
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+        return $this;
+    }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+        if ($imageFile) {
+            // Force la mise à jour pour VichUploader
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
-    }   
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
     }
-    public function setPublishedAt(?\DateTimeInterface $publishedAt): static { $this->publishedAt = $publishedAt; return $this; }
 }
