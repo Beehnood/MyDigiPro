@@ -36,9 +36,7 @@ export default function BlogList() {
   return (
     <section className="bg-orange-100 text-black pl-32 p-8 w-full min-h-screen">
       <div className="flex items-center justify-center gap-12 text-black mb-8">
-        <h1 className="text-3xl font-bold">
-          Les derniers articles de blogs
-        </h1>
+        <h1 className="text-3xl font-bold">Les derniers articles de blogs</h1>
 
         <a href="./createBlog_page">
           <button className="bg-[#8B0000] text-white tracking-wider w-28 h-8 text-md px-4 rounded-full hover:bg-blue-800 transition-colors">
@@ -47,35 +45,36 @@ export default function BlogList() {
         </a>
       </div>
 
-      <div className="flex flex-col space-y-6 w-full max-w-4xl mx-auto">
+      <div className="space-y-6 w-full max-w-4xl mx-auto">
         {posts
           .sort(
             (a, b) =>
-              new Date(b.createdAt).getTime() -
-              new Date(a.createdAt).getTime()
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
           .map((post) => (
             <article
               key={post.id}
-              className="bg-white rounded-lg shadow-md p-6"
+              className="bg-orange-100 flex w-100% gap-8 rounded-lg border-b p-6"
             >
-              <h2 className="text-2xl font-semibold mb-2">{post.title}</h2>
-              <p className="text-gray-600 mb-4">{post.content}</p>
-              {post.image && (
+             
+              <div className=  "w-150">
+                <h2 className="text-2xl truncate font-semibold mb-2">{post.title}</h2>
+              <p className="text-gray-600 text-wrap truncate mb-4">{post.content}</p>
+              </div>
+             <div className="w-50">
+               {post.image && (
                 <img
-                  src={
-                    post.image.startsWith("http")
-                      ? post.image
-                      : `/uploads/blog_images/${post.image}`
-                  }
+                  src={`http://localhost:8000/uploads/blogs/${post.image}`}
                   alt={post.title}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
+                  className="w-50 h-48 col-span-1 object-cover rounded-lg mb-4"
                 />
               )}
-              <time className="text-sm text-gray-400">
-                {new Date(post.createdAt).toLocaleDateString("fr-FR")} | Modifié le{" "}
-                {new Date(post.updatedAt).toLocaleDateString("fr-FR")}
+              <time className="text-sm  text-gray-400">
+                {new Date(post.createdAt).toLocaleDateString("fr-FR")} | Modifié
+                le {new Date(post.updatedAt).toLocaleDateString("fr-FR")}
               </time>
+             </div>
+           
             </article>
           ))}
 
