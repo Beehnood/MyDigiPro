@@ -61,8 +61,8 @@ const Collection: React.FC = () => {
         <div className="w-full max-w-7xl mx-auto px-6" key={genre}>
           <h2 className="text-xl sm:text-2xl font-bold mb-4">{genre}</h2>
           <Swiper
-            slidesPerView={6}
-            spaceBetween={50}
+         slidesPerView={9}
+          spaceBetween={12}
             navigation
             pagination={{ clickable: true }}
             scrollbar={{ draggable: true }}

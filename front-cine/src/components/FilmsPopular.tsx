@@ -99,8 +99,8 @@ export const FilmsPopular= () => {
           Films Plus Populaires
         </h2>
         <Swiper
-          slidesPerView={7}
-          spaceBetween={50}
+         slidesPerView={9}
+          spaceBetween={12}
           navigation
           pagination={{ clickable: true }}
           scrollbar={{ draggable: true }}

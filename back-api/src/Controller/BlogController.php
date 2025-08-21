@@ -18,7 +18,8 @@ final class BlogController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private SerializerInterface $serializer
-    ) {}
+    ) {
+    }
 
     #[Route('/api/blogs', name: 'app_blog_list', methods: ['GET'])]
     public function list(): JsonResponse
@@ -82,7 +83,13 @@ final class BlogController extends AbstractController
         return new JsonResponse([
             'status' => 'success',
             'message' => 'Blog post created successfully',
-            'data' => json_decode($this->serializer->serialize($blog, 'json'), true)
+            'data' => [
+                'id' => $blog->getId(),
+                'title' => $blog->getTitle(),
+                'content' => $blog->getContent(),
+                'image' => $blog->getImage(), // juste le nom du fichier
+                'createdAt' => $blog->getCreatedAt()->format('Y-m-d H:i:s'),
+            ]
         ], Response::HTTP_CREATED);
     }
 
