@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import axios from "axios";
 import { FilmIcon, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../service/Http-service";
 
 type Movie = {
   id: number;
@@ -21,19 +21,9 @@ export default function Randomizer() {
     setError("");
 
     try {
-      const res = await axios.get("/api/randomize", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setMovie(res.data); // API retourne un film { id, title, poster_path }
-    } catch (err: any) {
-      if (err.response?.status === 403) {
-        setError("Limite atteinte ou points insuffisants.");
-      } else {
-        setError("Erreur pendant le tirage.");
-      }
+      const res = await api.get("/randomize");
+      console.log("Réponse API:", res.data);
+      setMovie(res.data);
     } finally {
       setLoading(false);
     }
@@ -61,7 +51,11 @@ export default function Randomizer() {
             ) : movie ? (
               <div className="text-center transition-all duration-300 hover:scale-105">
                 <img
-                  src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                  src={
+                    movie.poster_path
+                      ? `https://image.tmdb.org/t/p/w200/${movie.poster_path}`
+                      : "/images/default-poster.png" // 👈 image par défaut (place-la dans public/images/)
+                  }
                   alt={movie.title}
                   key={movie.id}
                   onClick={() => navigate(`/film/${movie.id}`)}

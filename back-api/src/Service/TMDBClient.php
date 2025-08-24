@@ -56,6 +56,7 @@ class TMDBClient
                 'page' => 1,
             ],
         ]);
+      
 
         return $response->toArray();
     }

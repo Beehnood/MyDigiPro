@@ -144,7 +144,7 @@ export const Navbar = () => {
               <div>
                 {/* Inscription */}
                 <button className="bg-yellow-400 text-black tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-black transition-colors">
-                  <Link to="/Register">Inscription</Link>
+                  <Link to="/Register_page">Inscription</Link>
                 </button>
               </div>
               <div>
