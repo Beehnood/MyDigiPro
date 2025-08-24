@@ -22,7 +22,7 @@ class RandomizerController extends AbstractController
         Security $security,
         Request $request
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         $session = $request->getSession();
         $today = (new \DateTime())->format('Y-m-d');
@@ -45,17 +45,22 @@ class RandomizerController extends AbstractController
 
         try {
             $movie = $tmdbClient->fetchRandomMovie();
+            // dd($movie);
             $session->set('randomize_tries', $tries + 1);
+
 
             return new JsonResponse([
                 'id' => $movie['id'],
                 'title' => $movie['title'],
-                'poster_path' => $movie['poster_path'],
+                'poster_path' => $movie['poster_path']
+                    ? 'https://image.tmdb.org/t/p/w200' . $movie['poster_path']
+                    : null,
                 'overview' => $movie['overview'],
                 'vote_average' => $movie['vote_average'],
                 'release_date' => $movie['release_date'],
                 'tries_left' => 2 - $tries
             ]);
+
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['error' => 'Erreur TMDB: ' . $e->getMessage()],

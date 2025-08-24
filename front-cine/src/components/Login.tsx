@@ -102,7 +102,7 @@ const { login } = useAuth();
         <p className="mt-4 text-md tracking-wider text-center">
           Pas encore de compte ?{" "}
           <a
-            href="/register"
+            href="/register-page"
             className="text-blue-600 hover:underline"
           >
             S'inscrire

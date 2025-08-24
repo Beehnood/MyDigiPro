@@ -33,6 +33,7 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/api/randomize, roles: PUBLIC_ACCESS } # ✅
         - { path: ^/api/blogs, roles: PUBLIC_ACCESS } 
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
@@ -46,8 +47,6 @@ security:
         - { path: ^/api/movies, roles: ROLE_USER }
         - { path: ^/api/admin/, roles: ROLE_ADMIN }
         - { path: ^/api, roles: ROLE_USER }
-        - { path: ^api/randomize, roles: PUBLIC_ACCESS }
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY } 
 when@test:
     security:
         password_hashers:
