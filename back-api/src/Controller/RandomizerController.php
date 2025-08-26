@@ -1,17 +1,14 @@
 <?php
 
-// src/Controller/RandomizerController.php
-
-// src/Controller/RandomizerController.php
-
 namespace App\Controller;
 
+use App\Entity\RandomizerLog;
 use App\Service\TMDBClient;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class RandomizerController extends AbstractController
@@ -20,23 +17,30 @@ class RandomizerController extends AbstractController
     public function randomizeById(
         TMDBClient $tmdbClient,
         Security $security,
-        Request $request
+        EntityManagerInterface $em
     ): JsonResponse {
-        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        $session = $request->getSession();
-        $today = (new \DateTime())->format('Y-m-d');
-
-        $lastTryDate = $session->get('randomize_last_date');
-        $tries = $session->get('randomize_tries', 0);
-
-        if ($lastTryDate !== $today) {
-            $tries = 0;
-            $session->set('randomize_last_date', $today);
-            $session->set('randomize_tries', 0);
+        $user = $security->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
         }
 
-        if ($tries >= 3) {
+        // Définir les bornes du jour
+        $todayStart = (new \DateTime())->setTime(0, 0, 0);
+        $todayEnd   = (new \DateTime())->setTime(23, 59, 59);
+
+        // Compter les tirages de l'utilisateur aujourd'hui
+        $qb = $em->getRepository(RandomizerLog::class)->createQueryBuilder('r');
+        $count = $qb
+            ->select('COUNT(r.id)')
+            ->where('r.user = :user')
+            ->andWhere('r.createdAt BETWEEN :start AND :end')
+            ->setParameter('user', $user)
+            ->setParameter('start', $todayStart)
+            ->setParameter('end', $todayEnd)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        if ($count >= 3) {
             return new JsonResponse(
                 ['error' => 'Quota dépassé (3 essais/jour)'],
                 Response::HTTP_FORBIDDEN
@@ -45,9 +49,12 @@ class RandomizerController extends AbstractController
 
         try {
             $movie = $tmdbClient->fetchRandomMovie();
-            // dd($movie);
-            $session->set('randomize_tries', $tries + 1);
 
+            // Sauvegarde du tirage en base
+            $log = new RandomizerLog();
+            $log->setUser($user);
+            $em->persist($log);
+            $em->flush();
 
             return new JsonResponse([
                 'id' => $movie['id'],
@@ -58,7 +65,7 @@ class RandomizerController extends AbstractController
                 'overview' => $movie['overview'],
                 'vote_average' => $movie['vote_average'],
                 'release_date' => $movie['release_date'],
-                'tries_left' => 2 - $tries
+                'tries_left' => 3 - ($count + 1)
             ]);
 
         } catch (\Exception $e) {
