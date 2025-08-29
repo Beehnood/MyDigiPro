@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request; // 👈
 use Symfony\Component\Routing\Annotation\Route;
 
 class RandomizerController extends AbstractController
@@ -17,6 +18,7 @@ class RandomizerController extends AbstractController
     public function randomizeById(
         TMDBClient $tmdbClient,
         Security $security,
+        Request $request,
         EntityManagerInterface $em
     ): JsonResponse {
         $user = $security->getUser();
@@ -26,7 +28,7 @@ class RandomizerController extends AbstractController
 
         // Définir les bornes du jour
         $todayStart = (new \DateTime())->setTime(0, 0, 0);
-        $todayEnd   = (new \DateTime())->setTime(23, 59, 59);
+        $todayEnd = (new \DateTime())->setTime(23, 59, 59);
 
         // Compter les tirages de l'utilisateur aujourd'hui
         $qb = $em->getRepository(RandomizerLog::class)->createQueryBuilder('r');
@@ -46,9 +48,18 @@ class RandomizerController extends AbstractController
                 Response::HTTP_FORBIDDEN
             );
         }
+        // —— Lecture des plateformes demandées (ex: ?providers=337,8) ——
+        $providersParam = (string) $request->query->get('providers', '');
+        $providerIds = array_values(array_filter(array_map('intval', preg_split('/[,\|]/', $providersParam))));
+        // Optionnel : region + monétisation
+        $region = (string) $request->query->get('region', 'FR');
+        $monetization = (string) $request->query->get('monetization', 'flatrate');
 
         try {
-            $movie = $tmdbClient->fetchRandomMovie();
+            // 
+            $movie = !empty($providerIds)
+                ? $tmdbClient->fetchRandomMovieByProviders($providerIds, $region, $monetization)
+                : $tmdbClient->fetchRandomMovie();
 
             // Sauvegarde du tirage en base
             $log = new RandomizerLog();
