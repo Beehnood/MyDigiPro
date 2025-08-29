@@ -10,20 +10,51 @@ type Movie = {
   poster_path: string;
 };
 
+const PROVIDERS = [
+  { id: 8, name: "Netflix" },
+  { id: 9, name: "Prime Video" },
+  { id: 337, name: "Disney+" },
+  { id: 350, name: "Apple TV+" },
+];
+
 export default function Randomizer() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+   const [selectedProviders, setSelectedProviders] = useState<number[]>([]);
   const navigate = useNavigate();
+
+  const toggleProvider = (id: number) => {
+    setSelectedProviders((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
+  };
 
   const randomize = async () => {
     setLoading(true);
     setError("");
 
-    try {
-      const res = await api.get("/randomize");
-      console.log("Réponse API:", res.data);
+  //   try {
+  //     const res = await api.get("/randomize");
+  //     console.log("Réponse API:", res.data);
+  //     setMovie(res.data);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  try {
+      const params: any = {};
+      if (selectedProviders.length) {
+        params.providers = selectedProviders.join(",");
+      }
+      // optionnel : params.region = 'FR'; params.monetization = 'flatrate';
+
+      const res = await api.get("/randomize", { params });
       setMovie(res.data);
+    } catch (e: any) {
+      setError(e?.response?.data?.error || "Erreur pendant le tirage.");
+      setMovie(null);
     } finally {
       setLoading(false);
     }
@@ -44,6 +75,26 @@ export default function Randomizer() {
               {error}
             </p>
           )}
+
+          {/* Sélecteur de plateformes */}
+          <div className="mb-6">
+            <p className="mb-2 text-sm opacity-80">Filtrer par plateformes :</p>
+            <div className="flex flex-wrap gap-3">
+              {PROVIDERS.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => toggleProvider(p.id)}
+                  className={`px-3 py-2 rounded-xl border transition ${
+                    selectedProviders.includes(p.id)
+                      ? "bg-yellow-400 text-black border-yellow-400"
+                      : "border-white/20 hover:border-yellow-400"
+                  }`}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="flex justify-center items-center min-h-[200px] bg-zinc-800/50 rounded-xl p-4">
             {loading ? (

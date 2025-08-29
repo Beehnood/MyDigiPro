@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use ApiPlatform\OpenApi\Model\Response;
+use Symfony\Component\HttpFoundation\Response as res;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -185,6 +187,22 @@ class FilmController extends AbstractController
             return new JsonResponse(['error' => 'Erreur lors de la récupération du film'], 500);
         }
     }
+
+    #[Route('/api/movie/{id}/providers', name: 'api_movie_providers', methods: ['GET'])]
+    public function getProviders(int $id, TMDBClient $tmdbClient): JsonResponse
+    {
+        try {
+            $providers = $tmdbClient->fetchMovieProviders($id);
+
+            return new JsonResponse($providers);
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['error' => 'Erreur TMDB: ' . $e->getMessage()],
+                Res::HTTP_SERVICE_UNAVAILABLE
+            );
+        }
+    }
+
 
 
     #[Route('/api/test', name: 'test_endpoint', methods: ['GET'])]
