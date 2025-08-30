@@ -33,6 +33,7 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/api/movies/genres, roles: PUBLIC_ACCESS }
         - { path: ^/api/randomize, roles: PUBLIC_ACCESS } # ✅
         - { path: ^/api/blogs, roles: PUBLIC_ACCESS } 
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }

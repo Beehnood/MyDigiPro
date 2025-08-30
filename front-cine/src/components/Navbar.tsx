@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-
+import Randomaizer from "./Randomaizer";
 
 export const Navbar = () => {
   const { token } = useAuth();
@@ -67,16 +67,7 @@ export const Navbar = () => {
               {/* Randomize */}
 
               <div className="flex items-center space-x-2">
-                <Link
-                  to="/Randomizer"
-                  className="text-orange-100 hover:text-yellow-400 transition-colors"
-                >
-                  <img
-                    className="w-8 h-6"
-                    src="../public/randomize.png"
-                    alt=""
-                  />
-                </Link>
+                <Randomaizer />
               </div>
               {/* Search */}
               <div>

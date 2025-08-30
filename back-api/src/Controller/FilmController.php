@@ -114,6 +114,10 @@ class FilmController extends AbstractController
     {
         try {
             $genresList = $tmdbClient->fetchGenres();
+
+            // ⚡ Ajoute ce log pour voir la réponse brute
+        $logger->info('Réponse brute TMDB genres', $genresList);
+
             $genres = array_map(function ($genre) {
                 return [
                     'id' => $genre['id'],
