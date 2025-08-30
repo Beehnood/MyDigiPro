@@ -1,5 +1,4 @@
 import { MainLayout } from '../layouts/MainLayout';
-import Login from '../components/Login';
 import { Register } from '../components/Register';
 
 
