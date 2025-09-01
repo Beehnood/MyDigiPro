@@ -1,7 +1,7 @@
-import { BlogService } from "../service/BlogService";
+import { BlogService } from "../../service/BlogService";
 import React, { useEffect, useState } from "react";
-import ButtonRouge from "./ButtonRouge";
-import Button from "./Button";
+import ButtonRouge from "../Buttons/ButtonRouge";
+import Button from "../Buttons/Button";
 
 interface BlogListProps {
   id: number;

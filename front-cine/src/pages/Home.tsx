@@ -1,8 +1,8 @@
 
 import { MainLayout } from '../layouts/MainLayout';
-import { FilmsNowPlaying } from '../components/FilmsNowPlaying';
-import { BlogSection } from '../components/BlogSection';
-import { FilmsPopular } from '../components/FilmsPopular';
+import { FilmsNowPlaying } from '../components/Films/FilmsNowPlaying';
+import { BlogSection } from '../components/Blogs/BlogSection';
+import { FilmsPopular } from '../components/Films/FilmsPopular';
 
 
 

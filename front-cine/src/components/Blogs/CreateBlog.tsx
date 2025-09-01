@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BlogService } from "../service/BlogService";
+import { BlogService } from "../../service/BlogService";
 
 interface BlogPost {
   id: number;

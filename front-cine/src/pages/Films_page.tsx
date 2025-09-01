@@ -1,6 +1,6 @@
 import { MainLayout } from '../layouts/MainLayout';
-import { FilmsNowPlaying } from '../components/FilmsNowPlaying';
-import { FilmsPopular } from '../components/FilmsPopular';
+import { FilmsNowPlaying } from '../components/Films/FilmsNowPlaying';
+import { FilmsPopular } from '../components/Films/FilmsPopular';
 import Collections from '../components/Collections';
 
 
