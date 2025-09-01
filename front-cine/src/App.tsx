@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import "./index.css";
-import { BlogSection } from "./components/BlogSection";
+import { BlogSection } from "./components/Blogs/BlogSection";
 
 import { Home } from "./pages/Home";
 import Login_page from "./components/Login";

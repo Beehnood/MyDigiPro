@@ -1,5 +1,5 @@
 import { MainLayout } from '../layouts/MainLayout';
-import BlogList from '../components/BlogList';
+import BlogList from '../components/Blogs/BlogList';
 
 
 export const Blogs = () => {
