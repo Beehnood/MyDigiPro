@@ -3,27 +3,29 @@ import "./index.css";
 import { BlogSection } from "./components/Blogs/BlogSection";
 
 import { Home } from "./pages/Home";
-import Login_page from "./components/Login";
-import { Register_page } from "./pages/Register_page";
 import PrivateRoute from "./components/PrivateRoute";
 import { Collection } from "./pages/Collection";
 import { UserProfile } from "./pages/UserProfile";
 
 import { AuthProvider } from "./contexts/AuthContext";
-import { Film_page } from "./pages/Films_page";
-import { FilmProduit_page } from "./pages/FilmProduit_page";
+import { Film_page } from "./pages/Films-Pages/Films_page";
+import { FilmProduit_page } from "./pages/Films-Pages/FilmProduit_page";
 import Randomizer from "./components/Randomaizer";
 import Logout from "./components/Logout";
 import ContactPage from "./components/ContactPage";
 
-import {Blogs} from "./pages/Blogs";
-import { CreateBlog_page } from "./pages/CreateBlog_page";
+import { BlogsList_page } from "./pages/Blogs-Pages/Blogs";
+import { CreateBlog_page } from "./pages/Blogs-Pages/CreateBlog_page";
 import { ExitProvider } from "./contexts/ExitContext";
-
+import { Register } from "./components/Register";
+import Login from "./components/Login";
+import BlogPage from "./components/Blogs/BlogPage";
+import { MainLayout } from "./layouts/MainLayout";
 
 function App() {
   return (
-    <AuthProvider>
+    
+       <AuthProvider>
       <div className="flex flex-col min-h-screen bg-gray-900 text-white">
         <Routes>
           <Route
@@ -34,13 +36,14 @@ function App() {
               </>
             }
           />
-          <Route path="/Register_page" element={<Register_page />} />
-          <Route path="/Login_page" element={<Login_page />} />
+          {/* <Route path="/Register_page" element={<Register_page />} /> */}
+          <Route path="/Register" element={<Register />} />
+          <Route path="/Login" element={<Login/>} />
           <Route path="/logout" element={<Logout />} />
 
-          <Route path="/blogs" element={<Blogs />} />
-          <Route path="/blogList" element={<Blogs />} />
+          <Route path="/blogList" element={<BlogsList_page />} />
           <Route path="/createBlog_page" element={<CreateBlog_page />} />
+          <Route path="/blog/:id" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
 
           {/* Routes publiques */}
@@ -101,6 +104,9 @@ function App() {
         </Routes>
       </div>
     </AuthProvider>
+
+   
+   
   );
 }
 

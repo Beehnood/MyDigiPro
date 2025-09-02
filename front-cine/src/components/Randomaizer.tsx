@@ -26,13 +26,8 @@ export default function Randomizer() {
 
   const navigate = useNavigate();
 
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
 
   const toggleProvider = (id: number) => {
     setSelectedProviders((prev) =>
