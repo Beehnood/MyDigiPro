@@ -1,5 +1,5 @@
-import { MainLayout } from '../layouts/MainLayout';
-import { CreateBlog } from '../components/Blogs/CreateBlog';
+import { MainLayout } from '../../layouts/MainLayout';
+import { CreateBlog } from '../../components/Blogs/CreateBlog';
 
 
 export const CreateBlog_page = () => {

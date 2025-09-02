@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Randomaizer from "./Randomaizer";
+import Login from "./Login";
+import { Register } from "./Register";
 
 export const Navbar = () => {
   const { token } = useAuth();
@@ -135,13 +137,13 @@ export const Navbar = () => {
               <div>
                 {/* Inscription */}
                 <button className="bg-yellow-400 text-black tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-black transition-colors">
-                  <Link to="/Register_page">Inscription</Link>
+                  <Register/>
                 </button>
               </div>
               <div>
                 {/* Login-btn */}
                 <button className="bg-[#242424] text-white tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-yellow-400 hover:shadow-yellow-200 transition-colors">
-                  <Link to="/Login_page">Connexion</Link>
+                <Login/>
                 </button>
               </div>
             </>

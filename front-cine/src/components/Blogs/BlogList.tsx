@@ -2,6 +2,7 @@ import { BlogService } from "../../service/BlogService";
 import React, { useEffect, useState } from "react";
 import ButtonRouge from "../Buttons/ButtonRouge";
 import Button from "../Buttons/Button";
+import { Link } from "react-router-dom";
 
 interface BlogListProps {
   id: number;
@@ -39,11 +40,11 @@ export default function BlogList() {
       <div className="flex items-center justify-center gap-12 text-black mb-8">
         <h1 className="text-3xl font-bold">Les derniers articles de blogs</h1>
 
-        <a href="./createBlog_page">
+        <Link to="/createBlog_page">
           <button className="bg-[#8B0000] text-white tracking-wider w-28 text-md px-4 rounded-full hover:bg-blue-800 transition-colors">
             Créer Un Blog
           </button>
-        </a>
+        </Link>
       </div>
 
       <div className="space-y-4 w-full max-w-4xl mx-auto">
@@ -64,15 +65,14 @@ export default function BlogList() {
                 <p className="text-gray-600 text-wrap truncate mb-8">
                   {post.content}
                 </p>
-                 <a className="absolute bottom-0 left-0" href="#">
-                  <Button 
-                  variant="danger"
-                  >
-                    En Savoir Plus
-                  </Button>
-                </a>
+                <Link
+                  className="absolute bottom-0 left-0"
+                  to={`/blog/${post.id}`}
+                >
+                  <Button variant="danger">En Savoir Plus</Button>
+                </Link>
               </div>
-              
+
               <div className="w-50">
                 {post.image && (
                   <img
@@ -87,9 +87,7 @@ export default function BlogList() {
                   {new Date(post.updatedAt).toLocaleDateString("fr-FR")}
                 </time>
               </div>
-              
             </article>
-            
           ))}
       </div>
     </section>
