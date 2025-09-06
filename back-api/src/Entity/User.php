@@ -32,17 +32,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:collection', 'read:item'])]
+    #[Groups(['read:collection', 'read:item', 'blog:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
-    #[Groups(['read:collection', 'read:item', 'write:item'])]
+    #[Groups(['read:collection', 'read:item', 'write:item', 'blog:read'])]
     private string $lastName;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
-    #[Groups(['read:collection', 'read:item', 'write:item'])]
+    #[Groups(['read:collection', 'read:item', 'write:item','blog:read'])]
+
     private string $firstName;
 
     #[ORM\Column(length: 100, unique: true)]
@@ -103,6 +104,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:collection', 'read:item'])]
     private Collection $filmReferences;
 
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: Blog::class, cascade: ["persist", "remove"])]
+    private Collection $blogs;
+
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -110,6 +115,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = ['ROLE_USER'];
         $this->subscriptions = new ArrayCollection();
         $this->filmReferences = new ArrayCollection();
+        $this->blogs = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -333,6 +339,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->filmReferences->removeElement($filmReference)) {
             if ($filmReference->getUser() === $this) {
                 $filmReference->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+
+    public function getBlogs(): Collection
+    {
+        return $this->blogs;
+    }
+
+    public function addBlog(Blog $blog): self
+    {
+        if (!$this->blogs->contains($blog)) {
+            $this->blogs->add($blog);
+            $blog->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeBlog(Blog $blog): self
+    {
+        if ($this->blogs->removeElement($blog)) {
+            if ($blog->getUser() === $this) {
+                $blog->setUser(null);
             }
         }
         return $this;

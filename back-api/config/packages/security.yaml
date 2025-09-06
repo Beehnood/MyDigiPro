@@ -34,8 +34,10 @@ security:
 
     access_control:
         - { path: ^/api/movies/genres, roles: PUBLIC_ACCESS }
-        - { path: ^/api/randomize, roles: PUBLIC_ACCESS } # ✅
-        - { path: ^/api/blogs, roles: PUBLIC_ACCESS } 
+        - { path: ^/api/randomize, roles: PUBLIC_ACCESS } 
+        - { path: ^/api/blogs$, roles: PUBLIC_ACCESS } 
+        - { path: ^/api/blogs/[0-9]+$, roles: PUBLIC_ACCESS} 
+        - { path: ^/api/blogs/[0-9]+$, roles: [ROLE_USER, ROLE_ADMIN]}
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }

@@ -3,23 +3,29 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Put;
 use App\Repository\BlogRepository;
 use App\Controller\BlogController;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BlogRepository::class)]
 #[Vich\Uploadable]
 #[ApiResource(
+    normalizationContext: ['groups' => ['blog:read']],
+    denormalizationContext: ['groups' => ['blog:write']],
     operations: [
         new GetCollection(),
         new Get(),
-       
+        new Put(security: "is_granted('ROLE_USER') and object.getUser() == user"),
+        new Delete(security: "is_granted('ROLE_USER') and object.getUser() == user"),
     ],
 )]
 class Blog
@@ -27,24 +33,35 @@ class Blog
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['blog:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['blog:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank]
+    #[Groups(['blog:read'])]
     private ?string $content = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['blog:read'])]
     private ?string $image = null;
 
     #[Vich\UploadableField(mapping: 'blog_images', fileNameProperty: 'image')]
+    #[Groups(['blog:read'])]
     private ?File $imageFile = null;
 
     #[ORM\Column]
+    #[Groups(['blog:read'])]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\ManyToOne(inversedBy: "blogs")]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['blog:read'])]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -102,6 +119,15 @@ class Blog
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
         return $this;
     }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { BlogService } from "../../service/BlogService";
+import { useNavigate } from "react-router-dom";
 
 interface BlogPost {
   id: number;
@@ -19,6 +20,7 @@ export const CreateBlog = () => {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const fetchBlogs = async () => {
     try {
@@ -60,6 +62,7 @@ export const CreateBlog = () => {
 
       await BlogService.create(fd);
       alert("Blog post created successfully!");
+      navigate("/blogList");
       setFormData({ title: "", content: "", image: "", imageFile: null });
       await fetchBlogs();
     } catch (err) {

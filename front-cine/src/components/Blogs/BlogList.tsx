@@ -16,6 +16,7 @@ interface BlogListProps {
 export default function BlogList() {
   const [posts, setPosts] = useState<BlogListProps[]>([]);
   const [loading, setLoading] = useState(true);
+  const [navigate, setNavigate] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
