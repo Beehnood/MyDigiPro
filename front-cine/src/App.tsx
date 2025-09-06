@@ -20,7 +20,6 @@ import { ExitProvider } from "./contexts/ExitContext";
 import { Register } from "./components/Register";
 import Login from "./components/Login";
 import BlogPage from "./components/Blogs/BlogPage";
-import { MainLayout } from "./layouts/MainLayout";
 
 function App() {
   return (

@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Blog;
+use App\Entity\User;
+use ContainerHmVfJzd\getUserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,12 +14,15 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Bundle\SecurityBundle\Security;
+
 
 final class BlogController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
+        private Security $security
     ) {
     }
 
@@ -40,24 +45,28 @@ final class BlogController extends AbstractController
         if (!$blog) {
             return new JsonResponse(['error' => 'Blog not found'], Response::HTTP_NOT_FOUND);
         }
-        return new JsonResponse(
-            $this->serializer->serialize($blog, 'json'),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+
+       return new JsonResponse(
+        $this->serializer->serialize($blog, 'json', ['groups' => ['blog:read']]),
+        Response::HTTP_OK,
+        [],
+        true
+    );
     }
 
     #[Route('/api/blogs', name: 'app_blog_create', methods: ['POST'])]
     public function create(Request $request, ValidatorInterface $validator): JsonResponse
     {
-        $blog = new Blog();
+        $user = $this->security->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
 
-        // Champs texte
+        $blog = new Blog();
+        $blog->setUser($user);
         $blog->setTitle($request->request->get('title', ''));
         $blog->setContent($request->request->get('content', ''));
 
-        // Fichier image
         /** @var UploadedFile|null $imageFile */
         $imageFile = $request->files->get('imageFile');
         if ($imageFile) {
@@ -66,7 +75,6 @@ final class BlogController extends AbstractController
 
         $blog->setCreatedAt(new \DateTimeImmutable());
 
-        // Validation
         $errors = $validator->validate($blog);
         if (count($errors) > 0) {
             return new JsonResponse([
@@ -76,7 +84,6 @@ final class BlogController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // Sauvegarde
         $this->entityManager->persist($blog);
         $this->entityManager->flush();
 
@@ -87,7 +94,7 @@ final class BlogController extends AbstractController
                 'id' => $blog->getId(),
                 'title' => $blog->getTitle(),
                 'content' => $blog->getContent(),
-                'image' => $blog->getImage(), // juste le nom du fichier
+                'image' => $blog->getImage(),
                 'createdAt' => $blog->getCreatedAt()->format('Y-m-d H:i:s'),
             ]
         ], Response::HTTP_CREATED);
@@ -99,6 +106,11 @@ final class BlogController extends AbstractController
         $blog = $this->entityManager->getRepository(Blog::class)->find($id);
         if (!$blog) {
             return new JsonResponse(['error' => 'Blog not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $this->security->getUser();
+        if ($blog->getUser() !== $user && !$this->isGranted('ROLE_ADMIN')) {
+            return new JsonResponse(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -116,6 +128,7 @@ final class BlogController extends AbstractController
         );
     }
 
+
     #[Route('/api/blogs/{id}', name: 'app_blog_delete', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
@@ -124,9 +137,15 @@ final class BlogController extends AbstractController
             return new JsonResponse(['error' => 'Blog not found'], Response::HTTP_NOT_FOUND);
         }
 
+        $user = $this->security->getUser();
+        if ($blog->getUser() !== $user && !$this->isGranted('ROLE_ADMIN')) {
+            return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_FORBIDDEN);
+        }
+
         $this->entityManager->remove($blog);
         $this->entityManager->flush();
 
-        return new JsonResponse(['message' => 'Blog deleted successfully'], Response::HTTP_NO_CONTENT);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
+
 }

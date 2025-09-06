@@ -17,5 +17,10 @@ export const BlogService = {
     const response = await api.get(`/blogs/${id}`); // ← quotes + template
     return response.data;
   },
+
+  async deleteById(id: number) {
+    const response = await api.delete(`/blogs/${id}`); // ← quotes + template
+    return response.data;
+  },
 };
 

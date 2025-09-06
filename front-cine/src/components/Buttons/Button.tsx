@@ -23,8 +23,8 @@ function checkVariant(variant?: TVariant) {
   } else if (variant === "danger") {
     return { backgroundColor: "#8B0000", color: "white" };
   } else if (variant === "success") {
-    return { backgroundColor: "green", color: "white" };
+    return { backgroundColor: "#2BB106", color: "white" };
   } else if (variant === "warning") {
-    return { backgroundColor: "yellow", color: "white" };
+    return { backgroundColor: "#FFDE07", color: "black" };
   }
 }
