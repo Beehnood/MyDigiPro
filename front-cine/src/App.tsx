@@ -20,12 +20,13 @@ import { ExitProvider } from "./contexts/ExitContext";
 import { Register } from "./components/Register";
 import Login from "./components/Login";
 import BlogPage from "./components/Blogs/BlogPage";
+import EditBlogPage from "./components/Blogs/EditBlogPage";
 
 function App() {
   return (
     
        <AuthProvider>
-      <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+      <div className="flex flex-col min-h-screen bg-gray-900 text-black">
         <Routes>
           <Route
             path="/"
@@ -39,6 +40,8 @@ function App() {
           <Route path="/Register" element={<Register />} />
           <Route path="/Login" element={<Login/>} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/editBlog/:id" element={<EditBlogPage />} />
+
 
           <Route path="/blogList" element={<BlogsList_page />} />
           <Route path="/createBlog_page" element={<CreateBlog_page />} />

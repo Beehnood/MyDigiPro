@@ -11,7 +11,7 @@ final class BlogValidator extends ConstraintValidator
     {
         /* @var Blog $constraint */
 
-        if (null === $value || '' === $value) {
+        if ($value === null || $value === '') {
             return;
         }
 

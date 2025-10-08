@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Blog;
-use App\Entity\User;
-use ContainerHmVfJzd\getUserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,12 +44,12 @@ final class BlogController extends AbstractController
             return new JsonResponse(['error' => 'Blog not found'], Response::HTTP_NOT_FOUND);
         }
 
-       return new JsonResponse(
-        $this->serializer->serialize($blog, 'json', ['groups' => ['blog:read']]),
-        Response::HTTP_OK,
-        [],
-        true
-    );
+        return new JsonResponse(
+            $this->serializer->serialize($blog, 'json', ['groups' => ['blog:read']]),
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     #[Route('/api/blogs', name: 'app_blog_create', methods: ['POST'])]
@@ -100,9 +98,10 @@ final class BlogController extends AbstractController
         ], Response::HTTP_CREATED);
     }
 
-    #[Route('/api/blogs/{id}', name: 'app_blog_update', methods: ['PUT'])]
-    public function update(int $id, Request $request): JsonResponse
+    #[Route('/api/blogs/{id}', name: 'app_blog_update', methods: ['PUT', 'PATCH', 'POST'])]
+    public function update(int $id, Request $request, ValidatorInterface $validator): JsonResponse
     {
+        
         $blog = $this->entityManager->getRepository(Blog::class)->find($id);
         if (!$blog) {
             return new JsonResponse(['error' => 'Blog not found'], Response::HTTP_NOT_FOUND);
@@ -113,19 +112,45 @@ final class BlogController extends AbstractController
             return new JsonResponse(['error' => 'Access denied'], Response::HTTP_FORBIDDEN);
         }
 
-        $data = json_decode($request->getContent(), true);
-        $blog->setTitle($data['title'] ?? $blog->getTitle());
-        $blog->setContent($data['content'] ?? $blog->getContent());
-        $blog->setImage($data['image'] ?? $blog->getImage());
+        // 🔹 Met à jour uniquement si la valeur est fournie
+        $title = $request->request->get('title');
+        if (!empty($title)) {
+            $blog->setTitle($title);
+            //  dd($title);
+        }
+       
 
+        $content = $request->request->get('content');
+        if (!empty($content)) {
+            $blog->setContent($content);
+        }
+       
+
+        /** @var UploadedFile|null $imageFile */
+        $imageFile = $request->files->get('imageFile');
+        if ($imageFile) {
+            $blog->setImageFile($imageFile);
+        }
+
+        $blog->setUpdatedAt(new \DateTimeImmutable());
+
+        // 🔹 Validation
+        $errors = $validator->validate($blog);
+        if (count($errors) > 0) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => json_decode($this->serializer->serialize($errors, 'json'), true)
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // ✅ Sauvegarde en BDD
         $this->entityManager->flush();
 
-        return new JsonResponse(
-            $this->serializer->serialize($blog, 'json'),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+        // ✅ Retourne l’objet JSON (pas une string sérialisée)
+        $json = $this->serializer->serialize($blog, 'json', ['groups' => 'blog:read']);
+
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
 
