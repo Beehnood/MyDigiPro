@@ -7,11 +7,22 @@ export const BlogService = {
     return response.data;
   },
 
-  async create(blogData: FormData) {
-    // Laisse Axios gérer le boundary automatiquement
+  // async create(blogData: FormData) {
+  //   // Laisse Axios gérer le boundary automatiquement
+  //   const response = await api.post("/blogs", blogData);
+  //   return response.data;
+  // },
+
+
+async create(blogData: FormData) {
+  try {
     const response = await api.post("/blogs", blogData);
     return response.data;
-  },
+  } catch (error: any) {
+    console.error("Erreur API :", error.response?.data || error.message);
+    throw error;
+  }
+},
 
   async getById(id: number) {
     const response = await api.get(`/blogs/${id}`); // ← quotes + template

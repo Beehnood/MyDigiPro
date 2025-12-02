@@ -25,7 +25,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new GetCollection(),
         new Get(),
         // new Put(
-         
+
         // ),
         // new Patch(
         //     inputFormats: ['multipart' => ['multipart/form-data']],
@@ -56,10 +56,19 @@ class Blog
     #[Groups(['blog:read'])]
     private ?string $image = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['blog:read'])]
+    private ?string $video = null;
+
     // ⚠️ imageFile n’est pas stockée en DB, mais nécessaire pour VichUploader
     #[Vich\UploadableField(mapping: 'blog_images', fileNameProperty: 'image')]
-    #[Groups(['blog:write'])] 
+    #[Groups(['blog:write'])]
     private ?File $imageFile = null;
+
+    #[Vich\UploadableField(mapping: 'blog_videos', fileNameProperty: 'video')]
+    #[Groups(['blog:write'])]
+    private ?File $videoFile = null;
+
 
     #[ORM\Column]
     #[Groups(['blog:read'])]
@@ -74,16 +83,40 @@ class Blog
     #[Groups(['blog:read'])]
     private ?User $user = null;
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getTitle(): ?string { return $this->title; }
-    public function setTitle(string $title): self { $this->title = $title; return $this; }
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
 
-    public function getContent(): ?string { return $this->content; }
-    public function setContent(string $content): self { $this->content = $content; return $this; }
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+    public function setContent(string $content): self
+    {
+        $this->content = $content;
+        return $this;
+    }
 
-    public function getImage(): ?string { return $this->image; }
-    public function setImage(?string $image): self { $this->image = $image; return $this; }
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+        return $this;
+    }
 
     public function setImageFile(?File $imageFile = null): void
     {
@@ -92,16 +125,64 @@ class Blog
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
-    public function getImageFile(): ?File { return $this->imageFile; }
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
 
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self { $this->createdAt = $createdAt; return $this; }
+    public function getVideo(): ?string
+    {
+        return $this->video;
+    }
+    public function setVideo(?string $video): self
+    {
+        $this->video = $video;
+        return $this;
+    }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self { $this->updatedAt = $updatedAt; return $this; }
 
-    public function getUser(): ?User { return $this->user; }
-    public function setUser(?User $user): self { $this->user = $user; return $this; }
+    public function setVideoFile(?File $videoFile = null): void
+    {
+        $this->videoFile = $videoFile;
+        if ($videoFile !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getVideoFile(): ?File
+    {
+        return $this->videoFile;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+        return $this;
+    }
 
     #[ORM\PrePersist]
     public function onPrePersist(): void

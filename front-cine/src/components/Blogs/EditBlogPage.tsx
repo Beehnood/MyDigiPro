@@ -11,6 +11,7 @@ function EditBlogPage() {
     content: string;
     image: string | null;
     imageFile?: File | null;
+    video?: File | null;
   }>({
     title: "",
     content: "",
@@ -47,6 +48,15 @@ function EditBlogPage() {
       });
     }
   };
+  // const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files?.[0]) {
+  //     const file = e.target.files[0];
+  //     setFormData({
+  //       ...formData,
+  //       video: file,
+  //     });
+  //   }
+  // };
 
   // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,15 +67,12 @@ function EditBlogPage() {
       const data = new FormData();
       data.append("title", formData.title);
       data.append("content", formData.content);
-      if (formData.imageFile) {
-        data.append("imageFile", formData.imageFile);
-      }
+      if (formData.imageFile) data.append("imageFile", formData.imageFile);
+      if (formData.video) data.append("videoFile", formData.video);
 
-      data.append("_method", "PUT")
-
-    
-      await api.post(`/blogs/${id}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
-
+      await api.post(`/blogs/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       alert("Blog modifié avec succès !");
       navigate(`/blogList`);
@@ -138,6 +145,14 @@ function EditBlogPage() {
                 className="mt-4 w-40 h-40 object-cover rounded"
               />
             )}
+          </div>
+
+          {/* video */}
+
+          <div>
+            <label htmlFor="video" className="block mb-2 font-medium">
+              Choose Video
+            </label>
           </div>
 
           {/* Button */}
