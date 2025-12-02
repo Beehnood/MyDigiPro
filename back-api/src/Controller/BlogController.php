@@ -71,7 +71,17 @@ final class BlogController extends AbstractController
             $blog->setImageFile($imageFile);
         }
 
+        /** @var UploadedFile|null $videoFile */
+        $videoFile = $request->files->get('videoFile');
+        if ($videoFile) {
+            $blog->setVideoFile($videoFile);
+        }
+
+
         $blog->setCreatedAt(new \DateTimeImmutable());
+        
+        dump($request->request->all(), $request->files->all());
+
 
         $errors = $validator->validate($blog);
         if (count($errors) > 0) {
@@ -93,6 +103,7 @@ final class BlogController extends AbstractController
                 'title' => $blog->getTitle(),
                 'content' => $blog->getContent(),
                 'image' => $blog->getImage(),
+                'video' => $blog->getVideo(),
                 'createdAt' => $blog->getCreatedAt()->format('Y-m-d H:i:s'),
             ]
         ], Response::HTTP_CREATED);
@@ -101,7 +112,7 @@ final class BlogController extends AbstractController
     #[Route('/api/blogs/{id}', name: 'app_blog_update', methods: ['PUT', 'PATCH', 'POST'])]
     public function update(int $id, Request $request, ValidatorInterface $validator): JsonResponse
     {
-        
+
         $blog = $this->entityManager->getRepository(Blog::class)->find($id);
         if (!$blog) {
             return new JsonResponse(['error' => 'Blog not found'], Response::HTTP_NOT_FOUND);
@@ -118,19 +129,26 @@ final class BlogController extends AbstractController
             $blog->setTitle($title);
             //  dd($title);
         }
-       
+
 
         $content = $request->request->get('content');
         if (!empty($content)) {
             $blog->setContent($content);
         }
-       
+
 
         /** @var UploadedFile|null $imageFile */
         $imageFile = $request->files->get('imageFile');
         if ($imageFile) {
             $blog->setImageFile($imageFile);
+
         }
+        /** @var UploadedFile|null $videoFile */
+        $videoFile = $request->files->get('videoFile');
+        if ($videoFile) {
+            $blog->setVideoFile($videoFile);
+        }
+
 
         $blog->setUpdatedAt(new \DateTimeImmutable());
 

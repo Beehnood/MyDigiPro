@@ -7,6 +7,7 @@ interface BlogPost {
   title: string;
   content: string;
   image?: string;
+  video?: string | null;
   createdAt: string;
 }
 
@@ -16,6 +17,7 @@ export const CreateBlog = () => {
     content: "",
     image: "",
     imageFile: null as File | null,
+    video: null as File | null,
   });
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,26 +50,63 @@ export const CreateBlog = () => {
       });
     }
   };
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      const file = e.target.files[0];
+      setFormData({
+        ...formData,
+        video: file,
+      });
+    }
+  };
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     const fd = new FormData();
+  //     fd.append("title", formData.title);
+  //     fd.append("content", formData.content);
+  //     if (formData.imageFile) fd.append("imageFile", formData.imageFile);
+  //     if (formData.video) fd.append("videoFile", formData.video);
+
+  //     // debug
+  //     for (const [k, v] of fd.entries()) console.log(k, v);
+
+  //     await BlogService.create(fd);
+  //     alert("Blog post created successfully!");
+  //     navigate("/blogList");
+  //     setFormData({ title: "", content: "", image: "", imageFile: null , video: null});
+  //     await fetchBlogs();
+  //   } catch (err) {
+  //     setError("Failed to create post");
+  //     console.error("Error creating post:", err);
+  //   }
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const fd = new FormData();
       fd.append("title", formData.title);
       fd.append("content", formData.content);
       if (formData.imageFile) fd.append("imageFile", formData.imageFile);
+      if (formData.video) fd.append("videoFile", formData.video);
 
-      // debug
+      console.log("🔍 Sending form data:");
       for (const [k, v] of fd.entries()) console.log(k, v);
 
-      await BlogService.create(fd);
+      const response = await BlogService.create(fd);
+      console.log("✅ Created:", response);
+
       alert("Blog post created successfully!");
       navigate("/blogList");
-      setFormData({ title: "", content: "", image: "", imageFile: null });
-      await fetchBlogs();
-    } catch (err) {
+    } catch (err: any) {
+      console.error(
+        "❌ Error creating post:",
+        err.response?.data || err.message
+      );
       setError("Failed to create post");
-      console.error("Error creating post:", err);
     }
   };
 
@@ -78,31 +117,77 @@ export const CreateBlog = () => {
           Create New Post
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4 bg-orange-100 p-6 rounded-lg shadow-md mb-8">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 bg-orange-100 p-6 rounded-lg shadow-md mb-8"
+        >
           <div>
-            <label htmlFor="title" className="block mb-2 font-medium">Title</label>
-            <input id="title" type="text" value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+            <label htmlFor="title" className="block mb-2 font-medium">
+              Title
+            </label>
+            <input
+              id="title"
+              type="text"
+              value={formData.title}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
           </div>
 
           <div>
-            <label htmlFor="content" className="block mb-2 font-medium">Content</label>
-            <textarea id="content" value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full px-4 py-2 border rounded h-32 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+            <label htmlFor="content" className="block mb-2 font-medium">
+              Content
+            </label>
+            <textarea
+              id="content"
+              value={formData.content}
+              onChange={(e) =>
+                setFormData({ ...formData, content: e.target.value })
+              }
+              className="w-full px-4 py-2 border rounded h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
           </div>
 
           <div>
-            <label htmlFor="imageFile" className="block mb-2 font-medium">Choose Image</label>
-            <input id="imageFile" type="file" accept="image/*" onChange={handleFileChange}
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <label htmlFor="imageFile" className="block mb-2 font-medium">
+              Choose Image
+            </label>
+            <input
+              id="imageFile"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
             {formData.image && (
-              <img src={formData.image} alt="Preview" className="mt-4 w-40 h-40 object-cover rounded" />
+              <img
+                src={formData.image}
+                alt="Preview"
+                className="mt-4 w-40 h-40 object-cover rounded"
+              />
             )}
           </div>
+          <div>
+            <label htmlFor="videoFile" className="block mb-2 font-medium">
+              {" "}
+              Choose video
+            </label>
+            <input
+              id="videoFile"
+              type="file"
+              accept="video/*"
+              onChange={handleVideoChange}
+            />
+          </div>
 
-          <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
+          >
             Create Post
           </button>
         </form>
