@@ -1,0 +1,2 @@
+*.mov filter=lfs diff=lfs merge=lfs -text
+back-api/public/uploads/blogs/videos/screen-recording-2025-07-08-at-12-55-06-68efa43c56470078329831.mov filter=lfs diff=lfs merge=lfs -text
