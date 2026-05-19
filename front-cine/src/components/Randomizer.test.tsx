@@ -1,29 +1,37 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Randomizer from "../components/Randomaizer";
 import { MemoryRouter } from "react-router-dom";
-import axios from "axios";
+import { vi } from "vitest";
+import { api } from "../service/Http-service";
 
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+vi.mock("../service/Http-service", () => ({
+  api: {
+    get: vi.fn(),
+  },
+}));
 
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockedApiGet = vi.mocked(api.get);
+
+const mockedNavigate = vi.fn();
+vi.mock("react-router-dom", async () => ({
+  ...(await vi.importActual("react-router-dom") as object),
   useNavigate: () => mockedNavigate,
 }));
 
 describe("Randomizer", () => {
   beforeEach(() => {
-    mockedAxios.get.mockReset();
+    mockedApiGet.mockReset();
   });
 
   it("affiche le bouton Randomizer", () => {
     render(<Randomizer />, { wrapper: MemoryRouter });
+    fireEvent.click(screen.getByRole("button", { name: /ouvrir le randomizer/i }));
+
     expect(screen.getByText(/lancer le tirage/i)).toBeInTheDocument();
   });
 
   it("affiche un film après clic sur le bouton", async () => {
-    mockedAxios.get.mockResolvedValueOnce({
+    mockedApiGet.mockResolvedValueOnce({
       data: {
         id: 123,
         title: "Inception",
@@ -32,6 +40,7 @@ describe("Randomizer", () => {
     });
 
     render(<Randomizer />, { wrapper: MemoryRouter });
+    fireEvent.click(screen.getByRole("button", { name: /ouvrir le randomizer/i }));
 
     fireEvent.click(screen.getByRole("button", { name: /lancer le tirage/i }));
 
@@ -40,9 +49,12 @@ describe("Randomizer", () => {
   });
 
   it("affiche un message d'erreur en cas d'échec", async () => {
-    mockedAxios.get.mockRejectedValueOnce({ response: { status: 403 } });
+    mockedApiGet.mockRejectedValueOnce({
+      response: { data: { error: "Limite atteinte ou points insuffisants." } },
+    });
 
     render(<Randomizer />, { wrapper: MemoryRouter });
+    fireEvent.click(screen.getByRole("button", { name: /ouvrir le randomizer/i }));
 
     fireEvent.click(screen.getByText(/lancer le tirage/i));
 

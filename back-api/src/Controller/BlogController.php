@@ -29,7 +29,7 @@ final class BlogController extends AbstractController
     {
         $blogs = $this->entityManager->getRepository(Blog::class)->findBy([], ['createdAt' => 'DESC']);
         return new JsonResponse(
-            $this->serializer->serialize($blogs, 'json'),
+            $this->serializer->serialize($blogs, 'json', ['groups' => ['blog:read']]),
             Response::HTTP_OK,
             [],
             true
@@ -55,6 +55,11 @@ final class BlogController extends AbstractController
     #[Route('/api/blogs', name: 'app_blog_create', methods: ['POST'])]
     public function create(Request $request, ValidatorInterface $validator): JsonResponse
     {
+        $tooLargeResponse = $this->getTooLargeUploadResponse($request);
+        if ($tooLargeResponse) {
+            return $tooLargeResponse;
+        }
+
         $user = $this->security->getUser();
         if (!$user) {
             return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
@@ -79,8 +84,6 @@ final class BlogController extends AbstractController
 
 
         $blog->setCreatedAt(new \DateTimeImmutable());
-        
-        dump($request->request->all(), $request->files->all());
 
 
         $errors = $validator->validate($blog);
@@ -112,6 +115,10 @@ final class BlogController extends AbstractController
     #[Route('/api/blogs/{id}', name: 'app_blog_update', methods: ['PUT', 'PATCH', 'POST'])]
     public function update(int $id, Request $request, ValidatorInterface $validator): JsonResponse
     {
+        $tooLargeResponse = $this->getTooLargeUploadResponse($request);
+        if ($tooLargeResponse) {
+            return $tooLargeResponse;
+        }
 
         $blog = $this->entityManager->getRepository(Blog::class)->find($id);
         if (!$blog) {
@@ -189,6 +196,55 @@ final class BlogController extends AbstractController
         $this->entityManager->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    private function getTooLargeUploadResponse(Request $request): ?JsonResponse
+    {
+        $contentLength = (int) $request->server->get('CONTENT_LENGTH', 0);
+        $postMaxSize = $this->parseIniSize((string) ini_get('post_max_size'));
+
+        if ($postMaxSize > 0 && $contentLength > $postMaxSize) {
+            return new JsonResponse([
+                'error' => sprintf(
+                    'Fichier trop volumineux. Taille envoyée: %s. Limite serveur actuelle: %s.',
+                    $this->formatBytes($contentLength),
+                    $this->formatBytes($postMaxSize)
+                ),
+            ], Response::HTTP_REQUEST_ENTITY_TOO_LARGE);
+        }
+
+        return null;
+    }
+
+    private function parseIniSize(string $value): int
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return 0;
+        }
+
+        $unit = strtolower($value[-1]);
+        $size = (float) $value;
+
+        return match ($unit) {
+            'g' => (int) ($size * 1024 * 1024 * 1024),
+            'm' => (int) ($size * 1024 * 1024),
+            'k' => (int) ($size * 1024),
+            default => (int) $size,
+        };
+    }
+
+    private function formatBytes(int $bytes): string
+    {
+        if ($bytes >= 1024 * 1024) {
+            return round($bytes / 1024 / 1024, 1) . ' MB';
+        }
+
+        if ($bytes >= 1024) {
+            return round($bytes / 1024, 1) . ' KB';
+        }
+
+        return $bytes . ' B';
     }
 
 }

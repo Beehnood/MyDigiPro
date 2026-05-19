@@ -4,12 +4,16 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Button from "../Buttons/Button";
 import { BlogService } from "../../service/BlogService";
+import { API_BASE_URL } from "../../config";
+
+const API_ORIGIN = API_BASE_URL.replace(/\/api$/, "");
 
 type BlogPost = {
   id: number;
   title: string;
   content: string;
   image?: string;
+  video?: string | null;
   user: { id: number; username: string };
 };
 
@@ -66,10 +70,6 @@ function BlogPage() {
   if (!blog) {
     return <p className="text-center text-yellow-400">Aucun article trouvé.</p>;
   }
-  console.log("user",user)
-   console.log("user.id", user?.id)
-    console.log(blog.user.id)
-     console.log("blog",blog)
 
   return (
     <section className="bg-orange-100 w-full min-h-screen p-8">
@@ -82,10 +82,33 @@ function BlogPage() {
         {blog.image && (
           <div className="w-full text-black mb-6">
             <img
-              src={`http://localhost:8000/uploads/blogs/${blog?.image}`}
+              src={`${API_ORIGIN}/uploads/blogs/${blog?.image}`}
               alt={blog?.title}
               className="w-full max-h-96 object-cover rounded-lg mb-4"
             />
+          </div>
+        )}
+        {blog.video && (
+          <div className="w-full text-black mb-6">
+            {(() => {
+              const videoUrl = `${API_ORIGIN}/uploads/blogs/videos/${blog.video}`;
+              return (
+                <>
+            <video
+              src={videoUrl}
+              className="w-full max-h-96 rounded-lg bg-black"
+              controls
+            />
+                  <a
+                    href={videoUrl}
+                    download
+                    className="mt-2 inline-block text-blue-700 underline"
+                  >
+                    Télécharger la vidéo
+                  </a>
+                </>
+              );
+            })()}
           </div>
         )}
          <p className="font-light bg-amber-400 text-black mb-6">{blog?.content}</p>

@@ -12,7 +12,7 @@ import { Film_page } from "./pages/Films-Pages/Films_page";
 import { FilmProduit_page } from "./pages/Films-Pages/FilmProduit_page";
 import Randomizer from "./components/Randomaizer";
 import Logout from "./components/Logout";
-import ContactPage from "./components/ContactPage";
+import ContactPage from "./components/ContactModal";
 
 import { BlogsList_page } from "./pages/Blogs-Pages/Blogs";
 import { CreateBlog_page } from "./pages/Blogs-Pages/CreateBlog_page";
@@ -44,7 +44,14 @@ function App() {
 
 
           <Route path="/blogList" element={<BlogsList_page />} />
-          <Route path="/createBlog_page" element={<CreateBlog_page />} />
+          <Route
+            path="/createBlog_page"
+            element={
+              <PrivateRoute>
+                <CreateBlog_page />
+              </PrivateRoute>
+            }
+          />
           <Route path="/blog/:id" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
 

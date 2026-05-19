@@ -92,7 +92,7 @@ export const FilmsPopular= () => {
     );
 
   return (
-    <main className="bg-[#242424] py-10">
+    <section className="bg-[#242424] py-10">
       {/* LES FILMS SORTIES DU MOMENTS */}
       <div className="w-full max-w-7xl mx-auto px-6">
         <h2 className="text-xl sm:text-2xl font-bold mb-4 text-white">
@@ -148,6 +148,6 @@ export const FilmsPopular= () => {
           )}
         </Swiper>
       </div>
-    </main>
+    </section>
   );
 };

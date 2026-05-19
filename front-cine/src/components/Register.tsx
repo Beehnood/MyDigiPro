@@ -1,4 +1,5 @@
 import { api } from "../service/Http-service";
+import { API_BASE_URL } from "../config";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +30,6 @@ export const Register = () => {
       try {
         const response = await api.get("/movies/genres");
         const data = await response.data;
-        console.log("✅ Genres reçus :", data);
         setGenres(data);
       } catch (err) {
         console.error("❌ Erreur:", err);
@@ -54,7 +54,7 @@ export const Register = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8000/api/register", {
+      const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,11 +63,9 @@ export const Register = () => {
         body: JSON.stringify(form),
       });
 
-      const data = await response.json();
-      console.log("register response:", data);
-
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(data.message || "Erreur lors de l'inscription");
+        throw new Error(data.error || data.message || "Erreur lors de l'inscription");
       }
 
       navigate("/login");

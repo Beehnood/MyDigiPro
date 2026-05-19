@@ -3,12 +3,16 @@ import React, { useEffect, useState } from "react";
 import ButtonRouge from "../Buttons/ButtonRouge";
 import Button from "../Buttons/Button";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../../config";
+
+const API_ORIGIN = API_BASE_URL.replace(/\/api$/, "");
 
 interface BlogListProps {
   id: number;
   title: string;
   content: string;
   image?: string;
+  video?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -77,10 +81,34 @@ export default function BlogList() {
               <div className="w-50">
                 {post.image && (
                   <img
-                    src={`http://localhost:8000/uploads/blogs/${post.image}`}
+                    src={`${API_ORIGIN}/uploads/blogs/${post.image}`}
                     alt={post.title}
                     className="w-50 h-48 object-cover rounded-lg mb-4"
                   />
+                )}
+                {!post.image && post.video && (
+                  <div className="mb-4">
+                    {(() => {
+                      const videoUrl = `${API_ORIGIN}/uploads/blogs/videos/${post.video}`;
+                      return (
+                        <>
+                          <video
+                            src={videoUrl}
+                            className="w-50 h-48 object-cover rounded-lg"
+                            muted
+                            controls
+                          />
+                          <a
+                            href={videoUrl}
+                            download
+                            className="mt-2 inline-block text-blue-700 underline"
+                          >
+                            Télécharger
+                          </a>
+                        </>
+                      );
+                    })()}
+                  </div>
                 )}
                 <time className="text-sm  text-gray-400">
                   {new Date(post.createdAt).toLocaleDateString("fr-FR")} |

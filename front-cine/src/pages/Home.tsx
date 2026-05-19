@@ -7,7 +7,6 @@ import { FilmsPopular } from '../components/Films/FilmsPopular';
 
 
 export const Home = () => {
-  console.log('Home rendering');
   return (
     <MainLayout>
       <FilmsNowPlaying />

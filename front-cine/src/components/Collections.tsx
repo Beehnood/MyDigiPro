@@ -20,12 +20,10 @@ interface Genre {
 
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const API_URL = import.meta.env.VITE_TMDB_BASE_URL ; 
+
 const Collection: React.FC = () => {
   const [filmsByGenre, setFilmsByGenre] = useState<Record<string, Movie[]>>({});
   const navigate = useNavigate();
-
-
-
 
   useEffect(() => {
     const fetchGenresAndMovies = async () => {
