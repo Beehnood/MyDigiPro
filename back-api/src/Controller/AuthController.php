@@ -50,6 +50,14 @@ class AuthController extends AbstractController
             return new JsonResponse(['error' => 'Données manquantes'], 400);
         }
 
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            return new JsonResponse(['error' => 'Adresse e-mail invalide'], 400);
+        }
+
+        if (strlen($data['password']) < 6) {
+            return new JsonResponse(['error' => 'Le mot de passe doit contenir au moins 6 caractères'], 400);
+        }
+
         $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
         if ($existingUser) {
             return new JsonResponse(['error' => 'Cet email est déjà utilisé'], 400);
@@ -66,7 +74,11 @@ class AuthController extends AbstractController
         $user->setLastName($data['lastName']);
         $user->setCountry($data['country']);
         $user->setCity($data['city']);
-        $user->setInterests($data['interests'] ?? null);
+        $interests = $data['interests'] ?? null;
+        if (is_array($interests)) {
+            $interests = implode(',', array_filter($interests, static fn ($interest) => $interest !== ''));
+        }
+        $user->setInterests($interests ?: null);
         $user->setPassword($passwordHasher->hashPassword($user, $data['password']));
         $user->setRoles(['ROLE_USER']);
 

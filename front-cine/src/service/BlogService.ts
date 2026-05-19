@@ -7,12 +7,7 @@ export const BlogService = {
     return response.data;
   },
 
-  // async create(blogData: FormData) {
-  //   // Laisse Axios gérer le boundary automatiquement
-  //   const response = await api.post("/blogs", blogData);
-  //   return response.data;
-  // },
-
+ 
 
 async create(blogData: FormData) {
   try {

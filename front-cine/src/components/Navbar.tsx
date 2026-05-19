@@ -136,15 +136,11 @@ export const Navbar = () => {
             <>
               <div>
                 {/* Inscription */}
-                <button className="bg-yellow-400 text-black tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-black transition-colors">
-                  <Register/>
-                </button>
+                <Register/>
               </div>
               <div>
                 {/* Login-btn */}
-                <button className="bg-[#242424] text-white tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-yellow-400 hover:shadow-yellow-200 transition-colors">
                 <Login/>
-                </button>
               </div>
             </>
           )}

@@ -11,6 +11,9 @@ interface BlogPost {
   createdAt: string;
 }
 
+const VIDEO_ACCEPT =
+  "video/*,.mp4,.m4v,.mov,.avi,.mkv,.webm,.ogg,.ogv,.3gp,.3g2,.wmv,.flv,.mpeg,.mpg";
+
 export const CreateBlog = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -93,20 +96,16 @@ export const CreateBlog = () => {
       if (formData.imageFile) fd.append("imageFile", formData.imageFile);
       if (formData.video) fd.append("videoFile", formData.video);
 
-      console.log("🔍 Sending form data:");
-      for (const [k, v] of fd.entries()) console.log(k, v);
-
-      const response = await BlogService.create(fd);
-      console.log("✅ Created:", response);
+      await BlogService.create(fd);
 
       alert("Blog post created successfully!");
       navigate("/blogList");
     } catch (err: any) {
-      console.error(
-        "❌ Error creating post:",
-        err.response?.data || err.message
+      setError(
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Failed to create post"
       );
-      setError("Failed to create post");
     }
   };
 
@@ -116,6 +115,11 @@ export const CreateBlog = () => {
         <h2 className="text-2xl text-orange-100 text-center font-bold mb-8">
           Create New Post
         </h2>
+        {error && (
+          <p className="mb-4 rounded bg-red-100 px-4 py-3 text-red-700">
+            {error}
+          </p>
+        )}
 
         <form
           onSubmit={handleSubmit}
@@ -173,15 +177,20 @@ export const CreateBlog = () => {
           </div>
           <div>
             <label htmlFor="videoFile" className="block mb-2 font-medium">
-              {" "}
-              Choose video
+              Choose Video
             </label>
             <input
               id="videoFile"
               type="file"
-              accept="video/*"
+              accept={VIDEO_ACCEPT}
               onChange={handleVideoChange}
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {formData.video && (
+              <p className="mt-2 text-sm text-gray-700">
+                Vidéo sélectionnée : {formData.video.name}
+              </p>
+            )}
           </div>
 
           <button

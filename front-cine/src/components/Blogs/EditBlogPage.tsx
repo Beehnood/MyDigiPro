@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../service/Http-service";
+import { API_BASE_URL } from "../../config";
+
+const API_ORIGIN = API_BASE_URL.replace(/\/api$/, "");
+const VIDEO_ACCEPT =
+  "video/*,.mp4,.m4v,.mov,.avi,.mkv,.webm,.ogg,.ogv,.3gp,.3g2,.wmv,.flv,.mpeg,.mpg";
 
 function EditBlogPage() {
   const { id } = useParams<{ id: string }>();
@@ -10,13 +15,16 @@ function EditBlogPage() {
     title: string;
     content: string;
     image: string | null;
+    existingVideo: string | null;
     imageFile?: File | null;
     video?: File | null;
   }>({
     title: "",
     content: "",
     image: null,
+    existingVideo: null,
     imageFile: null,
+    video: null,
   });
 
   // Charger le blog existant
@@ -29,9 +37,13 @@ function EditBlogPage() {
           title: res.data.title,
           content: res.data.content,
           image: res.data.image
-            ? `http://127.0.0.1:8000/uploads/blogs/${res.data.image}`
+            ? `${API_ORIGIN}/uploads/blogs/${res.data.image}`
+            : null,
+          existingVideo: res.data.video
+            ? `${API_ORIGIN}/uploads/blogs/videos/${res.data.video}`
             : null,
           imageFile: null,
+          video: null,
         });
       })
       .catch((err) => console.error("Erreur chargement blog:", err));
@@ -48,15 +60,15 @@ function EditBlogPage() {
       });
     }
   };
-  // const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (e.target.files?.[0]) {
-  //     const file = e.target.files[0];
-  //     setFormData({
-  //       ...formData,
-  //       video: file,
-  //     });
-  //   }
-  // };
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      const file = e.target.files[0];
+      setFormData({
+        ...formData,
+        video: file,
+      });
+    }
+  };
 
   // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
@@ -150,9 +162,37 @@ function EditBlogPage() {
           {/* video */}
 
           <div>
-            <label htmlFor="video" className="block mb-2 font-medium">
+            <label htmlFor="videoFile" className="block mb-2 font-medium">
               Choose Video
             </label>
+            <input
+              id="videoFile"
+              type="file"
+              accept={VIDEO_ACCEPT}
+              onChange={handleVideoChange}
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {formData.video && (
+              <p className="mt-2 text-sm text-gray-700">
+                Nouvelle vidéo : {formData.video.name}
+              </p>
+            )}
+            {!formData.video && formData.existingVideo && (
+              <div className="mt-4">
+                <video
+                  src={formData.existingVideo}
+                  className="w-full max-h-64 rounded bg-black"
+                  controls
+                />
+                <a
+                  href={formData.existingVideo}
+                  download
+                  className="mt-2 inline-block text-blue-700 underline"
+                >
+                  Télécharger la vidéo actuelle
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Button */}

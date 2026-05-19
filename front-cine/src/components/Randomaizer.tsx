@@ -58,12 +58,13 @@ export default function Randomizer() {
 
   return (
     <>
-      <img
-        className="w-8 h-6"
-        src="../public/randomize.png"
-        alt=""
-        onClick={handleOpen}
-      />
+      <button type="button" onClick={handleOpen} aria-label="Ouvrir le randomizer">
+        <img
+          className="w-8 h-6"
+          src="../public/randomize.png"
+          alt=""
+        />
+      </button>
       {isOpen && (
         <div className="fixed antialiased inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
           <div className="relative bg-zinc-900 text-white p-8 rounded-2xl w-[700px] max-w-full shadow-2xl border border-yellow-500/20">

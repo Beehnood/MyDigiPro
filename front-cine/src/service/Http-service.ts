@@ -17,10 +17,11 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use((Response) => Response, error => {
-  if (error.response?.status === 403) {
-       toast.error("Limite atteinte ou points insuffisants.");
-      } else {
-       toast.error("Erreur pendant le tirage.");
-      }
-});
+  const message =
+    error.response?.data?.error ||
+    error.response?.data?.message ||
+    "Erreur pendant la requête.";
 
+  toast.error(message);
+  return Promise.reject(error);
+});
