@@ -11,7 +11,7 @@ interface MainLayoutProps {
 export const MainLayout = ({ children }: MainLayoutProps) => {
   console.log('MainLayout rendering');
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+    <div className="flex min-h-screen flex-col text-white">
       <ToastContainer />
       <Navbar />
       <main className="flex-grow">{children}</main>

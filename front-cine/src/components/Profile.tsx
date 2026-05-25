@@ -12,7 +12,7 @@ const Profile = () => {
 
   return (
     <section>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#242424]">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black/35">
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg text-justify text-gray-700">
           
           {/* Bouton X */}

@@ -72,7 +72,7 @@ export const CreateBlog = () => {
   };
 
   return (
-    <div className="bg-[#242424] min-h-screen py-8 text-black w-full">
+    <div className="min-h-screen bg-black/35 py-8 text-black w-full">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl text-orange-100 text-center font-bold mb-8">
           Create New Post
