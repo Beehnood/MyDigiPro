@@ -23,14 +23,14 @@ export const FilmProduit = () => {
     fetchFilm();
   }, [id]);
 
-  if (loading || !film) return <div className="h-screen bg-black text-white flex items-center justify-center">Chargement...</div>;
+  if (loading || !film) return <div className="h-screen bg-black/35 text-white flex items-center justify-center">Chargement...</div>;
 
   const year = new Date(film.release_date).getFullYear();
   const duration = `${Math.floor(film.runtime / 60)}h ${film.runtime % 60}min`;
   const genres = film.genres.map((g: any) => g.name).join(" / ");
 
   return (
-    <div className="min-h-screen bg-[#242424] text-white">
+    <div className="min-h-screen bg-black/35 text-white">
       {/* HERO avec backdrop + overlay texte */}
       <div className="relative h-screen">
         <img
@@ -99,7 +99,7 @@ export const FilmProduit = () => {
       </div>
 
       {/* Casting 5 personnes */}
-      <div className="max-w-7xl mx-auto px-8 py-16 bg-[#242424]">
+      <div className="max-w-7xl mx-auto px-8 py-16 bg-black/35">
         <h2 className="text-3xl font-bold mb-8">Distribution</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
           {film.credits.cast.slice(0, 5).map((actor: any) => (

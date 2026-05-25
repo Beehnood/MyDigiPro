@@ -72,8 +72,8 @@ function BlogPage() {
   }
 
   return (
-    <section className="bg-orange-100 w-full min-h-screen p-8">
-      <div className="container p-12 rounded-lg mx-auto">
+    <section className="bg-black/35 w-full min-h-screen p-8">
+      <div className="container bg-orange-100/95 p-12 rounded-lg mx-auto">
         <h1 className="font-extrabold italic text-black text-6xl mb-6">
           "{blog?.title}"
         </h1>

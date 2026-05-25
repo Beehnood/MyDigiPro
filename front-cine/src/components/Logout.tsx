@@ -8,7 +8,7 @@ const Logout = () => {
 
   useEffect(() => {
     logout(); 
-    navigate("/login"); // redirection
+    navigate("/Login"); // redirection
   }, []);
 
   return null;
