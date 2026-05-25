@@ -2,15 +2,18 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
-import { Register } from "./Register";
 
-const Login = () => {
+type LoginProps = {
+  isPage?: boolean;
+};
+
+const Login = ({ isPage = false }: LoginProps) => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(isPage);
 
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
@@ -44,24 +47,28 @@ const Login = () => {
 
   return (
     <>
-      <button
-        onClick={handleOpen}
-        className="bg-[#242424] text-white tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-yellow-400 hover:shadow-yellow-200 transition-colors"
-      >
-        Connexion
-      </button>
+      {!isPage && (
+        <button
+          onClick={handleOpen}
+          className="bg-[#242424] text-white tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-yellow-400 hover:shadow-yellow-200 transition-colors"
+        >
+          Connexion
+        </button>
+      )}
 
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
           <div className="bg-orange-100 text-[#242424] text-md tracking-wider p-8 rounded-lg shadow-md w-full max-w-md relative">
             
             {/* Bouton fermer en haut à droite */}
-            <button
-              onClick={handleClose}
-              className="absolute top-2 right-2 text-red-600 hover:text-red-800"
-            >
-              ✕
-            </button>
+            {!isPage && (
+              <button
+                onClick={handleClose}
+                className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+              >
+                X
+              </button>
+            )}
 
             <h2 className="text-2xl font-bold mb-6 text-center">Connexion</h2>
 
@@ -113,13 +120,9 @@ const Login = () => {
 
             <p className="mt-4 text-md tracking-wider text-center ">
               Pas encore de compte ?{" "}
-              <span className=" text-blue-600 hover:underline">
-                <Link to="Register">
-                </Link>
-              </span>
-             
-             
-              
+              <Link className="text-blue-600 hover:underline" to="/Register">
+                S'inscrire
+              </Link>
             </p>
           </div>
         </div>

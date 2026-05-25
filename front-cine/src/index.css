@@ -4,8 +4,16 @@
 
 @layer base {
   body {
-    
     font-family: 'Kaneda Gothic', sans-serif; /* Si intégré */
-    background-color: #242424; /* Fond par défaut pour éviter la page noire */
+    background-color: #242424; /* Fond par défaut pendant le chargement */
   }
+}
+
+.app-background {
+  background-color: #242424;
+  background-image: url("/Fond.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
 }

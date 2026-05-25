@@ -70,13 +70,13 @@ export const FilmProduit = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen bg-black/35 text-white">
         Chargement...
       </div>
     );
   if (!film)
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen bg-black/35 text-white">
         Film non trouvé
       </div>
     );
@@ -87,7 +87,7 @@ export const FilmProduit = () => {
   const genres = film.genres?.map((g) => g.name).join(" / ") || "";
 
   return (
-    <div className="min-h-screen bg-[#242424] text-orange-100">
+    <div className="min-h-screen bg-black/35 text-orange-100">
       {/* Backdrop */}
       <div>
         <img

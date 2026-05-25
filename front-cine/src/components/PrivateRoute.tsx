@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { token } = useAuth();
-  return token ? children : <Navigate to="/login" />;
+  return token ? children : <Navigate to="/Login" />;
 };
 
 export default PrivateRoute;

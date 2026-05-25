@@ -2,7 +2,11 @@ import { api } from "../service/Http-service";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const Register = () => {
+type RegisterProps = {
+  isPage?: boolean;
+};
+
+export const Register = ({ isPage = false }: RegisterProps) => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState<any>({
@@ -18,7 +22,7 @@ export const Register = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(isPage);
 
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
@@ -70,7 +74,7 @@ export const Register = () => {
         throw new Error(data.message || "Erreur lors de l'inscription");
       }
 
-      navigate("/login");
+      navigate("/Login");
     } catch (err: any) {
       setError(err.message || "Une erreur est survenue");
     }
@@ -79,12 +83,14 @@ export const Register = () => {
   return (
     <>
       {/* Bouton d'ouverture */}
-      <button
-        onClick={handleOpen}
-        className="bg-yellow-400 text-black tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-black transition-colors"
-      >
-        Inscription
-      </button>
+      {!isPage && (
+        <button
+          onClick={handleOpen}
+          className="bg-yellow-400 text-black tracking-wider w-24 h-8 text-md px-4 rounded-md hover:text-black transition-colors"
+        >
+          Inscription
+        </button>
+      )}
 
       {/* Modale */}
       {isOpen && (
@@ -165,13 +171,15 @@ export const Register = () => {
                 >
                   S'inscrire
                 </button>
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="flex-1 bg-yellow-400 text-black py-2 rounded hover:bg-red-700 hover:text-white transition-colors"
-                >
-                  Fermer
-                </button>
+                {!isPage && (
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="flex-1 bg-yellow-400 text-black py-2 rounded hover:bg-red-700 hover:text-white transition-colors"
+                  >
+                    Fermer
+                  </button>
+                )}
               </div>
 
               {error && <p className="text-red-600 text-sm">{error}</p>}

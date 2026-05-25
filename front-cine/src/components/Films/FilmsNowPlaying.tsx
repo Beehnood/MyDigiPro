@@ -47,7 +47,7 @@ export const FilmsNowPlaying = () => {
 
   if (selectedFilm) {
     return (
-      <div className="bg-[#242424] h-screen flex items-center justify-center">
+      <div className="h-screen bg-black/35 flex items-center justify-center">
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-white">
           <h2 className="text-2xl font-bold mb-4">{selectedFilm.title}</h2>
           <img
@@ -79,20 +79,20 @@ export const FilmsNowPlaying = () => {
 
   if (loading)
     return (
-      <div className="h-96 bg-[#242424] flex items-center justify-center">
+      <div className="h-96 bg-black/35 flex items-center justify-center">
         <p className="text-yellow-400 text-xl">Chargement...</p>
       </div>
     );
 
   if (error)
     return (
-      <div className="h-96 bg-[#242424] flex items-center justify-center">
+      <div className="h-96 bg-black/35 flex items-center justify-center">
         <p className="text-red-500 text-xl">{error}</p>
       </div>
     );
 
   return (
-    <main className="bg-[#242424] py-10">
+    <section className="bg-black/35 py-10">
       {/* LES FILMS SORTIES DU MOMENTS */}
       <div className="w-full max-w-7xl mx-auto px-6">
         <h2 className="text-xl sm:text-2xl font-bold mb-4 text-white">
@@ -148,6 +148,6 @@ export const FilmsNowPlaying = () => {
           )}
         </Swiper>
       </div>
-    </main>
+    </section>
   );
 };
