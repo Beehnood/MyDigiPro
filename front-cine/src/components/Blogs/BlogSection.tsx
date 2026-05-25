@@ -4,8 +4,8 @@ import React from "react";
 
 export const BlogSection = () => {
   return (
-    <section className=" flex py-12 bg-orange-100 text-black">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="flex py-12 bg-black/35 text-black">
+      <div className="max-w-7xl mx-auto rounded-2xl bg-orange-100/95 px-6 py-8">
         <h2 className="text-4xl font-bold mb-6">DERNIERS ARTICLES DE BLOGS</h2>
         <div className="flex justify-between gap-8">
           <div>

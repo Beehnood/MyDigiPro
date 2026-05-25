@@ -3,10 +3,9 @@ import { Register } from '../components/Register';
 
 
 export const Register_page = () => {
-  console.log('Home rendering');
   return (
     <MainLayout>
-      <Register />
+      <Register isPage />
     </MainLayout>
   );
 };

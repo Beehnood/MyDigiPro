@@ -17,8 +17,8 @@ import ContactPage from "./components/ContactModal";
 import { BlogsList_page } from "./pages/Blogs-Pages/Blogs";
 import { CreateBlog_page } from "./pages/Blogs-Pages/CreateBlog_page";
 import { ExitProvider } from "./contexts/ExitContext";
-import { Register } from "./components/Register";
-import Login from "./components/Login";
+import { Register_page } from "./pages/Register_page";
+import { Login_page } from "./pages/Login_page";
 import BlogPage from "./components/Blogs/BlogPage";
 import EditBlogPage from "./components/Blogs/EditBlogPage";
 
@@ -26,7 +26,7 @@ function App() {
   return (
     
        <AuthProvider>
-      <div className="flex flex-col min-h-screen bg-gray-900 text-black">
+      <div className="app-background flex min-h-screen flex-col text-black">
         <Routes>
           <Route
             path="/"
@@ -36,9 +36,8 @@ function App() {
               </>
             }
           />
-          {/* <Route path="/Register_page" element={<Register_page />} /> */}
-          <Route path="/Register" element={<Register />} />
-          <Route path="/Login" element={<Login/>} />
+          <Route path="/Register" element={<Register_page />} />
+          <Route path="/Login" element={<Login_page />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/editBlog/:id" element={<EditBlogPage />} />
 

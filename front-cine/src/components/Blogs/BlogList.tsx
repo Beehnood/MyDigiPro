@@ -41,8 +41,8 @@ export default function BlogList() {
   }
 
   return (
-    <section className="bg-orange-100 text-black pl-32 p-8 w-full min-h-screen">
-      <div className="flex items-center justify-center gap-12 text-black mb-8">
+    <section className="bg-black/35 text-black pl-32 p-8 w-full min-h-screen">
+      <div className="flex items-center justify-center gap-12 text-orange-100 mb-8">
         <h1 className="text-3xl font-bold">Les derniers articles de blogs</h1>
 
         <Link to="/createBlog_page">
@@ -61,7 +61,7 @@ export default function BlogList() {
           .map((post) => (
             <article
               key={post.id}
-              className="bg-orange-100 flex w-full gap-8 border-b rounded-lg p-6"
+              className="bg-orange-100/95 flex w-full gap-8 border-b rounded-lg p-6"
             >
               <div className="relative w-150 ">
                 <h2 className="text-2xl truncate font-semibold mb-2">
