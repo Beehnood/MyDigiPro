@@ -8,7 +8,7 @@ import { FilmsPopular } from '../components/Films/FilmsPopular';
 
 export const Home = () => {
   return (
-    <MainLayout>
+    <MainLayout >
       <FilmsNowPlaying />
       <FilmsPopular />
       <BlogSection />
