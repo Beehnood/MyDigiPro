@@ -48,7 +48,7 @@ function BlogPage() {
     try {
       await BlogService.deleteById(Number(id));
       alert("Article supprimé avec succès");
-      navigate("/blogList");
+      navigate("/blogs");
     } catch (err) {
       console.error("Erreur lors de la suppression : ", err);
       alert("Échec de la suppression de l'article");

@@ -1,5 +1,6 @@
 import ButtonRouge from "../Buttons/ButtonRouge"
 import React from "react";
+import { Link } from "react-router-dom";
 
 
 export const BlogSection = () => {
@@ -29,9 +30,9 @@ export const BlogSection = () => {
           </div>
            <span className="my-6"><ButtonRouge/></span>
         </div>
-          </div>
+      </div>
         <div className="mt-8 text-center">
-          <a href="./blogList" className="text-[#8B0000] text-xl font-bold hover:text-yellow-400 transition-colors">TOUS LES ARTICLES DES BLOGS →</a>
+          <Link to="/blogs" className="text-[#8B0000] text-xl font-bold hover:text-yellow-400 transition-colors">TOUS LES ARTICLES DES BLOGS →</Link>
         </div>
       </div>
     </section>

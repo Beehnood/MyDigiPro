@@ -4,13 +4,14 @@ import ContactModal from "./ContactModal"; // ← nouveau composant
 
 export const Footer = () => {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const assetBaseUrl = import.meta.env.BASE_URL;
 
   return (
     <>
       <footer className="bg-black w-full h-60 text-center text-white px-12 py-12">
         <div className="max-w-7xl mx-auto px-6 flex justify-between gap-8 items-center">
           <div className="w-36 h-36 col-span-1 items-center">
-            <img src="../public/Logo-blanc.png" alt="" />
+            <img src={`${assetBaseUrl}Logo-blanc.png`} alt="CineSpin" />
           </div>
 
           {/* Col 1 */}

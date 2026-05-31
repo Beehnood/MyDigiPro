@@ -25,6 +25,7 @@ export default function Randomizer() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const assetBaseUrl = import.meta.env.BASE_URL;
 
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
@@ -61,7 +62,7 @@ export default function Randomizer() {
       <button type="button" onClick={handleOpen} aria-label="Ouvrir le randomizer">
         <img
           className="w-8 h-6"
-          src="../public/randomize.png"
+          src={`${assetBaseUrl}randomize.png`}
           alt=""
         />
       </button>

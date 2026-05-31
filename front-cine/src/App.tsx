@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 import "./index.css";
 
 import { AuthProvider } from "./contexts/AuthContext";
@@ -36,6 +36,13 @@ function App() {
           <Route path="/login" element={<Login_page />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/contact" element={<ContactPage />} />
+
+          {/* Compatibilité anciennes URLs */}
+          <Route path="/Register" element={<Navigate to="/register" replace />} />
+          <Route path="/Login" element={<Navigate to="/login" replace />} />
+          <Route path="/BlogList" element={<Navigate to="/blogs" replace />} />
+          <Route path="/blogList" element={<Navigate to="/blogs" replace />} />
+          <Route path="/createBlog_page" element={<Navigate to="/create-blog" replace />} />
 
           {/* Blogs */}
           <Route path="/blogs" element={<BlogsList_page />} />

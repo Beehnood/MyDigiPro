@@ -45,7 +45,7 @@ export default function BlogList() {
       <div className="flex items-center justify-center gap-12 text-orange-100 mb-8">
         <h1 className="text-3xl font-bold">Les derniers articles de blogs</h1>
 
-        <Link to="/createBlog_page">
+        <Link to="/create-blog">
           <button className="bg-[#8B0000] text-white tracking-wider w-28 text-md px-4 rounded-full hover:bg-blue-800 transition-colors">
             Créer Un Blog
           </button>

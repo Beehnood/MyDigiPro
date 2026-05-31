@@ -87,7 +87,7 @@ function EditBlogPage() {
       });
 
       alert("Blog modifié avec succès !");
-      navigate(`/blogList`);
+      navigate("/blogs");
     } catch (err) {
       console.error("Erreur lors de la modification :", err);
       alert("Impossible de modifier le blog.");

@@ -120,7 +120,7 @@ const Login = ({ isPage = false }: LoginProps) => {
 
             <p className="mt-4 text-md tracking-wider text-center ">
               Pas encore de compte ?{" "}
-              <Link className="text-blue-600 hover:underline" to="/Register">
+              <Link className="text-blue-600 hover:underline" to="/register">
                 S'inscrire
               </Link>
             </p>

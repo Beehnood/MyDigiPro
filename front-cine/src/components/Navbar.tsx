@@ -7,12 +7,15 @@ import { Register } from "./Register";
 export const Navbar = () => {
   const { token } = useAuth();
   const { logout } = useAuth();
+  const assetBaseUrl = import.meta.env.BASE_URL;
 
   return (
     <nav className="bg-black shadow-md  ">
       <div className="flex items-center justify-between py-4 mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className=" w-16 h-16 flex items-center ">
-          <img src="../public/Logo-rouge.png" alt="image-logo" />
+          <Link to="/">
+            <img src={`${assetBaseUrl}Logo-rouge.png`} alt="CineSpin" />
+          </Link>
         </div>
         <div className=" flex items-center  ">
           <ul className="flex text-3xl space-x-12 gap-6">
@@ -31,7 +34,7 @@ export const Navbar = () => {
                 </li>
                 <li className="flex text-orange-100 hover:text-yellow-400">
                   <Link
-                    to="/BlogList"
+                    to="/blogs"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
                   >
                     Blogs
@@ -46,12 +49,12 @@ export const Navbar = () => {
                   </Link>
                 </li>
                 <li className="flex text-orange-100 hover:text-yellow-400">
-                  <a
-                    href="#"
+                  <Link
+                    to="/collection"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
                   >
                     Boutique
-                  </a>
+                  </Link>
                 </li>
               </>
             )}
@@ -86,7 +89,7 @@ export const Navbar = () => {
               {/* Login */}
               <div className="flex items-center space-x-2">
                 <Link
-                  to="/UserProfile"
+                  to="/user-profile"
                   className="text-orange-100 hover:text-yellow-400 transition-colors"
                 >
                   <svg

@@ -99,7 +99,7 @@ export const CreateBlog = () => {
       await BlogService.create(fd);
 
       alert("Blog post created successfully!");
-      navigate("/blogList");
+      navigate("/blogs");
     } catch (err: any) {
       setError(
         err.response?.data?.error ||

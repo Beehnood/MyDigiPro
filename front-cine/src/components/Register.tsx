@@ -72,7 +72,7 @@ export const Register = ({ isPage = false }: RegisterProps) => {
         throw new Error(data.error || data.message || "Erreur lors de l'inscription");
       }
 
-      navigate("/Login");
+      navigate("/login");
     } catch (err: any) {
       setError(err.message || "Une erreur est survenue");
     }
