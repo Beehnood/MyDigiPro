@@ -1,168 +1,348 @@
-🎬 Projet CineSpin
-Plateforme de gestion de films et d’abonnements
+# CineSpin
 
-Une application web permettant aux utilisateurs de découvrir des films, gérer leur profil et abonnement, et d’explorer un catalogue enrichi par l’API TMDB (The Movie Database).
+CineSpin est une application web full-stack dédiée à la découverte de films. Le projet combine une API Symfony avec un frontend React pour permettre aux utilisateurs de consulter des films issus de TMDB, gérer leur compte, sauvegarder des films dans leur espace personnel et lire ou publier des articles de blog.
 
-📚 Table des matières
-Description
+## Aperçu du Projet
 
-Fonctionnalités
+Le dépôt contient deux applications principales :
 
-Technologies
+- `back-api` : API backend développée avec Symfony, API Platform, Doctrine et JWT.
+- `front-cine` : interface web développée avec React, TypeScript, Vite et Tailwind CSS.
 
-Prérequis
+Le backend centralise l’authentification, les utilisateurs, les blogs, les films sauvegardés et certains appels vers TMDB. Le frontend consomme l’API Symfony et utilise aussi TMDB directement pour certaines vues de catalogue.
 
-Installation
+## Fonctionnalités
 
-Utilisation
+### Authentification et Utilisateurs
 
-Structure du projet
+- Inscription utilisateur.
+- Connexion avec JWT.
+- Récupération du profil connecté.
+- Mise à jour et suppression d’utilisateurs.
+- Gestion des rôles utilisateur et administrateur.
 
-API Endpoints
+### Films et TMDB
 
+- Affichage des films populaires.
+- Affichage des films du moment.
+- Recherche et consultation de films par genre.
+- Détail d’un film : résumé, note, date de sortie, affiche, crédits et plateformes.
+- Randomizer de films.
+- Import de films TMDB en base de données via commandes Symfony.
 
-📝 Description
-CineSpin est une plateforme web de découverte cinématographique. L’objectif est de proposer un espace personnalisé où l’utilisateur peut consulter des films populaires, accéder à leur fiche détaillée (titre, résumé, date, notes, etc.) via l’API TMDB, tout en gérant son profil et son abonnement. Le backend est développé en Symfony 7 + API Platform, et le frontend utilise React avec TypeScript, Vite et Tailwind CSS pour une interface fluide et responsive.
+### Espace Utilisateur
 
-🚀 Fonctionnalités
-🔐 Gestion utilisateur
-Inscription et authentification via JWT
+- Ajout de films dans une collection personnelle.
+- Consultation des films sauvegardés.
+- Suppression d’un film sauvegardé.
+- Pages protégées côté frontend.
 
-Accès à un tableau de bord utilisateur
+### Blog
 
-Mise à jour des informations du profil
+- Liste des articles.
+- Page détail d’un article.
+- Création, modification et suppression d’articles.
+- Upload d’images et de vidéos dans `back-api/public/uploads/blogs`.
 
-💳 Abonnements
-Choix d’un plan d’abonnement (Basic, Premium, etc.)
+### Administration
 
-Interface de gestion des abonnements
+- Route réservée aux administrateurs.
+- Consultation, mise à jour et suppression des utilisateurs via l’API.
 
-Restriction d’accès selon l’abonnement (à intégrer)
+## Stack Technique
 
-🎥 Catalogue de films
-Consultation de films populaires (depuis TMDB)
+### Backend
 
-Affichage de la fiche complète d’un film (synopsis, note, date de sortie)
+- PHP `>= 8.2`
+- Symfony `7.2`
+- API Platform `4`
+- Doctrine ORM
+- Doctrine Migrations
+- LexikJWTAuthenticationBundle
+- Nelmio CORS
+- VichUploaderBundle
+- Predis / SncRedisBundle
+- PHPUnit
 
-Système de recherche par titre ou catégorie
+### Frontend
 
-Catégorisation automatique via les genres TMDB
+- React `18`
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+- Swiper
+- Lucide React
+- Vitest
+- Testing Library
 
-📦 Commandes CLI Symfony
-php bin/console app:import:films : importe les films populaires depuis TMDB
+### Services Externes
 
-php bin/console app:import:categories : importe les catégories de films
+- TMDB API v3
+- Base de données MySQL ou PostgreSQL selon la configuration locale
 
-php bin/console app:create:admin : crée un utilisateur administrateur
+## Structure du Dépôt
 
-🧰 Technologies
+```text
+.
+├── back-api/
+│   ├── bin/                    # Console Symfony et PHPUnit
+│   ├── config/                 # Configuration Symfony, sécurité, CORS, Doctrine
+│   ├── migrations/             # Migrations Doctrine
+│   ├── public/                 # Point d’entrée public et fichiers uploadés
+│   ├── src/
+│   │   ├── Command/            # Commandes d’import TMDB
+│   │   ├── Controller/         # Routes API
+│   │   ├── Entity/             # Entités Doctrine et ressources API
+│   │   ├── EventListener/      # Personnalisation JWT
+│   │   ├── OpenApi/            # Décorateurs documentation API
+│   │   ├── Repository/         # Repositories Doctrine
+│   │   ├── Service/            # Client TMDB
+│   │   └── Validator/          # Validateurs custom
+│   ├── templates/              # Templates Twig générés par Symfony
+│   └── tests/                  # Tests backend
+│
+├── front-cine/
+│   ├── public/                 # Images et assets publics
+│   ├── src/
+│   │   ├── assets/             # Assets React
+│   │   ├── components/         # Composants réutilisables
+│   │   ├── contexts/           # Contextes React
+│   │   ├── layouts/            # Layouts de pages
+│   │   ├── pages/              # Pages principales
+│   │   ├── service/            # Services HTTP
+│   │   ├── App.tsx             # Routes principales
+│   │   ├── config.ts           # URL de l’API backend
+│   │   └── main.tsx            # Entrée React
+│   └── coverage/               # Rapports de couverture Vitest
+│
+└── docker/
+    ├── compose.yml             # Stack PHP, MySQL et phpMyAdmin
+    └── Dockerfile
+```
+
+## Prérequis
+
+- PHP `>= 8.2`
+- Composer
+- Symfony CLI
+- Node.js `>= 18`
+- npm
+- MySQL 8 ou PostgreSQL 16
+- Une clé API TMDB
+
+## Configuration
+
+### Backend
+
+Créer un fichier d’environnement local :
+
+```bash
+cd back-api
+cp .env .env.local
+```
+
+Exemple de variables importantes :
+
+```dotenv
+APP_ENV=dev
+DATABASE_URL="mysql://root:password@127.0.0.1:3306/MyDigiPro?serverVersion=8.0.32&charset=utf8mb4"
+TMDB_API_KEY="votre_cle_tmdb"
+TMDB_BASE_URL="https://api.themoviedb.org/3"
+CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
+JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
+JWT_PASSPHRASE=votre_passphrase
+```
+
+Générer les clés JWT si elles ne sont pas encore présentes :
+
+```bash
+php bin/console lexik:jwt:generate-keypair
+```
+
+### Frontend
+
+L’URL de l’API Symfony est définie dans `front-cine/src/config.ts` :
+
+```ts
+export const API_BASE_URL = "http://localhost:8000/api";
+```
+
+Certaines pages utilisent TMDB directement. Créer ou vérifier le fichier `front-cine/.env` :
+
+```dotenv
+VITE_TMDB_API_KEY="votre_cle_tmdb"
+VITE_TMDB_BASE_URL="https://api.themoviedb.org/3"
+```
+
+Les valeurs sensibles doivent rester locales. Ne pas publier de vraies clés API, mots de passe ou passphrases JWT.
+
+## Installation
+
+### 1. Installer le Backend
+
+```bash
+cd back-api
+composer install
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
+```
+
+Optionnel, charger les fixtures :
+
+```bash
+php bin/console doctrine:fixtures:load
+```
+
+### 2. Installer le Frontend
+
+```bash
+cd front-cine
+npm install
+```
+
+## Lancement en Développement
+
+Lancer l’API Symfony :
+
+```bash
+cd back-api
+symfony server:start --port=8000
+```
+
+Lancer le frontend Vite :
+
+```bash
+cd front-cine
+npm run dev
+```
+
+URLs locales :
+
+- Frontend : `http://localhost:5173`
+- API : `http://localhost:8000`
+- Documentation API Platform : `http://localhost:8000/api/docs`
+
+## Commandes Utiles
+
+### Backend
+
+```bash
+cd back-api
+php bin/console cache:clear
+php bin/console doctrine:migrations:migrate
+php bin/console app:import:film 550
+php bin/console app:import:popular-films
+php bin/phpunit
+```
+
+### Frontend
+
+```bash
+cd front-cine
+npm run dev
+npm run build
+npm run preview
+npm run test
+npm run test:coverage
+npm run lint
+npm run typecheck
+```
+
+## Routes API Principales
+
+### Authentification
+
+- `POST /api/register` : créer un compte.
+- `POST /api/login` : se connecter et récupérer un token JWT.
+- `GET /api/me` : récupérer le profil de l’utilisateur connecté.
+
+### Films
+
+- `GET /api/movies/popular` : récupérer les films populaires.
+- `GET /api/movies/list` : récupérer une liste de films depuis TMDB.
+- `GET /api/movies/by-genre/{genreId}` : récupérer les films par genre.
+- `GET /api/movies/genres` : récupérer les genres TMDB.
+- `GET /api/movies/details/{id}` : récupérer le détail d’un film.
+- `GET /api/movies/{id}` : récupérer un film par son identifiant TMDB.
+- `GET /api/movie/{id}/providers` : récupérer les plateformes disponibles.
+- `GET /api/randomize` : récupérer un film aléatoire.
+- `GET /api/tmdb/config` : récupérer la configuration TMDB.
+
+### Films Utilisateur
+
+- `POST /api/user/films` : ajouter un film à une liste utilisateur.
+- `GET /api/user/films` : récupérer les films sauvegardés.
+- `DELETE /api/user/films/{tmdbId}/{type}` : supprimer un film sauvegardé.
+
+### Blog
+
+- `GET /api/blogs` : récupérer tous les articles.
+- `GET /api/blogs/{id}` : récupérer un article.
+- `POST /api/blogs` : créer un article.
+- `PUT /api/blogs/{id}` : modifier un article.
+- `PATCH /api/blogs/{id}` : modifier partiellement un article.
+- `POST /api/blogs/{id}` : modifier un article avec upload.
+- `DELETE /api/blogs/{id}` : supprimer un article.
+
+### Administration
+
+- `GET /api/users` : récupérer les utilisateurs.
+- `PUT /api/users/{id}` : modifier un utilisateur.
+- `DELETE /api/users/{id}` : supprimer un utilisateur.
+- `GET /api/admin/secret` : route réservée au rôle administrateur.
+
+## Tests et Qualité
+
 Backend :
-PHP 8.3+
 
-Symfony 7
-
-API Platform
-
-Doctrine ORM
-
-JWT Authentication
-
-MySQL
+```bash
+cd back-api
+php bin/phpunit
+```
 
 Frontend :
-React 18
 
-TypeScript
+```bash
+cd front-cine
+npm run test
+npm run test:coverage
+npm run lint
+npm run typecheck
+```
 
-Vite
+Le dossier `front-cine/coverage` contient les rapports de couverture générés par Vitest.
 
-Tailwind CSS
+## Docker
 
-Swiper.js (slider pour films)
+Une configuration Docker est disponible dans `docker/compose.yml`.
 
+Services exposés :
 
+- Application PHP : `http://localhost:8082`
+- phpMyAdmin : `http://localhost:8081`
+- MySQL : port `3306`
 
-API externe :
-TMDB API v3
+Lancement :
 
-Outils :
-Composer
+```bash
+docker compose -f docker/compose.yml up -d
+```
 
-Node.js / npm
+Symfony fournit aussi un fichier `back-api/compose.yaml` pour lancer une base PostgreSQL de développement si le projet est configuré avec PostgreSQL.
 
-Git / GitHub
+## Notes pour GitHub
 
-📦 Prérequis
-PHP 8.3 ou supérieur
+- Le README racine documente le projet complet : backend, frontend, configuration, tests et Docker.
+- Le fichier `front-cine/README.md` vient du template Vite et peut rester comme documentation spécifique au frontend ou être remplacé plus tard par une documentation React dédiée.
+- Les rapports `coverage` sont générés automatiquement et ne sont pas nécessaires pour comprendre l’installation du projet.
+- Les fichiers `.env.local` doivent rester privés.
 
-Composer
+## Sécurité
 
-Node.js ≥ 18
-
-npm ≥ 9
-
-MySQL
-
-Clé API TMDB (à obtenir depuis themoviedb.org)
-
-⚙️ Installation
-Backend
-git clone https://github.com/ton-utilisateur/cinespin.git
-cd cinespin
-
-# Installer les dépendances PHP
-composer install
-
-# Créer et configurer le fichier .env.local avec DB + TMDB_API_KEY
-cp .env .env.local
-
-# Créer la base de données
-php bin/console doctrine:database:create
-
-# Exécuter les migrations
-php bin/console doctrine:migrations:migrate
-
-# Lancer le serveur de dev
-symfony server:start
-
-Frontend
-cd frontend
-
-# Installer les dépendances
-npm install
-
-# Lancer le serveur de dev
-npm run dev
-
-🧪 Utilisation
-Accès à l’API via /api
-
-Interface frontend accessible via http://localhost:5173 (ou le port Vite configuré)
-
-Importer les films avec la commande :
-
-
-php bin/console app:import:films
-📁 Structure du projet
-├── backend/
-│   ├── src/
-│   │   └── Entity/, Controller/, Service/, Command/
-│   ├── config/
-│   └── ...
-├── frontend/
-│   ├── src/
-│   │   └── components/, pages/, services/
-│   └── ...
-
-
-📡 API Endpoints
-GET /api/films/populaires : Liste de films populaires
-
-GET /api/films/{id} : Détails d’un film
-
-GET /api/categories : Liste des catégories
-
-POST /api/register : Créer un compte utilisateur
-
-POST /api/login : Authentification utilisateur (JWT)
-
+- Ne jamais commiter de vraies clés TMDB.
+- Ne jamais commiter de passphrase JWT réelle.
+- Ne jamais commiter de mot de passe de base de données.
+- Restreindre `CORS_ALLOW_ORIGIN` aux domaines autorisés en production.
