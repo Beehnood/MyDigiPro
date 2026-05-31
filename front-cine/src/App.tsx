@@ -52,15 +52,7 @@ function App() {
           />
 
           {/* Films */}
-          <Route
-            path="/films"
-            element={
-              <PrivateRoute>
-                <Film_page />
-              </PrivateRoute>
-            }
-          />
-
+          <Route path="/films" element={<Film_page />} />
           {/* Compatibilité ancienne URL */}
           <Route
             path="/Film_page"
@@ -81,14 +73,7 @@ function App() {
           />
 
           {/* Collection */}
-          <Route
-            path="/collection"
-            element={
-              <PrivateRoute>
-                <Collection />
-              </PrivateRoute>
-            }
-          />
+          <Route path="/collection" element={<Collection />} />
 
           {/* Profil */}
           <Route
