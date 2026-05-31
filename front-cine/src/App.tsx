@@ -54,14 +54,14 @@ function App() {
           {/* Films */}
           <Route path="/films" element={<Film_page />} />
           {/* Compatibilité ancienne URL */}
-          <Route
+          {/* <Route
             path="/Film_page"
             element={
               <PrivateRoute>
                 <Film_page />
               </PrivateRoute>
             }
-          />
+          /> */}
 
           <Route
             path="/film/:id"

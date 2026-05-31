@@ -7,7 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <HashRouter>
+    <HashRouter basename="/MyDigitalPro">
       <AuthProvider>
         <App />
       </AuthProvider>
