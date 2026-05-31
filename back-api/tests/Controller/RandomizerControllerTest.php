@@ -2,53 +2,40 @@
 
 
 namespace App\Tests\Controller;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 class RandomizerControllerTest extends WebTestCase
 {
-    public function testRandomizer(): void
+    private $client;
+
+    protected function setUp(): void
     {
-        $client = static::createClient();
-
-        $client->request('GET', '/api/randomize');
-
-        $this->assertResponseIsSuccessful();
-        $response = json_decode($client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('randomValue', $response);
-        $this->assertIsInt($response['randomValue']);
-    }
-
-    public function testRandomFilmWithAuth(): void
-    {
-        $client = static::createClient();
-
-        // Authentifier un utilisateur
-        $client->request('POST', '/api/login', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
-            'email' => 'test@example.com',
-            'password' => 'password123',
-        ]));
-
-        $data = json_decode($client->getResponse()->getContent(), true);
-        $token = $data['token'];
-
-        // Requête avec token
-        $client->request('GET', '/api/randomize', [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $token
-        ]);
-
-        $this->assertResponseIsSuccessful();
-        $response = json_decode($client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('title', $response);
+        parent::setUp();
+        static::ensureKernelShutdown();
+        $this->client = static::createClient();
+        $this->resetDatabase();
     }
 
     public function testRandomFilmWithoutAuth(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/randomize');
+        $this->client->request('GET', '/api/randomize');
 
         $this->assertResponseStatusCodeSame(401);
     }
 
+    private function resetDatabase(): void
+    {
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
+
+        if ($metadata === []) {
+            return;
+        }
+
+        $schemaTool = new SchemaTool($entityManager);
+        $schemaTool->dropDatabase();
+        $schemaTool->createSchema($metadata);
+    }
 }

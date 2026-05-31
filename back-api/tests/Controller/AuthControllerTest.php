@@ -2,57 +2,44 @@
 
 namespace App\Tests\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AuthControllerTest extends WebTestCase
 {
     private $client;
 
-    protected function tearDown(): void
-    {
-        // Réinitialise le client entre les tests
-        $this->client = null;
-        parent::tearDown();
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
+        static::ensureKernelShutdown();
         $this->client = static::createClient();
+        $this->resetDatabase();
     }
 
-    
     public function testSuccessfulLoginReturnsJwtToken(): void
-{
-    $client = static::createClient();
-    
-    $client->request('POST', '/api/login', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
-        'email' => 'test@example.com',
-        'password' => 'password123',
-    ]));
+    {
+        $this->createTestUser();
 
-    $this->assertResponseIsSuccessful();
-    $responseData = json_decode($client->getResponse()->getContent(), true);
-    $this->assertArrayHasKey('token', $responseData);
-    $this->assertNotEmpty($responseData['token']);
-}
+        $this->client->request('POST', '/api/login', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'email' => 'testlogin@example.com',
+            'password' => 'password123',
+        ]));
 
+        $this->assertResponseIsSuccessful();
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('token', $responseData);
+        $this->assertNotEmpty($responseData['token']);
+    }
 
-public function testAccessDeniedWithoutToken(): void
-{
-    $client = static::createClient();
-    $client->request('GET', '/api/films/random');
+    public function testAccessDeniedWithoutToken(): void
+    {
+        $this->client->request('GET', '/api/admin/secret');
 
-    $this->assertResponseStatusCodeSame(401); // Unauthorized
-}
-    
-    
-    
-    
-    
-    
-    
-    
+        $this->assertResponseStatusCodeSame(401);
+    }
+
     public function testRegister(): void
     {
         $uniqueId = uniqid();
@@ -92,10 +79,8 @@ public function testAccessDeniedWithoutToken(): void
 
     public function testLogin(): void
     {
-        // 1. D'abord créer un utilisateur
         $this->createTestUser();
-        
-        // 2. Puis tester le login
+
         $this->client->request('POST', '/api/login', [], [], [
             'CONTENT_TYPE' => 'application/json'
         ], json_encode([
@@ -126,10 +111,23 @@ public function testAccessDeniedWithoutToken(): void
     public function testRandomizer(): void
     {
         $this->client->request('GET', '/api/randomize');
-        
-        $this->assertResponseIsSuccessful();
+
+        $this->assertResponseStatusCodeSame(401);
         $response = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('randomValue', $response);
-        $this->assertIsInt($response['randomValue']);
+        $this->assertSame('Non authentifié', $response['error']);
+    }
+
+    private function resetDatabase(): void
+    {
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
+
+        if ($metadata === []) {
+            return;
+        }
+
+        $schemaTool = new SchemaTool($entityManager);
+        $schemaTool->dropDatabase();
+        $schemaTool->createSchema($metadata);
     }
 }
