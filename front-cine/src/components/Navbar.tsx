@@ -19,20 +19,15 @@ export const Navbar = () => {
             {token && (
               <>
                 <li className="flex text-orange-100 hover:text-yellow-400">
-                  <a
-                    href="/"
-                    className="text-orange-100 hover:text-yellow-400 transition-colors "
-                  >
-                    Accueil
-                  </a>
+                  <Link to="/">Accueil</Link>
                 </li>
                 <li className="flex text-orange-100 hover:text-yellow-400">
-                  <a
-                    href="/Collection"
+                  <Link
+                    to="/collection"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
                   >
                     Collection
-                  </a>
+                  </Link>
                 </li>
                 <li className="flex text-orange-100 hover:text-yellow-400">
                   <Link
@@ -43,12 +38,12 @@ export const Navbar = () => {
                   </Link>
                 </li>
                 <li className="flex text-orange-100 hover:text-yellow-400">
-                  <a
-                    href="/Film_page"
+                  <Link
+                    to="/films"
                     className="text-orange-100 hover:text-yellow-400 transition-colors"
                   >
                     Films
-                  </a>
+                  </Link>
                 </li>
                 <li className="flex text-orange-100 hover:text-yellow-400">
                   <a
@@ -136,11 +131,11 @@ export const Navbar = () => {
             <>
               <div>
                 {/* Inscription */}
-                <Register/>
+                <Register />
               </div>
               <div>
                 {/* Login-btn */}
-                <Login/>
+                <Login />
               </div>
             </>
           )}
