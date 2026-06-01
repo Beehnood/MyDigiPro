@@ -99,10 +99,12 @@ const Login = ({ isPage = false }: LoginProps) => {
             {/* Bouton fermer en haut à droite */}
             {!isPage && (
               <button
+                type="button"
                 onClick={handleClose}
-                className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                aria-label="Fermer la fenêtre de connexion"
+                className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#8B0000] text-xl font-bold leading-none text-white shadow-md transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-orange-100"
               >
-                X
+                ×
               </button>
             )}
 
