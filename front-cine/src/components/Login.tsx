@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
+import { API_BASE_URL } from "../config";
 
 type LoginProps = {
   isPage?: boolean;
@@ -22,8 +23,18 @@ const Login = ({ isPage = false }: LoginProps) => {
     e.preventDefault();
     setError(null);
 
+    if (!email.trim()) {
+      setError("Veuillez saisir votre adresse e-mail.");
+      return;
+    }
+
+    if (!password) {
+      setError("Veuillez saisir votre mot de passe.");
+      return;
+    }
+
     try {
-      const response = await fetch("http://localhost:8000/api/login", {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,17 +42,35 @@ const Login = ({ isPage = false }: LoginProps) => {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error("Identifiants incorrects");
+        if (response.status === 401) {
+          throw new Error("Adresse e-mail ou mot de passe incorrect.");
+        }
+
+        if (response.status === 429) {
+          throw new Error("Trop de tentatives. Réessayez dans quelques minutes.");
+        }
+
+        throw new Error(
+          data.error || data.message || "Connexion impossible pour le moment.",
+        );
       }
 
-      const data = await response.json();
+      if (!data.token) {
+        throw new Error("Connexion impossible : aucun token reçu du serveur.");
+      }
+
       login(data.token);
       localStorage.setItem("token", data.token);
 
       navigate("/"); // Redirection après connexion
     } catch (err: any) {
-      setError(err.message || "Erreur de connexion");
+      setError(
+        err.message ||
+          "Impossible de se connecter. Vérifiez votre connexion puis réessayez.",
+      );
     }
   };
 

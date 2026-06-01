@@ -46,16 +46,33 @@ class AuthController extends AbstractController
     ): JsonResponse {
 
         $data = json_decode($request->getContent(), true);
-        if (!$data || !isset($data['email'], $data['password'], $data['username'], $data['firstName'], $data['lastName'], $data['country'], $data['city'])) {
-            return new JsonResponse(['error' => 'Données manquantes'], 400);
+        if (!is_array($data)) {
+            return new JsonResponse(['error' => 'Le formulaire envoyé est invalide. Vérifiez les informations saisies.'], 400);
+        }
+
+        $requiredFields = [
+            'email' => 'adresse e-mail',
+            'password' => 'mot de passe',
+            'username' => 'nom d’utilisateur',
+            'firstName' => 'prénom',
+            'lastName' => 'nom',
+            'country' => 'pays',
+            'city' => 'ville',
+        ];
+
+        foreach ($requiredFields as $field => $label) {
+            if (!isset($data[$field]) || trim((string) $data[$field]) === '') {
+                return new JsonResponse(['error' => sprintf('Le champ "%s" est obligatoire.', $label)], 400);
+            }
         }
 
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            return new JsonResponse(['error' => 'Adresse e-mail invalide'], 400);
+            return new JsonResponse(['error' => 'Adresse e-mail invalide. Exemple attendu : nom@example.com.'], 400);
         }
 
-        if (strlen($data['password']) < 6) {
-            return new JsonResponse(['error' => 'Le mot de passe doit contenir au moins 6 caractères'], 400);
+        $passwordError = $this->validatePassword((string) $data['password']);
+        if ($passwordError !== null) {
+            return new JsonResponse(['error' => $passwordError], 400);
         }
 
         $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
@@ -90,6 +107,26 @@ class AuthController extends AbstractController
             return new JsonResponse(['error' => 'Erreur lors de l\'inscription : ' . $e->getMessage()], 500);
         }
     }
-    
+
+    private function validatePassword(string $password): ?string
+    {
+        if (strlen($password) < 8) {
+            return 'Le mot de passe doit contenir au moins 8 caractères.';
+        }
+
+        if (!preg_match('/[a-z]/', $password)) {
+            return 'Le mot de passe doit contenir au moins une lettre minuscule.';
+        }
+
+        if (!preg_match('/[A-Z]/', $password)) {
+            return 'Le mot de passe doit contenir au moins une lettre majuscule.';
+        }
+
+        if (!preg_match('/\d/', $password)) {
+            return 'Le mot de passe doit contenir au moins un chiffre.';
+        }
+
+        return null;
+    }
 
 }

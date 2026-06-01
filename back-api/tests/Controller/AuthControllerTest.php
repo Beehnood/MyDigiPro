@@ -24,7 +24,7 @@ class AuthControllerTest extends WebTestCase
 
         $this->client->request('POST', '/api/login', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
             'email' => 'testlogin@example.com',
-            'password' => 'password123',
+            'password' => 'Password123',
         ]));
 
         $this->assertResponseIsSuccessful();
@@ -48,7 +48,7 @@ class AuthControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json'
         ], json_encode([
             'email' => "test{$uniqueId}@example.com",
-            'password' => 'password123',
+            'password' => 'Password123',
             'username' => "user{$uniqueId}",
             'firstName' => 'Test',
             'lastName' => 'User',
@@ -85,7 +85,7 @@ class AuthControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json'
         ], json_encode([
             'email' => 'testlogin@example.com',
-            'password' => 'password123'
+            'password' => 'Password123'
         ]));
 
         $this->assertResponseIsSuccessful();
@@ -99,7 +99,7 @@ class AuthControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json'
         ], json_encode([
             'email' => 'testlogin@example.com',
-            'password' => 'password123',
+            'password' => 'Password123',
             'username' => 'testloginuser',
             'firstName' => 'Test',
             'lastName' => 'Login',

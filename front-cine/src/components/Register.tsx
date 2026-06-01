@@ -7,6 +7,33 @@ type RegisterProps = {
   isPage?: boolean;
 };
 
+const passwordRules = [
+  "8 caractères minimum",
+  "1 lettre majuscule",
+  "1 lettre minuscule",
+  "1 chiffre",
+];
+
+const getPasswordError = (password: string) => {
+  if (password.length < 8) {
+    return "Le mot de passe doit contenir au moins 8 caractères.";
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return "Le mot de passe doit contenir au moins une lettre majuscule.";
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return "Le mot de passe doit contenir au moins une lettre minuscule.";
+  }
+
+  if (!/\d/.test(password)) {
+    return "Le mot de passe doit contenir au moins un chiffre.";
+  }
+
+  return null;
+};
+
 export const Register = ({ isPage = false }: RegisterProps) => {
   const navigate = useNavigate();
 
@@ -20,6 +47,17 @@ export const Register = ({ isPage = false }: RegisterProps) => {
     city: "",
     interests: ["", "", ""], // 3 genres choisis
   });
+
+  const fallbackGenres = [
+    { id: 28, name: "Action" },
+    { id: 35, name: "Comédie" },
+    { id: 18, name: "Drame" },
+    { id: 27, name: "Horreur" },
+    { id: 878, name: "Science-Fiction" },
+    { id: 10749, name: "Romance" },
+    { id: 16, name: "Animation" },
+    { id: 99, name: "Documentaire" },
+  ];
 
   const [error, setError] = useState<string | null>(null);
   const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
@@ -37,6 +75,7 @@ export const Register = ({ isPage = false }: RegisterProps) => {
         setGenres(data);
       } catch (err) {
         console.error("❌ Erreur:", err);
+        setGenres(fallbackGenres);
       }
     };
 
@@ -57,6 +96,12 @@ export const Register = ({ isPage = false }: RegisterProps) => {
     e.preventDefault();
     setError(null);
 
+    const passwordError = getPasswordError(form.password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
@@ -69,12 +114,17 @@ export const Register = ({ isPage = false }: RegisterProps) => {
 
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(data.error || data.message || "Erreur lors de l'inscription");
+        throw new Error(
+          data.error || data.message || "Erreur lors de l'inscription",
+        );
       }
 
       navigate("/login");
     } catch (err: any) {
-      setError(err.message || "Une erreur est survenue");
+      setError(
+        err.message ||
+          "Impossible de créer le compte pour le moment. Vérifiez votre connexion puis réessayez.",
+      );
     }
   };
 
@@ -92,11 +142,9 @@ export const Register = ({ isPage = false }: RegisterProps) => {
 
       {/* Modale */}
       {isOpen && (
-        <div
-          className="fixed inset-0 flex items-center justify-center  bg-opacity-50 backdrop-blur-sm z-50"
-        >
+        <div className="fixed inset-0 flex items-center justify-center  bg-opacity-50 backdrop-blur-sm z-50">
           <div
-            className="bg-orange-100 w-full max-w-2xl p-8 rounded-2xl shadow-md space-y-4 relative"
+            className="bg-orange-100 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 rounded-2xl shadow-md space-y-4 relative"
             onClick={(e) => e.stopPropagation()} // empêcher fermeture quand on clique dans la modale
           >
             <h2 className="text-2xl font-bold mb-4 text-[#242424] text-center">
@@ -132,6 +180,11 @@ export const Register = ({ isPage = false }: RegisterProps) => {
                       className="w-full px-3 py-2 border border-gray-300 bg-orange-50 text-[#242424] rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder={`Entrez votre ${label.toLowerCase()}`}
                     />
+                    {name === "password" && (
+                      <p className="mt-1 text-xs leading-5 text-gray-700">
+                        Mot de passe requis : {passwordRules.join(", ")}.
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
