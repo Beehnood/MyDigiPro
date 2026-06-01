@@ -121,6 +121,13 @@ export const Register = ({ isPage = false }: RegisterProps) => {
 
       navigate("/login");
     } catch (err: any) {
+      if (err instanceof TypeError) {
+        setError(
+          "Impossible de joindre le serveur d’inscription. En local, lancez le backend Symfony sur http://localhost:8000. Sur GitHub Pages, configurez VITE_API_BASE_URL avec l’URL de votre API en ligne.",
+        );
+        return;
+      }
+
       setError(
         err.message ||
           "Impossible de créer le compte pour le moment. Vérifiez votre connexion puis réessayez.",

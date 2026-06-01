@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
 type User = {
   email: string;
@@ -27,7 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 useEffect(() => {
   if (token) {
-    fetch("http://localhost:8000/api/me", {
+    fetch(`${API_BASE_URL}/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {

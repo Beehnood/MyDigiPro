@@ -67,6 +67,13 @@ const Login = ({ isPage = false }: LoginProps) => {
 
       navigate("/"); // Redirection après connexion
     } catch (err: any) {
+      if (err instanceof TypeError) {
+        setError(
+          "Impossible de joindre le serveur de connexion. En local, lancez le backend Symfony sur http://localhost:8000. Sur GitHub Pages, configurez VITE_API_BASE_URL avec l’URL de votre API en ligne.",
+        );
+        return;
+      }
+
       setError(
         err.message ||
           "Impossible de se connecter. Vérifiez votre connexion puis réessayez.",
