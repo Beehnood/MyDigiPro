@@ -1,5 +1,7 @@
 FROM dunglas/frankenphp:php8.4
 
+ENV APP_DEBUG=0
+ENV APP_ENV=prod
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
