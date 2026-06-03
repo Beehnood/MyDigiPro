@@ -1,4 +1,6 @@
-FROM dunglas/frankenphp:php8.3
+FROM dunglas/frankenphp:php8.4
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
 
@@ -19,6 +21,4 @@ COPY . .
 
 RUN composer dump-autoload --optimize
 
-ENV SERVER_NAME=:${PORT}
-
-CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+CMD ["sh", "-c", "SERVER_NAME=:${PORT:-8080} frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile"]
