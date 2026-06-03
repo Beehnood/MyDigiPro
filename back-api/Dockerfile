@@ -25,4 +25,4 @@ RUN APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear
 
 RUN composer dump-autoload --optimize
 
-CMD ["sh", "-c", "SERVER_NAME=:${PORT:-8080} frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile"]
+CMD ["sh", "-c", "APP_ENV=prod APP_DEBUG=0 SERVER_NAME=:${PORT:-8080} frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile"]
