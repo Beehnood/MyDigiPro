@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "installCommand": "cd front-cine && npm ci",
+  "buildCommand": "cd front-cine && npm run build",
+  "outputDirectory": "front-cine/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
