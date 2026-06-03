@@ -15,9 +15,11 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY composer.json composer.lock ./
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN APP_ENV=prod composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 COPY . .
+
+RUN APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear
 
 RUN composer dump-autoload --optimize
 
