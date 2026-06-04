@@ -15,16 +15,3 @@ services:
       $httpClient: '@Symfony\Contracts\HttpClient\HttpClientInterface'
       $tmdbApiKey: '%env(TMDB_API_KEY)%'
       $tmdbBaseUrl: '%env(TMDB_BASE_URL)%'
-
-  session.redis_connection:
-    class: Redis
-    calls:
-      - method: connect
-        arguments: ['localhost', 6379]
-
-  session.handler.redis:
-    class: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
-    arguments:
-      - '@session.redis_connection'
-
-
