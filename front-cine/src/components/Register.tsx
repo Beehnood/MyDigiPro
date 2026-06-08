@@ -149,9 +149,9 @@ export const Register = ({ isPage = false }: RegisterProps) => {
 
       {/* Modale */}
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center  bg-opacity-50 backdrop-blur-sm z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50 p-4">
           <div
-            className="bg-orange-100 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 rounded-2xl shadow-md space-y-4 relative"
+            className="bg-orange-100 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-8 rounded-2xl shadow-md space-y-4 relative"
             onClick={(e) => e.stopPropagation()} // empêcher fermeture quand on clique dans la modale
           >
             <h2 className="text-2xl font-bold mb-4 text-[#242424] text-center">
@@ -159,7 +159,7 @@ export const Register = ({ isPage = false }: RegisterProps) => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {/* Inputs texte */}
                 {[
                   ["Prénom", "firstName"],
@@ -222,7 +222,7 @@ export const Register = ({ isPage = false }: RegisterProps) => {
               </div>
 
               {/* Boutons */}
-              <div className="flex gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <button
                   type="submit"
                   className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"

@@ -72,9 +72,9 @@ function BlogPage() {
   }
 
   return (
-    <section className="bg-black/35 w-full min-h-screen p-8">
-      <div className="container bg-orange-100/95 p-12 rounded-lg mx-auto">
-        <h1 className="font-extrabold italic text-black text-6xl mb-6">
+    <section className="bg-black/35 w-full min-h-screen p-4 sm:p-8">
+      <div className="container bg-orange-100/95 p-4 sm:p-8 md:p-12 rounded-lg mx-auto">
+        <h1 className="font-extrabold italic text-black text-3xl sm:text-5xl md:text-6xl mb-6 break-words">
           "{blog?.title}"
         </h1>
         
@@ -111,10 +111,10 @@ function BlogPage() {
             })()}
           </div>
         )}
-         <p className="font-light bg-amber-400 text-black mb-6">{blog?.content}</p>
+         <p className="font-light bg-amber-400 text-black mb-6 p-3">{blog?.content}</p>
          {user && user.id === blog.user.id && (
         
-        <div className="flex gap-4 mt-6">
+        <div className="flex flex-col gap-4 mt-6 sm:flex-row">
           <Link to={`/editBlog/${blog.id}`}>
             <Button variant="warning">Modifier</Button>
           </Link>

@@ -41,9 +41,11 @@ export default function BlogList() {
   }
 
   return (
-    <section className="bg-black/35 text-black pl-32 p-8 w-full min-h-screen">
-      <div className="flex items-center justify-center gap-12 text-orange-100 mb-8">
-        <h1 className="text-3xl font-bold">Les derniers articles de blogs</h1>
+    <section className="bg-black/35 text-black p-4 sm:p-8 w-full min-h-screen">
+      <div className="flex flex-col items-center justify-center gap-4 text-orange-100 mb-8 sm:flex-row sm:gap-12">
+        <h1 className="text-center text-2xl font-bold sm:text-3xl">
+          Les derniers articles de blogs
+        </h1>
 
         <Link to="/create-blog">
           <button className="bg-[#8B0000] text-white tracking-wider w-28 text-md px-4 rounded-full hover:bg-blue-800 transition-colors">
@@ -61,29 +63,29 @@ export default function BlogList() {
           .map((post) => (
             <article
               key={post.id}
-              className="bg-orange-100/95 flex w-full gap-8 border-b rounded-lg p-6"
+              className="bg-orange-100/95 flex w-full flex-col gap-6 border-b rounded-lg p-4 sm:flex-row sm:p-6"
             >
-              <div className="relative w-150 ">
+              <div className="flex flex-1 flex-col">
                 <h2 className="text-2xl truncate font-semibold mb-2">
                   {post.title}
                 </h2>
-                <p className="text-gray-600 text-wrap truncate mb-8">
+                <p className="text-gray-600 line-clamp-3 mb-6">
                   {post.content}
                 </p>
                 <Link
-                  className="absolute bottom-0 left-0"
+                  className="mt-auto"
                   to={`/blog/${post.id}`}
                 >
                   <Button variant="danger">En Savoir Plus</Button>
                 </Link>
               </div>
 
-              <div className="w-50">
+              <div className="w-full sm:w-52">
                 {post.image && (
                   <img
                     src={`${API_ORIGIN}/uploads/blogs/${post.image}`}
                     alt={post.title}
-                    className="w-50 h-48 object-cover rounded-lg mb-4"
+                    className="w-full h-48 object-cover rounded-lg mb-4"
                   />
                 )}
                 {!post.image && post.video && (
@@ -94,7 +96,7 @@ export default function BlogList() {
                         <>
                           <video
                             src={videoUrl}
-                            className="w-50 h-48 object-cover rounded-lg"
+                            className="w-full h-48 object-cover rounded-lg"
                             muted
                             controls
                           />

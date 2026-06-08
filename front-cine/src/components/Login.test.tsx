@@ -39,6 +39,14 @@ describe("Login", () => {
     expect(screen.getByLabelText(/mot de passe/i)).toBeInTheDocument();
   });
 
+  it("affiche le bouton fermer sur la page login", () => {
+    render(<Login isPage />, { wrapper: MemoryRouter });
+
+    fireEvent.click(screen.getByRole("button", { name: /fermer/i }));
+
+    expect(mockedNavigate).toHaveBeenCalledWith("/");
+  });
+
   it("envoie le formulaire et stocke le token", async () => {
     render(<Login />, { wrapper: MemoryRouter });
     fireEvent.click(screen.getByRole("button", { name: /connexion/i }));

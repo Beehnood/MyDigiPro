@@ -8,15 +8,15 @@ export const Footer = () => {
 
   return (
     <>
-      <footer className="bg-black w-full h-60 text-center text-white px-12 py-12">
-        <div className="max-w-7xl mx-auto px-6 flex justify-between gap-8 items-center">
-          <div className="w-36 h-36 col-span-1 items-center">
+      <footer className="bg-black w-full text-center text-white px-4 py-8 md:px-12 md:py-12">
+        <div className="max-w-7xl mx-auto flex flex-col items-center justify-between gap-8 px-4 md:flex-row md:px-6">
+          <div className="w-24 h-24 items-center md:w-36 md:h-36">
             <img src={`${assetBaseUrl}Logo-blanc.png`} alt="CineSpin" />
           </div>
 
           {/* Col 1 */}
-          <div className="flex md:flex-row space-y-4 md:space-y-0 md:space-x-8 mb-4 md:mb-0">
-            <ul className="text-white text-2xl">
+          <div className="mb-4 md:mb-0">
+            <ul className="space-y-3 text-white text-lg sm:text-xl md:text-2xl">
               <li>
                 <button
                   onClick={() =>
@@ -36,8 +36,8 @@ export const Footer = () => {
           </div>
 
           {/* Col 2 */}
-          <div className="grid-span-3 md:flex-row space-y-4 md:space-y-0 md:space-x-8 mb-4 md:mb-0">
-            <ul className="text-white text-2xl">
+          <div className="mb-4 md:mb-0">
+            <ul className="space-y-3 text-white text-lg sm:text-xl md:text-2xl">
               <li>
                 <a href="#" className="hover:text-yellow-400 transition-colors">
                   MENTION LÉGALE

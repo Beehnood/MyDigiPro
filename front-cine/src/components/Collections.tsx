@@ -59,8 +59,14 @@ const Collection: React.FC = () => {
         <div className="w-full max-w-7xl mx-auto px-6" key={genre}>
           <h2 className="text-xl sm:text-2xl font-bold mb-4">{genre}</h2>
           <Swiper
-         slidesPerView={9}
-          spaceBetween={12}
+            slidesPerView={2}
+            spaceBetween={12}
+            breakpoints={{
+              640: { slidesPerView: 3 },
+              768: { slidesPerView: 4 },
+              1024: { slidesPerView: 6 },
+              1280: { slidesPerView: 9 },
+            }}
             navigation
             pagination={{ clickable: true }}
             scrollbar={{ draggable: true }}
@@ -71,7 +77,6 @@ const Collection: React.FC = () => {
               <SwiperSlide
                 key={film.id}
                  onClick={() => navigate(`/film/${film.id}`)}
-                className="w-[140px] sm:w-[180px] md:w-[220px]"
               >
                 <div className="rounded-lg  overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300">
                   <img
@@ -81,7 +86,7 @@ const Collection: React.FC = () => {
                         : "/placeholder.jpg"
                     }
                     alt={film.title}
-                    className="w-full h-[240px] object-cover"
+                    className="w-full h-[220px] sm:h-[240px] object-cover"
                   />
                 </div>
                 <p className="mt-2 text-sm text-center line-clamp-1">

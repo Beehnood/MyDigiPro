@@ -99,8 +99,14 @@ export const FilmsPopular= () => {
           Films Plus Populaires
         </h2>
         <Swiper
-         slidesPerView={9}
+          slidesPerView={2}
           spaceBetween={12}
+          breakpoints={{
+            640: { slidesPerView: 3 },
+            768: { slidesPerView: 4 },
+            1024: { slidesPerView: 6 },
+            1280: { slidesPerView: 9 },
+          }}
           navigation
           pagination={{ clickable: true }}
           scrollbar={{ draggable: true }}
@@ -127,10 +133,10 @@ export const FilmsPopular= () => {
                     className="w-full h-[240px] object-cover"
                   />
                 </div>
-                <p className="mt-2 text-2xl text-center text-white line-clamp-1">
+                <p className="mt-2 text-base sm:text-xl md:text-2xl text-center text-white line-clamp-1">
                   {filme.title}
                 </p>
-                <p className="text-xl text-gray-400 text-center">
+                <p className="text-sm sm:text-lg md:text-xl text-gray-400 text-center">
                   {new Date(filme.release_date).toLocaleDateString("fr-FR", {
                     year: "numeric",
                     month: "long",

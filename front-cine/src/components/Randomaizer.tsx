@@ -67,11 +67,11 @@ export default function Randomizer() {
         />
       </button>
       {isOpen && (
-        <div className="fixed antialiased inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="relative bg-zinc-900 text-white p-8 rounded-2xl w-[700px] max-w-full shadow-2xl border border-yellow-500/20">
+        <div className="fixed antialiased inset-0 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+          <div className="relative max-h-[90vh] overflow-y-auto bg-zinc-900 text-white p-4 sm:p-8 rounded-2xl w-full max-w-[700px] shadow-2xl border border-yellow-500/20">
             <div className="absolute -top-4 right-8 w-0 h-0 border-l-[20px] border-r-[20px] border-b-[20px] border-transparent border-b-zinc-900" />
 
-            <h2 className="text-3xl font-bold text-center mb-6 text-orange-100 drop-shadow-md">
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 text-orange-100 drop-shadow-md">
               Randomizer
             </h2>
 
@@ -137,7 +137,7 @@ export default function Randomizer() {
               )}
             </div>
             {/* BTNS */}
-            <div className="mt-8 flex justify-center gap-8 ">
+            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row sm:gap-8">
               <div className="flex items-center">
                 <button
                   onClick={randomize}
