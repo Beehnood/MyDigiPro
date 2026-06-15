@@ -76,7 +76,14 @@ export const Register = ({ isPage = false }: RegisterProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(isPage);
 
   const handleOpen = () => setIsOpen(true);
-  const handleClose = () => setIsOpen(false);
+  const handleClose = () => {
+    if (isPage) {
+      navigate("/login");
+      return;
+    }
+
+    setIsOpen(false);
+  };
 
   // Charger la liste des genres depuis le backend
   useEffect(() => {
@@ -257,15 +264,13 @@ export const Register = ({ isPage = false }: RegisterProps) => {
                 >
                   S'inscrire
                 </button>
-                {!isPage && (
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    className="flex-1 bg-yellow-400 text-black py-2 rounded hover:bg-red-700 hover:text-white transition-colors"
-                  >
-                    Fermer
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="flex-1 bg-yellow-400 text-black py-2 rounded hover:bg-red-700 hover:text-white transition-colors"
+                >
+                  Fermer
+                </button>
               </div>
 
               {error && <p className="text-red-600 text-sm">{error}</p>}
