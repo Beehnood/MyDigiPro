@@ -5,11 +5,7 @@ import { API_BASE_URL } from "../config";
 type User = {
   email: string;
   username: string;
-  firstName: string;
-  lastName: string;
-  country: string;
-  city: string;
-  interests: string;
+  interests: string | null;
 };
 
 type AuthContextType = {

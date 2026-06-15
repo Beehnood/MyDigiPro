@@ -7,6 +7,13 @@ type RegisterProps = {
   isPage?: boolean;
 };
 
+type RegisterForm = {
+  email: string;
+  password: string;
+  username: string;
+  interests: string[];
+};
+
 const passwordRules = [
   "8 caractères minimum",
   "1 lettre majuscule",
@@ -34,18 +41,23 @@ const getPasswordError = (password: string) => {
   return null;
 };
 
+const textFields: Array<{
+  label: string;
+  name: "username" | "email" | "password";
+}> = [
+  { label: "Nom d'utilisateur", name: "username" },
+  { label: "Email", name: "email" },
+  { label: "Mot de passe", name: "password" },
+];
+
 export const Register = ({ isPage = false }: RegisterProps) => {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState<any>({
+  const [form, setForm] = useState<RegisterForm>({
     email: "",
     password: "",
     username: "",
-    firstName: "",
-    lastName: "",
-    country: "",
-    city: "",
-    interests: ["", "", ""], // 3 genres choisis
+    interests: ["", "", ""],
   });
 
   const fallbackGenres = [
@@ -99,6 +111,17 @@ export const Register = ({ isPage = false }: RegisterProps) => {
     const passwordError = getPasswordError(form.password);
     if (passwordError) {
       setError(passwordError);
+      return;
+    }
+
+    const selectedInterests = form.interests.filter(Boolean);
+    if (selectedInterests.length !== 3) {
+      setError("Veuillez choisir 3 genres préférés.");
+      return;
+    }
+
+    if (new Set(selectedInterests).size !== 3) {
+      setError("Veuillez choisir 3 genres différents.");
       return;
     }
 
@@ -161,15 +184,7 @@ export const Register = ({ isPage = false }: RegisterProps) => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {/* Inputs texte */}
-                {[
-                  ["Prénom", "firstName"],
-                  ["Nom", "lastName"],
-                  ["Nom d'utilisateur", "username"],
-                  ["Pays", "country"],
-                  ["Ville", "city"],
-                  ["Email", "email"],
-                  ["Mot de passe", "password"],
-                ].map(([label, name]) => (
+                {textFields.map(({ label, name }) => (
                   <div key={name} className="col-span-1">
                     <label
                       className="block text-[#242424] font-medium mb-1"
@@ -178,7 +193,13 @@ export const Register = ({ isPage = false }: RegisterProps) => {
                       {label}
                     </label>
                     <input
-                      type={name === "password" ? "password" : "text"}
+                      type={
+                        name === "password"
+                          ? "password"
+                          : name === "email"
+                            ? "email"
+                            : "text"
+                      }
                       id={name}
                       name={name}
                       value={form[name]}
@@ -212,7 +233,14 @@ export const Register = ({ isPage = false }: RegisterProps) => {
                     >
                       <option value="">-- Sélectionner un genre --</option>
                       {genres.map((g) => (
-                        <option key={g.id} value={g.id}>
+                        <option
+                          key={g.id}
+                          value={g.id}
+                          disabled={
+                            form.interests.includes(String(g.id)) &&
+                            form.interests[i] !== String(g.id)
+                          }
+                        >
                           {g.name}
                         </option>
                       ))}

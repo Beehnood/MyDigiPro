@@ -35,16 +35,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:collection', 'read:item', 'blog:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
+    #[ORM\Column(length: 50, nullable: true)]
     #[Groups(['read:collection', 'read:item', 'write:item', 'blog:read'])]
-    private string $lastName;
+    private ?string $lastName = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
+    #[ORM\Column(length: 50, nullable: true)]
     #[Groups(['read:collection', 'read:item', 'write:item','blog:read'])]
 
-    private string $firstName;
+    private ?string $firstName = null;
 
     #[ORM\Column(length: 100, unique: true)]
     #[Assert\NotBlank]
@@ -52,15 +50,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:collection', 'read:item', 'write:item'])]
     private string $email;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
+    #[ORM\Column(length: 50, nullable: true)]
     #[Groups(['read:collection', 'read:item', 'write:item'])]
-    private string $country;
+    private ?string $country = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
+    #[ORM\Column(length: 50, nullable: true)]
     #[Groups(['read:collection', 'read:item', 'write:item'])]
-    private string $city;
+    private ?string $city = null;
 
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank]
@@ -136,21 +132,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
-    public function setLastName(string $lastName): static
+    public function setLastName(?string $lastName): static
     {
         $this->lastName = $lastName;
         return $this;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
-    public function setFirstName(string $firstName): static
+    public function setFirstName(?string $firstName): static
     {
         $this->firstName = $firstName;
         return $this;
@@ -166,21 +162,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCountry(): string
+    public function getCountry(): ?string
     {
         return $this->country;
     }
-    public function setCountry(string $country): static
+    public function setCountry(?string $country): static
     {
         $this->country = $country;
         return $this;
     }
 
-    public function getCity(): string
+    public function getCity(): ?string
     {
         return $this->city;
     }
-    public function setCity(string $city): static
+    public function setCity(?string $city): static
     {
         $this->city = $city;
         return $this;

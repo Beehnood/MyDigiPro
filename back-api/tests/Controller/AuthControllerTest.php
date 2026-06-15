@@ -50,10 +50,7 @@ class AuthControllerTest extends WebTestCase
             'email' => "test{$uniqueId}@example.com",
             'password' => 'Password123',
             'username' => "user{$uniqueId}",
-            'firstName' => 'Test',
-            'lastName' => 'User',
-            'country' => 'France',
-            'city' => 'Paris'
+            'interests' => ['28', '35', '18'],
         ]));
 
         $this->assertResponseStatusCodeSame(201);
@@ -69,9 +66,7 @@ class AuthControllerTest extends WebTestCase
             'email' => 'invalid-email',
             'password' => 'short',
             'username' => 'test',
-            'firstName' => 'Test',
-            'lastName' => 'User',
-            'city' => 'Paris'
+            'interests' => ['28', '35', '18'],
         ]));
 
         $this->assertResponseStatusCodeSame(400);
@@ -101,10 +96,7 @@ class AuthControllerTest extends WebTestCase
             'email' => 'testlogin@example.com',
             'password' => 'Password123',
             'username' => 'testloginuser',
-            'firstName' => 'Test',
-            'lastName' => 'Login',
-            'country' => 'France',
-            'city' => 'Paris'
+            'interests' => ['28', '35', '18'],
         ]));
     }
 

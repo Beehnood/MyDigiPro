@@ -24,23 +24,20 @@ const Profile = () => {
               title="Revenir à la page précédente"
               aria-label="Retour"
             >
-              <a href="./Home"></a>
               X
             </button>
           </div>
 
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-4xl font-bold mb-4">
-              Bienvenue, {user?.firstName} 👋
+              Bienvenue, {user?.username}
             </h1>
           </div>
           
           <ul>
             <li className="mb-2 text-2xl"><strong>Email :</strong> {user?.email}</li>
             <li className="mb-2 text-2xl"><strong>Nom d'utilisateur :</strong> {user?.username}</li>
-            <li className="mb-2 text-2xl"><strong>Nom :</strong> {user?.firstName} {user?.lastName}</li>
-            <li className="mb-2 text-2xl"><strong>Ville :</strong> {user?.city}, {user?.country}</li>
-            <li className="mb-2 text-2xl"><strong>Centres d'intérêt :</strong> {user?.interests}</li>
+            <li className="mb-2 text-2xl"><strong>Genres souhaités :</strong> {user?.interests || "Non renseignés"}</li>
           </ul>
         </div>
       </div>

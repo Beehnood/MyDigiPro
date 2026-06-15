@@ -54,10 +54,6 @@ class AuthController extends AbstractController
             'email' => 'adresse e-mail',
             'password' => 'mot de passe',
             'username' => 'nom d’utilisateur',
-            'firstName' => 'prénom',
-            'lastName' => 'nom',
-            'country' => 'pays',
-            'city' => 'ville',
         ];
 
         foreach ($requiredFields as $field => $label) {
@@ -75,6 +71,24 @@ class AuthController extends AbstractController
             return new JsonResponse(['error' => $passwordError], 400);
         }
 
+        $interests = $data['interests'] ?? null;
+        if (!is_array($interests)) {
+            return new JsonResponse(['error' => 'Veuillez choisir 3 genres préférés.'], 400);
+        }
+
+        $interests = array_values(array_filter(
+            $interests,
+            static fn ($interest) => trim((string) $interest) !== ''
+        ));
+
+        if (count($interests) !== 3) {
+            return new JsonResponse(['error' => 'Veuillez choisir exactement 3 genres préférés.'], 400);
+        }
+
+        if (count(array_unique($interests)) !== 3) {
+            return new JsonResponse(['error' => 'Veuillez choisir 3 genres différents.'], 400);
+        }
+
         $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
         if ($existingUser) {
             return new JsonResponse(['error' => 'Cet email est déjà utilisé'], 400);
@@ -87,15 +101,7 @@ class AuthController extends AbstractController
         $user = new User();
         $user->setEmail($data['email']);
         $user->setUsername($data['username']);
-        $user->setFirstName($data['firstName']);
-        $user->setLastName($data['lastName']);
-        $user->setCountry($data['country']);
-        $user->setCity($data['city']);
-        $interests = $data['interests'] ?? null;
-        if (is_array($interests)) {
-            $interests = implode(',', array_filter($interests, static fn ($interest) => $interest !== ''));
-        }
-        $user->setInterests($interests ?: null);
+        $user->setInterests(implode(',', $interests));
         $user->setPassword($passwordHasher->hashPassword($user, $data['password']));
         $user->setRoles(['ROLE_USER']);
 
