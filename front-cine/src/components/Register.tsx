@@ -258,19 +258,22 @@ export const Register = ({ isPage = false }: RegisterProps) => {
 
               {/* Boutons */}
               <div className="flex flex-col gap-4 sm:flex-row">
-                <button
-                  type="submit"
-                  className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
-                >
-                  S'inscrire
-                </button>
-                <button
+
+                 <button
                   type="button"
                   onClick={handleClose}
                   className="flex-1 bg-yellow-400 text-black py-2 rounded hover:bg-red-700 hover:text-white transition-colors"
                 >
                   Fermer
                 </button>
+                
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
+                >
+                  S'inscrire
+                </button>
+               
               </div>
 
               {error && <p className="text-red-600 text-sm">{error}</p>}
