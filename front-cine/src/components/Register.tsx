@@ -230,10 +230,10 @@ export const Register = ({ isPage = false }: RegisterProps) => {
                   {genres.map((g) => (
                     <option
                       key={g.id}
-                      value={g.id}
+                      value={g.name}
                       disabled={
-                        form.interests.includes(String(g.id)) &&
-                        form.interests[i] !== String(g.id)
+                        form.interests.includes(String(g.name)) &&
+                        form.interests[i] !== String(g.name)
                       }
                     >
                       {g.name}
