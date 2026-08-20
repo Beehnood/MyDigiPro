@@ -1,6 +1,7 @@
 import { api } from "../service/Http-service";
 import { API_BASE_URL } from "../config";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 
 type RegisterProps = {
@@ -165,6 +166,108 @@ export const Register = ({ isPage = false }: RegisterProps) => {
     }
   };
 
+  const registerModal = isOpen ? (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div
+        className="relative max-h-[90vh] w-full max-w-2xl space-y-4 overflow-y-auto rounded-2xl bg-orange-100 p-4 shadow-md sm:p-8"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="mb-4 text-center text-2xl font-bold text-[#242424]">
+          Inscription
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Inputs texte */}
+            {textFields.map(({ label, name }) => (
+              <div key={name} className="col-span-1">
+                <label
+                  className="mb-1 block font-medium text-[#242424]"
+                  htmlFor={name}
+                >
+                  {label}
+                </label>
+                <input
+                  type={
+                    name === "password"
+                      ? "password"
+                      : name === "email"
+                        ? "email"
+                        : "text"
+                  }
+                  id={name}
+                  name={name}
+                  value={form[name]}
+                  onChange={handleChange}
+                  required
+                  className="w-full rounded border border-gray-300 bg-orange-50 px-3 py-2 text-[#242424] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={`Entrez votre ${label.toLowerCase()}`}
+                />
+                {name === "password" && (
+                  <p className="mt-1 text-xs leading-5 text-gray-700">
+                    Mot de passe requis : {passwordRules.join(", ")}.
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Sélecteurs de genres */}
+          <div>
+            <label className="mb-2 block font-medium text-[#242424]">
+              Choisissez 3 genres préférés :
+            </label>
+            <div className="grid grid-cols-1 gap-2">
+              {[0, 1, 2].map((i) => (
+                <select
+                  key={i}
+                  value={form.interests[i]}
+                  onChange={(e) => handleGenreChange(i, e.target.value)}
+                  className="w-full rounded border border-gray-300 bg-orange-50 px-3 py-2 text-[#242424] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">-- Sélectionner un genre --</option>
+                  {genres.map((g) => (
+                    <option
+                      key={g.id}
+                      value={g.id}
+                      disabled={
+                        form.interests.includes(String(g.id)) &&
+                        form.interests[i] !== String(g.id)
+                      }
+                    >
+                      {g.name}
+                    </option>
+                  ))}
+                </select>
+              ))}
+            </div>
+          </div>
+
+          {/* Boutons */}
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex-1 rounded bg-yellow-400 py-2 text-black transition-colors hover:bg-red-700 hover:text-white"
+            >
+              Fermer
+            </button>
+
+            <button
+              type="submit"
+              className="flex-1 rounded bg-blue-600 py-2 text-white transition-colors hover:bg-blue-700"
+            >
+              S'inscrire
+            </button>
+          </div>
+
+          {error && <p className="text-sm text-red-600">{error}</p>}
+        </form>
+      </div>
+    </div>
+  ) : null;
+
   return (
     <>
       {/* Bouton d'ouverture */}
@@ -177,110 +280,8 @@ export const Register = ({ isPage = false }: RegisterProps) => {
         </button>
       )}
 
-      {/* Modale */}
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50 p-4">
-          <div
-            className="bg-orange-100 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-8 rounded-2xl shadow-md space-y-4 relative"
-            onClick={(e) => e.stopPropagation()} // empêcher fermeture quand on clique dans la modale
-          >
-            <h2 className="text-2xl font-bold mb-4 text-[#242424] text-center">
-              Inscription
-            </h2>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {/* Inputs texte */}
-                {textFields.map(({ label, name }) => (
-                  <div key={name} className="col-span-1">
-                    <label
-                      className="block text-[#242424] font-medium mb-1"
-                      htmlFor={name}
-                    >
-                      {label}
-                    </label>
-                    <input
-                      type={
-                        name === "password"
-                          ? "password"
-                          : name === "email"
-                            ? "email"
-                            : "text"
-                      }
-                      id={name}
-                      name={name}
-                      value={form[name]}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 bg-orange-50 text-[#242424] rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder={`Entrez votre ${label.toLowerCase()}`}
-                    />
-                    {name === "password" && (
-                      <p className="mt-1 text-xs leading-5 text-gray-700">
-                        Mot de passe requis : {passwordRules.join(", ")}.
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Sélecteurs de genres */}
-              <div>
-                <label className="block text-[#242424] font-medium mb-2">
-                  Choisissez 3 genres préférés :
-                </label>
-                <div className="grid grid-cols-1 gap-2">
-                  {[0, 1, 2].map((i) => (
-                    <select
-                      key={i}
-                      value={form.interests[i]}
-                      onChange={(e) => handleGenreChange(i, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 bg-orange-50 text-[#242424] rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    >
-                      <option value="">-- Sélectionner un genre --</option>
-                      {genres.map((g) => (
-                        <option
-                          key={g.id}
-                          value={g.id}
-                          disabled={
-                            form.interests.includes(String(g.id)) &&
-                            form.interests[i] !== String(g.id)
-                          }
-                        >
-                          {g.name}
-                        </option>
-                      ))}
-                    </select>
-                  ))}
-                </div>
-              </div>
-
-              {/* Boutons */}
-              <div className="flex flex-col gap-4 sm:flex-row">
-
-                 <button
-                  type="button"
-                  onClick={handleClose}
-                  className="flex-1 bg-yellow-400 text-black py-2 rounded hover:bg-red-700 hover:text-white transition-colors"
-                >
-                  Fermer
-                </button>
-                
-                <button
-                  type="submit"
-                  className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
-                >
-                  S'inscrire
-                </button>
-               
-              </div>
-
-              {error && <p className="text-red-600 text-sm">{error}</p>}
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Le portail évite qu'un parent responsive `hidden` masque la modale. */}
+      {registerModal && createPortal(registerModal, document.body)}
     </>
   );
 };
