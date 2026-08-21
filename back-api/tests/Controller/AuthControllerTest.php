@@ -38,7 +38,7 @@ class AuthControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/api/admin/secret');
 
-        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testRegister(): void
