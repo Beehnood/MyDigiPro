@@ -21,7 +21,6 @@ permissions:
 jobs:
   symfony-tests:
     name: Symfony PHPUnit Tests
-
     runs-on: ubuntu-latest
 
     services:
@@ -46,7 +45,7 @@ jobs:
     env:
       APP_ENV: test
       APP_DEBUG: 0
-      DATABASE_URL: "mysql://app:app@127.0.0.1:3306/cinespin_test?serverVersion=8.4&charset=utf8mb4"
+      DATABASE_URL: "mysql://app:app@127.0.0.1:3306/cinespin?serverVersion=8.4&charset=utf8mb4"
 
     defaults:
       run:
@@ -57,12 +56,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Installation de PHP
+      # 2. Installation de PHP 8.4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
-          extensions: pdo_mysql, intl, zip
+          extensions: pdo_mysql, intl, zip, mbstring, dom, xml, xmlwriter
           coverage: none
           tools: composer:v2
 
@@ -75,18 +74,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-8.4-composer-
 
-      # 4. Installation des dépendances
+      # 4. Vérification de composer.json
+      - name: Validate composer.json
+        run: composer validate --no-check-publish
+
+      # 5. Installation des dépendances
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      # 5. Vérification de Symfony
-      - name: Check Symfony console
-        run: php bin/console about
+      # 6. Vérification de Symfony
+      - name: Check Symfony test environment
+        run: php bin/console about --env=test
 
-      # 6. Création du schéma de BDD pour les tests
+      # 7. Création du schéma MySQL de test
       - name: Create test database schema
         run: php bin/console doctrine:schema:create --env=test
 
-      # 7. Lancement des tests
-      - name: Run PHPUnit tests
+      # 8. Tests PHPUnit
+      - name: Run PHPUnit
         run: php bin/phpunit
