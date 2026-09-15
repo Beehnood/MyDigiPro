@@ -56,7 +56,6 @@ class RandomizerController extends AbstractController
         $monetization = (string) $request->query->get('monetization', 'flatrate');
 
         try {
-            // 
             $movie = !empty($providerIds)
                 ? $tmdbClient->fetchRandomMovieByProviders($providerIds, $region, $monetization)
                 : $tmdbClient->fetchRandomMovie();
