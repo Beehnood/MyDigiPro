@@ -7,7 +7,7 @@ import { api } from "../service/Http-service";
 type Movie = {
   id: number;
   title: string;
-  poster_path: string;
+  poster_path: string | null;
 };
 
 const PROVIDERS = [
@@ -18,7 +18,7 @@ const PROVIDERS = [
 ];
 
 export default function Randomizer() {
-  const [movie, setMovie] = useState<Movie | null>(null);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedProviders, setSelectedProviders] = useState<number[]>([]);
@@ -37,21 +37,22 @@ export default function Randomizer() {
   };
 
   const randomize = async () => {
+    if (loading || movies.length >= 3) return;
+
     setLoading(true);
     setError("");
 
     try {
-      const params: any = {};
+      const params: { providers?: string } = {};
       if (selectedProviders.length) {
         params.providers = selectedProviders.join(",");
       }
       // optionnel : params.region = 'FR'; params.monetization = 'flatrate';
 
-      const res = await api.get("/randomize", { params });
-      setMovie(res.data);
-    } catch (e: any) {
-      setError(e?.response?.data?.error || "Erreur pendant le tirage.");
-      setMovie(null);
+      const res = await api.get<Movie>("/randomize", { params });
+      setMovies((previous) => [...previous, res.data]);
+    } catch (e: unknown) {
+      setError(axios.isAxiosError(e) ? e.response?.data?.error || "Erreur pendant le tirage." : "Erreur pendant le tirage.");
     } finally {
       setLoading(false);
     }
@@ -103,38 +104,54 @@ export default function Randomizer() {
               </div>
             </div>
 
-            <div className="flex justify-center items-center min-h-[200px] bg-zinc-800/50 rounded-xl p-4">
-              {loading ? (
-                <Loader2 className="animate-spin w-12 h-12 text-yellow-500" />
-              ) : movie ? (
-                <div className="text-center transition-all duration-300 hover:scale-105">
-                  <img
-                    src={
-                      movie.poster_path
-                        ? `https://image.tmdb.org/t/p/w200/${movie.poster_path}`
-                        : "/images/default-poster.png" // 👈 image par défaut (place-la dans public/images/)
-                    }
-                    alt={movie.title}
-                    key={movie.id}
-                    onClick={() => navigate(`/film/${movie.id}`)}
-                    className="rounded-lg shadow-lg mx-auto mb-2 border-2 border-yellow-500/30"
-                  />
-                  <h3 className="text-xl font-semibold text-white">
-                    {movie.title}
-                  </h3>
-                </div>
-              ) : (
-                <div className="flex flex-wrap justify-center gap-6">
-                  {[...Array(3)].map((_, index) => (
-                    <div
-                      key={index}
-                      className="bg-black/30 border border-white/10 p-6 rounded-xl transform hover:scale-105 transition-transform duration-200"
-                    >
-                      <FilmIcon className="w-16 h-16 text-white opacity-80" />
-                    </div>
-                  ))}
+            <div aria-busy={loading} className="relative min-h-[200px] bg-zinc-800/50 rounded-xl p-4">
+              {loading && (
+                <div role="status" className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-zinc-900/80">
+                  <Loader2 aria-hidden="true" className="animate-spin w-12 h-12 text-yellow-500" />
+                  <span className="sr-only">Tirage en cours</span>
                 </div>
               )}
+              <div className="grid grid-cols-3 gap-3 sm:gap-6">
+                {Array.from({ length: 3 }, (_, index) => {
+                  const movie = movies[index];
+                  return movie ? (
+                    <button
+                      type="button"
+                      key={`movie-${index}-${movie.id}`}
+                      disabled={loading}
+                      aria-label={`Choisir ${movie.title}`}
+                      onClick={() => {
+                        handleClose();
+                        navigate(`/film/${movie.id}`);
+                      }}
+                      className="min-w-0 text-center rounded-xl transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-400 disabled:cursor-wait"
+                    >
+                      {movie.poster_path ? (
+                        <img
+                          src={movie.poster_path.startsWith("https://")
+                            ? movie.poster_path
+                            : `https://image.tmdb.org/t/p/w200/${movie.poster_path.replace(/^\//, "")}`}
+                          alt={movie.title}
+                          className="aspect-[2/3] w-full object-cover rounded-lg shadow-lg mb-2 border-2 border-yellow-500/30"
+                        />
+                      ) : (
+                        <div className="aspect-[2/3] flex items-center justify-center rounded-lg bg-black/30 mb-2">
+                          <span className="text-sm">Affiche indisponible</span>
+                        </div>
+                      )}
+                      <h3 className="text-sm sm:text-lg font-semibold text-white break-words">{movie.title}</h3>
+                    </button>
+                  ) : (
+                    <div
+                      key={`placeholder-${index}`}
+                      aria-label={`Emplacement film ${index + 1}`}
+                      className="aspect-[2/3] flex items-center justify-center bg-black/30 border border-white/10 rounded-xl"
+                    >
+                      <FilmIcon aria-hidden="true" className="w-10 h-10 sm:w-16 sm:h-16 text-white opacity-80" />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             {/* BTNS */}
             <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row sm:gap-8">
@@ -142,9 +159,9 @@ export default function Randomizer() {
                 <button
                   onClick={randomize}
                   className=" bg-orange-100 hover:bg-yellow-400 text-black font-bold px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed"
-                  disabled={loading}
+                  disabled={loading || movies.length >= 3}
                 >
-                  🎲 Lancer le tirage
+                  {movies.length >= 3 ? "Les 3 films sont proposés" : "🎲 Lancer le tirage"}
                 </button>
               </div>
               <div className="flex items-center">
@@ -153,7 +170,7 @@ export default function Randomizer() {
                   className=" bg-yellow-400 hover:bg-red-400 text-black hover:text-white font-bold px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
-                  Close
+                  Fermer
                 </button>
               </div>
             </div>
