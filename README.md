@@ -148,12 +148,12 @@ Exemple de variables importantes :
 ```dotenv
 APP_ENV=dev
 DATABASE_URL="mysql://root:password@127.0.0.1:3306/MyDigiPro?serverVersion=8.0.32&charset=utf8mb4"
-TMDB_API_KEY="votre_cle_tmdb"
+TMDB_API_KEY="************"
 TMDB_BASE_URL="https://api.themoviedb.org/3"
 CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
 JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
 JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
-JWT_PASSPHRASE=votre_passphrase
+JWT_PASSPHRASE=***********
 ```
 
 Générer les clés JWT si elles ne sont pas encore présentes :
@@ -173,7 +173,7 @@ export const API_BASE_URL = "http://localhost:8000/api";
 Certaines pages utilisent TMDB directement. Créer ou vérifier le fichier `front-cine/.env` :
 
 ```dotenv
-VITE_TMDB_API_KEY="votre_cle_tmdb"
+VITE_TMDB_API_KEY="***********"
 VITE_TMDB_BASE_URL="https://api.themoviedb.org/3"
 ```
 
